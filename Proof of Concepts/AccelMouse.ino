@@ -22,9 +22,9 @@
 #define timeInterval 10
 
 //Variables
-int acceleration[] = {0, 0, 0};
-float velocity[] = {0, 0, 0};
-float velocityOld[] = {0, 0, 0};
+int    a[] = {0, 0, 0};
+float v1[] = {0, 0, 0};
+float v0[] = {0, 0, 0};
 
 void setup()
 {
@@ -44,34 +44,37 @@ void loop()
   
   readAccelData(acceleration);  // Read the x/y/z adc values
 
-  // Now we'll calculate the accleration value into actual g's
-  double accelActual[3];  // Stores the real accel value in g's
+  // Now we'll calculate the accleration value into actual g's and then into m/s^s
   for (int i = 0 ; i < 3 ; i++)
   {
-    accelActual[i] = (double) acceleration[i] / ((1<<12)/(2*GSCALE)) * 9.8;  // get actual m/s^2 value, this depends on scale being set
+    a[i] = a[i] / ((1<<12)/(2*GSCALE)) * 9.8;  // get actual m/s^2 value, this depends on g scale being set
   }
   
-  accelActual[2] -= 9.8;
+  a[2] -= 9.8; // Subtract out gravity
   
-  Serial.print("X Acc: "); Serial.println(accelActual[0]);
-  Serial.print("Z Acc: "); Serial.println(accelActual[2]);
+  Serial.print("X Acc: "); Serial.println(a[0]);
+  Serial.print("Z Acc: "); Serial.println(a[2]);
   
   
   for(int i = 0; i < 3; i++) {
-    velocityOld[i] = velocity[i];
-    velocity[i] =+ ((float)accelActual[i]*timeInterval*0.001)*100;
+    v0[i] = v1[i];
+    v1[i] =+ (float) a[i]*(timeInterval*0.001);
   }
   
   Serial.print("Vx: "); Serial.println(velocity[0]);
   Serial.print("Vy: "); Serial.println(-velocity[2]);
   
-  float deltaX = 100*(velocityOld[0]*(timeInterval*0.001)+0.5*accelActual[0]*pow((timeInterval*0.001), 2));
-  float deltaY = 100*(-velocityOld[2]*(timeInterval*0.001) - 0.5*accelActual[2]*pow((timeInterval*0.001), 2));
+  float deltaX = v0[0]*(timeInterval*0.001) + 0.5*((float) a[0])*pow((timeInterval*0.001), 2);
+  float deltaZ = v0[2]*(timeInterval*0.001) + 0.5*((float) a[0])*pow((timeInterval*0.001), 2);
+  
+  //Convert to pixels from meters
+  deltaX = deltaX*1280;
+  deltaZ = deltaZ*800;
   
   Serial.print("DeltaX: "); Serial.println(deltaX);
   Serial.print("DeltaY: "); Serial.println(deltaY);
   
-  Mouse.move(deltaX, deltaY, 0);
+  Mouse.move(deltaX, -deltaZ, 0);
   
   delay(timeInterval);
 }
