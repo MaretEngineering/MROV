@@ -22,7 +22,7 @@
 #define timeInterval 10
 
 //Variables
-int    a[] = {0, 0, 0};
+int    a[] = {0, 0, 0};  
 float v1[] = {0, 0, 0};
 float v0[] = {0, 0, 0};
 
@@ -42,7 +42,7 @@ void loop()
 {  
   if(digitalRead(9) == HIGH){ Serial.println("Switch off"); return; }
   
-  readAccelData(acceleration);  // Read the x/y/z adc values
+  readAccelData(a);  // Read the x/y/z adc values
 
   // Now we'll calculate the accleration value into actual g's and then into m/s^s
   for (int i = 0 ; i < 3 ; i++)
@@ -61,8 +61,8 @@ void loop()
     v1[i] =+ (float) a[i]*(timeInterval*0.001);
   }
   
-  Serial.print("Vx: "); Serial.println(velocity[0]);
-  Serial.print("Vy: "); Serial.println(-velocity[2]);
+  Serial.print("Vx: "); Serial.println(v1[0]);
+  Serial.print("Vy: "); Serial.println(-v1[2]);
   
   float deltaX = v0[0]*(timeInterval*0.001) + 0.5*((float) a[0])*pow((timeInterval*0.001), 2);
   float deltaZ = v0[2]*(timeInterval*0.001) + 0.5*((float) a[0])*pow((timeInterval*0.001), 2);
@@ -72,7 +72,7 @@ void loop()
   deltaZ = deltaZ*800;
   
   Serial.print("DeltaX: "); Serial.println(deltaX);
-  Serial.print("DeltaY: "); Serial.println(deltaY);
+  Serial.print("DeltaY: "); Serial.println(-deltaZ);
   
   Mouse.move(deltaX, -deltaZ, 0);
   
