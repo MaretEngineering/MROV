@@ -3,7 +3,7 @@
 
 int motorPins[NUM_MOTORS] = {9, 3, 5, 6};
 int motorPower[NUM_MOTORS];
-int motorDirection[NUM_MOTORS];
+int directionPins[NUM_MOTORS] = {13, 12, 11, 8};
 int buttonStates[NUM_BUTTONS];
 
 void setup() {
@@ -21,8 +21,10 @@ void setup() {
   //Set up pins and arrays
   for (int n = 0; n < NUM_MOTORS; n++) {
     pinMode(motorPins[n], OUTPUT);
+    pinMode(directionPins[n], OUTPUT);
     motorPower[n] = 0;
   }
+  
   
  }
 
@@ -30,20 +32,26 @@ void loop () {
   
   readCharArrayFromSerial();
   
+  //Constrain to make sure nothing breaks
+  for ( int h = 0; h < NUM_MOTORS; h++ ) {
+    if ( motorPower[h] > 0 ) { motorPower[h] = map(motorPower[h], 0, 255, 50, 255); }
+    else if (motorPower[h] < 0 ) { motorPower[h] = map(motorPower[h], -255, 0, -255, 50); }
+  }
+  
   for ( int i = 0; i < NUM_MOTORS; i++) {
     analogWrite( motorPins[i], abs(motorPower[i]) );
     
-    /*
     if ( motorPower[i] >= 0 ) {
-      digitalWrite( motorDirection[i], HIGH);
+      digitalWrite( directionPins[i], HIGH);
     } else {
-      digitalWrite( motorDirection[i], LOW);
+      digitalWrite( directionPins[i], LOW);
     }
   }
+  /*
   for ( int i = 0; i < NUM_BUTTONS; i++) {
   }
   */
-  }
+  
   delay(10);
 }
 
@@ -55,6 +63,10 @@ void readCharArrayFromSerial() {
   //Scan for motor values first
   int index = 0;
   String input = "";
+  
+  if ( Serial.available() > 0 ) {
+    if ( Serial.read() != (int)'!' ) { return; }
+  }
   
   while ( Serial.available() > 0 && index < 4 ) {
     int c = Serial.read();

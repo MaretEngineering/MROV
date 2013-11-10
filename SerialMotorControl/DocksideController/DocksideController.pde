@@ -56,12 +56,13 @@ void draw() {
   text("x joystick 2: " + str(joy2x), 50, 150); 
   text("y joystick 2: " + str(joy2y), 50, 200);
   
-  String toSend = "";
+  String toSend = "!";
   toSend += str(joy1x) + "/";
   toSend += str(joy1y) + "/";
   toSend += str(joy2x) + "/";
   toSend += str(joy2y) + "/";
   port.write(toSend);
+  
   delay(10);
 }
 
