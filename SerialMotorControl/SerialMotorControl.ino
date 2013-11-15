@@ -92,7 +92,7 @@ void readCharArrayFromSerial() {
     }
   }
   
-  /*
+  
   //Then scan for button values
   index = 0;
   input = "";
@@ -112,5 +112,5 @@ void readCharArrayFromSerial() {
     }
     
   }
-  */
+  
 }
