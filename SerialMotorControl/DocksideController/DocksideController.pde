@@ -75,25 +75,25 @@ void draw() {
   // translates boolean values to a 1 or a 0 
   if (aButton == true) {
    aButtonInt = 1; 
-  } esle {
+  } else {
    aButtonInt = 0;  
   }
   
   if (bButton == true) {
    bButtonInt = 1; 
-  } esle {
+  } else {
    bButtonInt = 0;  
   }
   
   if (xButton == true) {
    xButtonInt = 1; 
-  } esle {
+  } else {
    xButtonInt = 0;  
   }
   
   if (yButton == true) {
    yButtonInt = 1; 
-  } esle {
+  } else {
    yButtonInt = 0;  
   }
   String toSend = "!";

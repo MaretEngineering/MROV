@@ -58,7 +58,7 @@ void loop () {
 //Utility method to read a string (in the form of a char array) from Serial
 void readCharArrayFromSerial() {
   int motorDelimiter = (int)'/';
-  int buttonDelimiter = (int)'\\';
+  int buttonDelimiter = (int)'|';
   
   //Scan for motor values first
   int index = 0;
