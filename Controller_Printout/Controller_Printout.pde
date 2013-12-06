@@ -1,5 +1,8 @@
 import procontroll.*;
 import net.java.games.input.*;
+
+import procontroll.*;
+import net.java.games.input.*;
 import processing.serial.*;
 
 // Notes on the controller:

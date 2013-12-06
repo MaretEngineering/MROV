@@ -21,10 +21,10 @@ int joy1x = 0;
 int joy1y = 0;
 int joy2x = 0; 
 int joy2y = 0;
-boolean aButton = null;
-boolean bButton = null;
-boolean xButton = null;
-boolean yButton = null;
+boolean aButtonValue = false;
+boolean bButtonValue = false;
+boolean xButtonValue = false;
+boolean yButtonValue = false;
 
 
 void setup(){
@@ -59,10 +59,10 @@ void draw() {
   joy1x = -(int) joy1.getY(); //y-values need to be inverted, because the controller is weird like that, as I believe I has already noted
   joy2y = (int) joy2.getX();
   joy2x = -(int) joy2.getY(); 
-  aButton = (boolean)joypad.getButton(11);
-  bButton = (boolean)joypad.getButton(12);
-  xButton = (boolean)joypad.getButton(13);
-  yButton = (boolean)joypad.getButton(14);
+  aButtonValue = (boolean)joypad.getButton(11).pressed();
+  bButtonValue = (boolean)joypad.getButton(12).pressed();
+  xButtonValue = (boolean)joypad.getButton(13).pressed();
+  yButtonValue = (boolean)joypad.getButton(14).pressed();
   
   text("x joystick 1: " + str(joy1x), 50, 50);
   text("y joystick 1: " + str(joy1y), 50, 100);
