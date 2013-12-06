@@ -1,10 +1,10 @@
 #define NUM_MOTORS 4
-#define NUM_BUTTONS 0
+#define NUM_BUTTONS 4
 
 int motorPins[NUM_MOTORS] = {9, 3, 5, 6};
 int motorPower[NUM_MOTORS];
-int directionPins[NUM_MOTORS] = {13, 12, 11, 8};
-int buttonStates[NUM_BUTTONS];
+int buttonPins[NUM_MOTORS] = {13, 12, 11, 8};
+int buttonStates[NUM_BUTTONS] = {0, 0, 0, 0};
 
 void setup() {
   //Set up serial
@@ -21,10 +21,13 @@ void setup() {
   //Set up pins and arrays
   for (int n = 0; n < NUM_MOTORS; n++) {
     pinMode(motorPins[n], OUTPUT);
-    pinMode(directionPins[n], OUTPUT);
+    pinMode(buttonPins[n], OUTPUT);
     motorPower[n] = 0;
   }
-  
+ 
+ digitalWrite(buttonPins[0], HIGH);
+ 
+ delay(1000);
   
  }
 
@@ -40,17 +43,16 @@ void loop () {
   
   for ( int i = 0; i < NUM_MOTORS; i++) {
     analogWrite( motorPins[i], abs(motorPower[i]) );
-    
-    if ( motorPower[i] >= 0 ) {
-      digitalWrite( directionPins[i], HIGH);
+  }
+  
+  for ( int i = 0; i < NUM_BUTTONS; i++) {
+    if ( buttonStates[i] == 1 ) {
+      digitalWrite( buttonPins[i], HIGH);
     } else {
-      digitalWrite( directionPins[i], LOW);
+      digitalWrite( buttonPins[i], LOW);
     }
   }
-  /*
-  for ( int i = 0; i < NUM_BUTTONS; i++) {
-  }
-  */
+  
   
   delay(10);
 }
@@ -59,6 +61,10 @@ void loop () {
 void readCharArrayFromSerial() {
   int motorDelimiter = (int)'/';
   int buttonDelimiter = (int)'|';
+<<<<<<< HEAD
+  int switchDelimeter = (int)'{';
+=======
+>>>>>>> e55ef34844049d06960da9459a848180ea824cff
   
   //Scan for motor values first
   int index = 0;
@@ -85,7 +91,7 @@ void readCharArrayFromSerial() {
     } else {
       
       //Handle other delimeters
-      if ( c == buttonDelimiter) { break; }
+      if ( c == switchDelimeter) { break; }
     
       //If no delimeter found, add the char to the input string
       input += (char) c;
@@ -96,7 +102,7 @@ void readCharArrayFromSerial() {
   //Then scan for button values
   index = 0;
   input = "";
-  while ( Serial.available() > 0 && index < 0) {
+  while ( Serial.available() > 0 && index < 4) {
     int b = Serial.read();
     
     //Handle button delimeters
