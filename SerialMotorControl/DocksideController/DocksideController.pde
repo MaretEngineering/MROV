@@ -35,7 +35,7 @@ int yButtonInt = 0;
 
 
 void setup(){
-  size(600, 600);
+  size(1000, 700);
   noStroke();
   textSize(32);
   
@@ -56,7 +56,7 @@ void setup(){
 
   //Set up serial
   println(Serial.list());
-  port = new Serial(this, Serial.list()[10], 9600);
+  //port = new Serial(this, Serial.list()[10], 9600);
 }
 
 void draw() {
@@ -110,6 +110,22 @@ void draw() {
   } else {
    yButtonInt = 0;  
   }
+
+  //Draw thrust vectors
+   int[] thrustValues = getTranslation(joy1y, -joy1x);
+   text ("a:" + str(thrustValues[0]), 50, 450);
+   text ("b:" + str(thrustValues[1]), 50, 500);
+   text ("c:" + str(thrustValues[2]), 50, 550);
+   text ("y:" + str(thrustValues[3]), 50, 600);
+   //  Draw Motor A
+   line (500, 100, 500-thrustValues[0]*cos(radians(225)), 100-thrustValues[0]*sin(radians(225)));
+   //  Draw Motor B
+   line (750, 100, 750+thrustValues[1]*cos(radians(315)), 100+thrustValues[1]*sin(radians(315)));
+   //  Draw Motor C
+   line (500, 350, 500+thrustValues[2]*cos(radians(135)), 350+thrustValues[2]*sin(radians(135)));
+   //  Draw Motor D
+   line (750, 350, 750-thrustValues[3]*cos(radians(45)), 350-thrustValues[3]*sin(radians(45)));
+  
   String toSend = "!";
   toSend += str(joy1x) + "/";
   toSend += str(joy1y) + "/";
@@ -120,7 +136,7 @@ void draw() {
   toSend += str (xButtonInt) + "|";
   toSend += str (yButtonInt) + "|";
   
-  port.write(toSend);
+  //port.write(toSend);
   
   delay(10);
 }
@@ -140,4 +156,24 @@ void keyPressed(){
     
   }
 }
-  
+ 
+// Tuning Constants
+double Kx = 1.0000;
+double Ky = 1.0000;
+//double aConst = 1/(sqrt(2)*2*(Kx + Ky));
+//double bConst = 1/(sqrt(2)*2*(Ky - Kx));
+double aConst = 1;
+double bConst = 1;
+ 
+int[] getTranslation(int x, int y){
+ int[] vals = new int[4];
+ int a = (int)((x + y)*aConst);
+ int b = (int)((y - x)*bConst);
+ int d = -a;
+ int c = -b;
+ vals[0] = a;
+ vals[1] = b;
+ vals[2] = c;
+ vals[3] = d;
+ return vals;
+}
