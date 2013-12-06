@@ -1,5 +1,8 @@
 import procontroll.*;
 import net.java.games.input.*;
+
+import procontroll.*;
+import net.java.games.input.*;
 import processing.serial.*;
 
 // Notes on the controller:
@@ -25,13 +28,13 @@ boolean aButtonValue = false;
 boolean bButtonValue = false;
 boolean xButtonValue = false;
 boolean yButtonValue = false;
-<<<<<<< HEAD
-=======
+
+
 int aButtonInt = 0;
 int bButtonInt = 0;
 int xButtonInt = 0;
 int yButtonInt = 0;
->>>>>>> 69c75d612d48ad005ef7ac424eb0d93548679c89
+
 
 
 void setup(){
@@ -65,18 +68,25 @@ void draw() {
   joy1y = (int) joy1.getX();
   joy1x = -(int) joy1.getY(); //y-values need to be inverted, because the controller is weird like that, as I believe I has already noted
   joy2y = (int) joy2.getX();
-  joy2x = -(int) joy2.getY(); 
-<<<<<<< HEAD
-  aButtonValue = (boolean)joypad.getButton(11).pressed();
-  bButtonValue = (boolean)joypad.getButton(12).pressed();
-  xButtonValue = (boolean)joypad.getButton(13).pressed();
-  yButtonValue = (boolean)joypad.getButton(14).pressed();
-=======
+  joy2x = -(int) joy2.getY();
+ 
   aButton = joypad.getButton(11);
   bButton = joypad.getButton(12);
   xButton = joypad.getButton(13);
-  yButton = joypad.getButton(14);
->>>>>>> 69c75d612d48ad005ef7ac424eb0d93548679c89
+  yButton = joypad.getButton(14); 
+
+ // aButtonValue = (boolean)joypad.getButton(11).pressed();
+  //bButtonValue = (boolean)joypad.getButton(12).pressed();
+ // xButtonValue = (boolean)joypad.getButton(13).pressed();
+  //yButtonValue = (boolean)joypad.getButton(14).pressed();
+ 
+ // all the buttons are set to true for debugging purposes only 
+  aButtonValue = true;
+  bButtonValue = true;
+  xButtonValue = true;
+  yButtonValue = true; 
+
+
   
   text("x joystick 1: " + str(joy1x), 50, 50);
   text("y joystick 1: " + str(joy1y), 50, 100);

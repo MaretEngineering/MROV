@@ -1,3 +1,4 @@
+
 #define NUM_MOTORS 4
 #define NUM_BUTTONS 4
 
@@ -61,10 +62,10 @@ void loop () {
 void readCharArrayFromSerial() {
   int motorDelimiter = (int)'/';
   int buttonDelimiter = (int)'|';
-<<<<<<< HEAD
+
   int switchDelimeter = (int)'{';
-=======
->>>>>>> e55ef34844049d06960da9459a848180ea824cff
+
+
   
   //Scan for motor values first
   int index = 0;
