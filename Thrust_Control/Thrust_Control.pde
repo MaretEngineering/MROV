@@ -37,6 +37,8 @@ double Ky = 1.0000;
 //double bConst = 1/(sqrt(2)*2*(Ky - Kx));
 double aConst = 1;
 double bConst = 1;
+double aConstR = 1;
+double bConstR = 1;
 int debounceTime = 175;
 
 
@@ -86,10 +88,10 @@ void draw() {
   text("y joystick 1: " + str(joy1y), 50, 100);
   text("x joystick 2: " + str(joy2x), 50, 150); 
   text("y joystick 2: " + str(joy2y), 50, 200);
-  text ("a Button:" + str(aButtonValue), 50, 250);
-  text ("b Button:" + str(bButtonValue), 50, 300);
-  text ("x Button:" + str(xButtonValue), 50, 350);
-  text ("y Button:" + str(yButtonValue), 50, 400);
+  text ("a Button: " + str(aButtonValue), 50, 250);
+  text ("b Button: " + str(bButtonValue), 50, 300);
+  text ("x Button: " + str(xButtonValue), 50, 350);
+  text ("y Button: " + str(yButtonValue), 50, 400);
   
   //Calculate thrust vectors
   if (joy1y != 0 || joy1x != 0) {
@@ -142,10 +144,10 @@ int[] getTranslation(int x, int y){
 
 int[] getRotation(int x) {
   int[] vals = new int[4];
-  int a = (int)(x*aConst);
-  int b = (int)(x*bConst);
-  int d = -a;
-  int c = -b;
+  int a = (int)(x*aConstR);
+  int b = -(int)(x*bConstR);
+  int d = a;
+  int c = b;
   vals[0] = a;
   vals[1] = b;
   vals[2] = c;
