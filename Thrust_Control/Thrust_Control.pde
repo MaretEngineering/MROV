@@ -114,15 +114,16 @@ void draw() {
   line (750, 350, 750+thrustValues[3]*cos(radians(45)), 350-thrustValues[3]*sin(radians(45)));
   
   String toSend = "!";
-  toSend += str(joy1x) + "/";
-  toSend += str(joy1y) + "/";
-  toSend += str(joy2x) + "/";
-  toSend += str(joy2y) + "/";
+  toSend += str(thrustValues[0]) + "/";
+  toSend += str(thrustValues[1]) + "/";
+  toSend += str(thrustValues[2]) + "/";
+  toSend += str(thrustValues[3]) + "/";
   toSend += "{";
   toSend += str(int(aButtonValue)) + "|";
   toSend += str(int(bButtonValue)) + "|";
   toSend += str(int(xButtonValue)) + "|";
   toSend += str(int(yButtonValue)) + "|";
+  toSend += "$"
   
   //port.write(toSend);
   
