@@ -22,7 +22,7 @@ void setup() {
   //Set up pins and arrays
   for (int n = 0; n < NUM_MOTORS; n++) {
     pinMode(motorPins[n], OUTPUT);
-    pinMode(buttonPins[n], OUTPUT);
+    pinMode(buttonPins[n], OUTPUT);3
     motorPower[n] = 0;
   }
  
