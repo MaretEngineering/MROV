@@ -67,7 +67,7 @@ void setup(){
 
   //Set up serial
   println(Serial.list());
-  //port = new Serial(this, Serial.list()[10], 9600);
+  port = new Serial(this, Serial.list()[10], 9600);
 
 }
 
@@ -123,9 +123,11 @@ void draw() {
   toSend += str(int(bButtonValue)) + "|";
   toSend += str(int(xButtonValue)) + "|";
   toSend += str(int(yButtonValue)) + "|";
-  toSend += "$"
+  toSend += "$";
   
-  //port.write(toSend);
+  text(toSend, 50, 650);
+  
+  port.write(toSend);
   
   delay(10);
 }
