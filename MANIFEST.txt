@@ -1,0 +1,7 @@
+All Arduino-related code is in `Ardunio Stuff`, and all Processing-related code is in `Processing Stuff` (as expected).
+
+
+Current Setup
+=============
+
+As of now, we are using `Thrust_Control` as our dockside controller, and nothing as our Arduino controller (yet).
