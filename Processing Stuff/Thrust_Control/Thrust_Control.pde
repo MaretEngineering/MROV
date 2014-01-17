@@ -46,6 +46,7 @@ double bConstR = 1;
 int debounceTime = 175;
 
 
+
 void setup(){
   size(1500, 700);
   stroke(150);
@@ -133,11 +134,33 @@ void draw() {
   line (1300, 350, 1300, 350 + (diff));
   
   String toSend = "!";
-  toSend += str(thrustValues[0]) + "/";
-  toSend += str(thrustValues[1]) + "/";
-  toSend += str(thrustValues[2]) + "/";
-  toSend += str(thrustValues[3]) + "/";
-  toSend += str(-diff) + "/";
+
+  // makes all thrust value strings going out 3 characters long + the "/"
+  for (int counter = 0, counter<=3, counter++) {
+   thrustValues[counter] += 256;
+   if ((thrustValues[counter]) < 10) {
+    toSend+= "00" + str(thrustValues[counter]) + "/";
+   }
+   if (thrustValues[counter])>=10 && thrustValues[counter] < 100) {
+        toSend+= "0" + str(thrustValues [counter]) + "/"; 
+   }
+   if (thrustValues[counter] >= 100) {
+      toSend+= str(thrustValues[counter]) + "/"
+   }
+  }
+    
+  //makes the diff value 3 characters long + "/"
+  diff += 256;
+  if (diff < 10) {
+    toSend+= "00" + str(diff)  + "/";
+  }
+  if (diff >= 10 && diff < 100) {
+    toSend+= "0" + str(diff) + "/"; 
+  }
+  if (diff >= 100) {
+    toSend+= str(diff) + "/"
+  } 
+
   toSend += "{";
   toSend += str(int(aButtonValue)) + "|";
   toSend += str(int(bButtonValue)) + "|";
