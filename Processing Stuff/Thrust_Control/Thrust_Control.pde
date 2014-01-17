@@ -108,9 +108,16 @@ void draw() {
   //Calculate thrust vectors
   if (joy1y != 0 || joy1x != 0) {
     thrustValues = getTranslation(joy1y, -joy1x);
+    // Map thrust vectors to between -256 and +256
+    for (int i = 0; i < 4; i++) {
+      if (thrustValues[i] > 512 || thrustValues[i] < -512) { println("WHAT THE FRACK ARE YOU DOING? Motor #" + str(i) + " is " + str(thrustValues[i])); }
+      thrustValues[i] = (int) map(thrustValues[i], -512, 512, -256, 256);
+    
+  }
   } else {
     thrustValues = getRotation(-joy2x);
   }
+  
   //Draw thrust vectors
   text ("a:" + str(thrustValues[0]), 50, 450);
   text ("b:" + str(thrustValues[1]), 50, 500);
@@ -130,22 +137,22 @@ void draw() {
   line (750, 350, 750+thrustValues[3]*cos(radians(45)), 350-thrustValues[3]*sin(radians(45)));
   
   // Draw Depth control lines
-  int diff = r_trig - l_trig;
-  line (1300, 350, 1300, 350 + (diff));
+  int diff = l_trig - r_trig;
+  line (1300, 350, 1300, 350 - (diff));
   
   String toSend = "!";
 
   // makes all thrust value strings going out 3 characters long + the "/"
-  for (int counter = 0, counter<=3, counter++) {
+  for (int counter = 0; counter < 4; counter++) {
    thrustValues[counter] += 256;
-   if ((thrustValues[counter]) < 10) {
-    toSend+= "00" + str(thrustValues[counter]) + "/";
+   if (thrustValues[counter] < 10) {
+        toSend+= "00" + str(thrustValues[counter]) + "/";
    }
-   if (thrustValues[counter])>=10 && thrustValues[counter] < 100) {
-        toSend+= "0" + str(thrustValues [counter]) + "/"; 
+   if (thrustValues[counter] >=10 && thrustValues[counter] < 100) {
+        toSend+= "0" + str(thrustValues[counter]) + "/"; 
    }
    if (thrustValues[counter] >= 100) {
-      toSend+= str(thrustValues[counter]) + "/"
+      toSend+= str(thrustValues[counter]) + "/";
    }
   }
     
@@ -158,7 +165,7 @@ void draw() {
     toSend+= "0" + str(diff) + "/"; 
   }
   if (diff >= 100) {
-    toSend+= str(diff) + "/"
+    toSend+= str(diff) + "/";
   } 
 
   toSend += "{";
