@@ -1,15 +1,21 @@
  //all of the stuff together
 
 
-/* !motor/motor/{Button|Button|$ */
+// !motor/motor/{Button|Button|$
 
+#define LEDPIN 9
 
 void setup() {
   Serial.begin(9600);
+  
+  pinMode(LEDPIN, OUTPUT);
 }
 
 void loop() {
-  String input = read_input(31);
+  char* input = read_input(31);
+  
+  int motor1 = motorValue(input, 1);
+  analogWrite(LEDPIN, motor1);
 }
 
 char* read_input (int max_length) {
@@ -27,8 +33,8 @@ char* read_input (int max_length) {
  return data;
 }
 
-int* motorValue(char inputData[], int whichMotor) {
-  placeHolder = 0;
+int motorValue(char* inputData, int whichMotor) {
+  int placeHolder = 0;
   
   if (whichMotor == 1) {
     placeHolder = 1;
@@ -45,7 +51,11 @@ int* motorValue(char inputData[], int whichMotor) {
   else if (whichMotor == 5) {
     placeHolder = 17;
   }
-  return int motorValue = atoi(inputData.substring(placeholder, placeholder+3)
   
-   
-   
+  char val[3];
+  for (int i = 0; i < 3; i++) {
+    val[i] = inputData[placeHolder + i];
+  }
+  
+  return atoi(val);
+}
