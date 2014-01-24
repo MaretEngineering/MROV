@@ -1,4 +1,3 @@
-
 #define NUM_MOTORS 4
 #define NUM_BUTTONS 4
 
@@ -7,10 +6,49 @@ int motorPower[NUM_MOTORS];
 int buttonPins[NUM_MOTORS] = {13, 12, 11, 10};
 int buttonStates[NUM_BUTTONS] = {0, 0, 0, 0};
 
+// vvvvv-----------------------------------------------------------
+int[] thrustValues;
+#include "I2CDev.h"
+#include "MPU6050.h"
+#include "Wire.h"
+#include "Servo.h"
+
+int ax, ay, az, gx, gy, gz;
+long cax, cay, caz, cgx, cgy, cgz;
+long prevTime, curTime;
+
+long lastAccelRead = 0;
+long lastGyroRead = 0;
+
+MPU6050 ag;
+
+// Tuning Constants
+double Kx = 1.0000;
+double Ky = 1.0000;
+//double aConst = 1/(sqrt(2)*2*(Kx + Ky));
+//double bConst = 1/(sqrt(2)*2*(Ky - Kx));
+double aConst = 1;
+double bConst = 1;
+double aConstR = 1;
+double bConstR = 1;
+// ^^^^^--------------------------------------------------------
 void setup() {
   //Set up serial
   Serial.begin(9600);  //  opens serial port 
-      
+  
+  // vvvvv--------------------------------------------------------------
+  
+  Wire.begin();
+  ag.initialize();
+  ag.setSleepEnabled(false);
+  
+  ag.setRate(B11111111);
+  lastAccelRead = micros();
+  lastGyroRead = micros();
+  
+  // ^^^^---------------------------------------------------------------
+  
+  
   //Set up pins and arrays
   for (int n = 0; n < NUM_MOTORS; n++) {
     pinMode(motorPins[n], OUTPUT);
@@ -109,3 +147,31 @@ void readCharArrayFromSerial() {
   }
   
 }
+
+// vvvvv-------------------------------------------------------------
+int[] getTranslation(int x, int y){
+  int[] vals = new int[4];
+  int a = (int)((x + y)*aConst);
+  int b = -(int)((y - x)*bConst);
+  int d = -a;
+  int c = -b;
+  vals[0] = a;
+  vals[1] = b;
+  vals[2] = c;
+  vals[3] = d;
+  return vals;
+}
+
+int[] getRotation(int x) {
+  int[] vals = new int[4];
+  int a = (int)(x*aConstR);
+  int b = -(int)(x*bConstR);
+  int d = a;
+  int c = b;
+  vals[0] = a;
+  vals[1] = b;
+  vals[2] = c;
+  vals[3] = d;
+  return vals;
+}
+// ^^^^^--------------------------------------------------------------------
