@@ -91,18 +91,24 @@ void draw() {
   r_trig = (int) trigs.getX() + 128;
   l_trig = (int) trigs.getY() + 128;
   
-  if (aButton.pressed()) { aButtonValue = ! aButtonValue; delay(debounceTime); }
-  if (bButton.pressed()) { bButtonValue = ! bButtonValue; delay(debounceTime); }
-  if (xButton.pressed()) { xButtonValue = ! xButtonValue; delay(debounceTime); }
-  if (yButton.pressed()) { yButtonValue = ! yButtonValue; delay(debounceTime); }
+  aButtonValue = aButton.pressed();
+  bButtonValue = bButton.pressed();
+  if (xButton.pressed()) {
+    xButtonValue = !xButtonValue;
+    delay(debounceTime);
+  }
+  if (yButton.pressed()) {
+    yButtonValue = !yButtonValue;
+    delay(debounceTime);
+  }
   
   text("x joystick 1: " + str(joy1x), 50, 50);
   text("y joystick 1: " + str(joy1y), 50, 100);
   text("x joystick 2: " + str(joy2x), 50, 150); 
   text("y joystick 2: " + str(joy2y), 50, 200);
-  text ("PID Toggle: " + str(aButtonValue), 50, 250);
+  text ("a Toggle: " + str(aButtonValue), 50, 250);
   text ("b Button: " + str(bButtonValue), 50, 300);
-  text ("x Button: " + str(xButtonValue), 50, 350);
+  text ("PID Button: " + str(xButtonValue), 50, 350);
   text ("y Button: " + str(yButtonValue), 50, 400);
   
   //Calculate thrust vectors
