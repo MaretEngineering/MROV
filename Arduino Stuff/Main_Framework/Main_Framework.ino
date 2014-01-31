@@ -1,6 +1,9 @@
 #include <PID_v1.h>
 #include <Adafruit_BMP085.h>
 
+#define FORWARD HIGH
+#define BACKWARD LOW
+
 // Variables!
 double motorValues[] = {0, 0, 0, 0, 0};
 double servoValues[] = {0, 0, 0, 0};
@@ -24,7 +27,7 @@ void loop() {
   if (is_PID_on == true) {
     adjustDepthSetpoint();
     getSensorData();
-    computePID();
+    pid.compute();
   }
   
   actOnDepthValues();
@@ -73,18 +76,23 @@ void getSensorData() {
   // Get the sensor data
 }
 
-void computePID() {
-  // Compute the PID
-}
-
 void actOnDepthValues() {
   //Act on the depth values
+  control_value = motor_values[4];
   
+  //Readjust the scale
+  control_value += 256;
   
+  //Set the motor value accordingly
+  if (control_value < 0) {
+    run_motor(4, abs(control_value), BACKWARD);
+    run_motor(5, abs(control_value), BACKWARD);
+  } else {
+    run_motor(4, abs(control_value), FORWARD);
+    run_motor(5, abs(control_value), FORWARD);
+  }
 }
-int getElevation(int[] d){
-  //Jedd's code 
-}
+
 
 void act() {
   // Act
@@ -93,7 +101,7 @@ void act() {
 }
 
 void actOnMotors() {
-  //Act on the motors
+  for (int i = 0; i < 4
 }
 
 void actOnServos() {
