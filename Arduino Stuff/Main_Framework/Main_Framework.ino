@@ -26,6 +26,7 @@ void loop() {
     getSensorData();
     computePID();
   }
+  
   actOnDepthValues();
   act();
 }
@@ -40,7 +41,7 @@ void initSerial() {
   // Initialize the serial
   Serial.begin(9600);
 }
-
+//intializes the PID
 void initPID() {
   pid.SetMode(AUTOMATIC);
 }
@@ -50,7 +51,7 @@ String recievePacket() {
 }
 
 void parseThePacket(String packet) {
-  // Parse the packet
+  // Parse the packet also part of E&Z's code
 }
 
 int getMotorValueAt(int mototIndex) {
@@ -60,7 +61,7 @@ int getMotorValueAt(int mototIndex) {
 boolean getButtonValueAt(int buttonIndex) {
   // Adaptation of E&Z's code
 }
-
+// if the PID is not on this will allow the user to manually adjust the depth setpoint
 void adjustDepthSetpoint() {
   //Adjust depth setpoint
   double adjustment = motorValues[4];
@@ -80,8 +81,9 @@ void actOnDepthValues() {
   //Act on the depth values
   
   
-  
-  
+}
+int getElevation(int[] d){
+  //Jedd's code 
 }
 
 void act() {
