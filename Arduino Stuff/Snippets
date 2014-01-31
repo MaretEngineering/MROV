@@ -1,11 +1,14 @@
+//requires an array of trigger values
+//returns an array of [motor value, direction]
+//requires defining 2 tuning constants
 int[] getElevation(int[] d) {
 //first trigger = up, 2nd = down
   int[] vals = new int[2];
   if(d[0] > d[1]) {
-    vals[0] = d[0];
+    vals[0] = (d[0]*dconst1)+dconst2;
     vals[1] = 1;
     } else {
-    vals[0] = d[1];
+    vals[0] = (d[1]*dconst1)+dconst2;
     vals[1] = 0;
     }
   return vals;
