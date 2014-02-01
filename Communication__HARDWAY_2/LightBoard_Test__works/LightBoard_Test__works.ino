@@ -4,11 +4,11 @@
 /* !motor/motor/{Button|Button|$ */
 
 // !XXX/XXX/XXX/XXX/XXX/{X|X|X|X|$
-int led1 = 10;
-int led2 = 11;
-int led3 = 12;
-int led4 = 13;
-int led5 = 8;
+int led1 = 5;
+int led2 = 6;
+int led3 = 10;
+int led4 = 11;
+int led5 = 9;
 
 void setup() {
   pinMode(led1, OUTPUT);
@@ -17,7 +17,7 @@ void setup() {
   pinMode(led4, OUTPUT);
   pinMode(led5, OUTPUT);
   Serial.println("Hello, world");
-  Serial.begin(9600);
+  Serial.begin(115200);
   //pinMode(led, OUTPUT);
 }
 
@@ -27,11 +27,11 @@ void loop() {
   input = read_input();
   Serial.print("Input read: ");
   Serial.println(input);
-  int motor1 = motorValue(input, 1);
-  int motor2 = motorValue(input, 2);
-  int motor3 = motorValue(input, 3);
-  int motor4 = motorValue(input, 4);
-  int motor5 = motorValue(input, 5);
+  int motor1 = abs(motorValue(input, 1) - 256);
+  int motor2 = abs(motorValue(input, 2) - 256);
+  int motor3 = abs(motorValue(input, 3) - 256);
+  int motor4 = abs(motorValue(input, 4) - 256);
+  int motor5 = abs(motorValue(input, 5) - 256);
   int button1 = buttonValue(input, 1);
   int button2 = buttonValue(input, 2);
   int button3 = buttonValue(input, 3);
@@ -50,25 +50,20 @@ String read_input () {
   char data[32];
   
   while (Serial.available() <= 0 || Serial.read() != '!') {}
-  Serial.println("Data incoming!");
-  delay(1);
+  delayMicroseconds(80);
   while (Serial.available() > 0) {
     char input = Serial.read();
-    Serial.print("input");
-    if (input == '$') {Serial.println("End of string"); break; }
+    if (input == '$') { break; }
     data[index] = input;
     index ++;
-    delay(1);
+    delayMicroseconds(80);
  }
  data[index] = '\0';
- Serial.println(data);
- Serial.println("------------------------- DATA: " + String(data));
  return String(data);
 }
 
 
 int motorValue(String inputData, int motorNumber) {
-  Serial.println("Hello");
   int placeHolder = -1;
   
   switch (motorNumber) {
@@ -88,16 +83,13 @@ int motorValue(String inputData, int motorNumber) {
       placeHolder = 16;
       break;
   }
-  Serial.println(placeHolder); //debugging
-  Serial.println(inputData);
+
   String val = inputData.substring(placeHolder, placeHolder + 3);
-  Serial.println(val); //debugging
   return val.toInt();
   //Serial.println(val.toInt());
 }
 
 int buttonValue(String inputData, int buttonNumber) {
-  Serial.println("Hello Button");
   int placeHolder = 0;
   
   switch (buttonNumber) {
@@ -114,10 +106,8 @@ int buttonValue(String inputData, int buttonNumber) {
       placeHolder = 27;
       break;
   }
-  Serial.println(placeHolder); //debugging
-  Serial.println(inputData);
+
   String val = inputData.substring(placeHolder, placeHolder+1);
-  Serial.println(val); //debugging
   return val.toInt();
 }
 
