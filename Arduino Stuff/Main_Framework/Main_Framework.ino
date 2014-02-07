@@ -51,7 +51,7 @@ void loop() {
     pid.compute();
   }
   
-  actOnDepthValues();
+  //actOnDepthValues();
   act();
 }
 
