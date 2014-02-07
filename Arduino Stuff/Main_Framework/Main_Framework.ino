@@ -8,6 +8,23 @@
 double motorValues[] = {0, 0, 0, 0, 0};
 double servoValues[] = {0, 0, 0, 0};
 
+// Motor Pins!
+int motor1Pin = 0;
+int motor2Pin = 0;
+int motor3Pin = 0;
+int motor4Pin = 0;
+int motorUp1Pin = 0;
+int motorUp2Pin = 0;
+int motor1PinDir = 0;
+int motor2PinDir = 0;
+int motor3PinDir = 0;
+int motor4PinDir = 0;
+int motorUp1PinDir = 0;
+int motorUp2PinDir = 0;
+int motorValuePins[] = {motor1Pin, motor2Pin, motor3Pin, motor4Pin, motorUp1Pin, motorUp2Pin};
+int motorDirPins[] = {motor1PinDir, motor2PinDir, motor3PinDir, motor4PinDir, motorUp1PinDir, motorUp2PinDir};
+
+
 boolean is_PID_on = false;
 double setpoint = 101000;
 double sensor = 0;
@@ -19,6 +36,10 @@ void setup() {
   initSensors();
   initSerial();
   initPID();
+  for (int i = 0; i < 6; i++) {
+    pinMode(motorValuePins[i], OUTPUT);
+    pinMode(motorDirPins[i], OUTPUT);
+  }
 }
 
 void loop() {
@@ -93,7 +114,6 @@ void actOnDepthValues() {
   }
 }
 
-
 void act() {
   // Act
   actOnMotors();
@@ -101,7 +121,30 @@ void act() {
 }
 
 void actOnMotors() {
-  for (int i = 0; i < 4
+  for (int i = 0; i < 4; i++) {
+    a = motorValues[i];
+    a += 256;
+    if (a < 0) {
+      analogWrite(motorValuePins[i], a);
+      digitalWrite(motorDirPins[i], -1);
+    } else {
+      analogWrite(motorValuePins[i], a);
+      digitalWrite(motorDirPins[i], 1);
+    }
+  }
+    a = motorValues[4];
+    a += 256;
+    if (a < 0) {
+      analogWrite(motorValuePins[4], a);
+      digitalWrite(motorDirPins[4], -1);
+      analogWrite(motorValuePins[5], a);
+      digitalWrite(motorDirPins[5], -1);
+    } else {
+      analogWrite(motorValuePins[4], a);
+      digitalWrite(motorDirPins[4], 1);
+      analogWrite(motorValuePins[5], a);
+      digitalWrite(motorDirPins[5], 1);
+    }
 }
 
 void actOnServos() {
