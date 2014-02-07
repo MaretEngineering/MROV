@@ -102,7 +102,7 @@ void actOnDepthValues() {
   control_value = motor_values[4];
   
   //Readjust the scale
-  control_value += 256;
+  control_value -= 256;
   
   //Set the motor value accordingly
   if (control_value < 0) {
