@@ -123,23 +123,27 @@ void act() {
 void actOnMotors() {
   for (int i = 0; i < 4; i++) {
     a = motorValues[i];
-    a += 256;
+    a -= 256;
     if (a < 0) {
+      a = abs(a);
       analogWrite(motorValuePins[i], a);
       digitalWrite(motorDirPins[i], -1);
     } else {
+      a = abs(a);
       analogWrite(motorValuePins[i], a);
       digitalWrite(motorDirPins[i], 1);
     }
   }
     a = motorValues[4];
-    a += 256;
+    a -= 256;
     if (a < 0) {
+      a = abs(a);
       analogWrite(motorValuePins[4], a);
       digitalWrite(motorDirPins[4], -1);
       analogWrite(motorValuePins[5], a);
       digitalWrite(motorDirPins[5], -1);
     } else {
+      a = abs(a);
       analogWrite(motorValuePins[4], a);
       digitalWrite(motorDirPins[4], 1);
       analogWrite(motorValuePins[5], a);
