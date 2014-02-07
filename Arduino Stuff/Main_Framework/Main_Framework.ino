@@ -1,4 +1,5 @@
 #include <PID_v1.h>
+#include <Wire.h>
 #include <Adafruit_BMP085.h>
 
 #define FORWARD HIGH
@@ -9,26 +10,28 @@ double motorValues[] = {0, 0, 0, 0, 0};
 double servoValues[] = {0, 0, 0, 0};
 
 // Motor Pins!
-int motor1Pin = 0;
-int motor2Pin = 0;
-int motor3Pin = 0;
-int motor4Pin = 0;
-int motorUp1Pin = 0;
-int motorUp2Pin = 0;
-int motor1PinDir = 0;
-int motor2PinDir = 0;
-int motor3PinDir = 0;
-int motor4PinDir = 0;
-int motorUp1PinDir = 0;
-int motorUp2PinDir = 0;
+#define motor1Pin 0
+#define motor2Pin 0
+#define motor3Pin 0
+#define motor4Pin 0
+#define motorUp1Pin 0
+#define motorUp2Pin 0
+#define motor1PinDir 0
+#define motor2PinDir 0
+#define motor3PinDir 0
+#define motor4PinDir 0
+#define motorUp1PinDir 0
+#define motorUp2PinDir 0
 int motorValuePins[] = {motor1Pin, motor2Pin, motor3Pin, motor4Pin, motorUp1Pin, motorUp2Pin};
 int motorDirPins[] = {motor1PinDir, motor2PinDir, motor3PinDir, motor4PinDir, motorUp1PinDir, motorUp2PinDir};
 
+String inputData = "";
 
 boolean is_PID_on = false;
 double setpoint = 101000;
 double sensor = 0;
-PID pid(&sensor, &motorValues[4], &setpoint, 1, 1, 1, DIRECT);
+double depth = 0;
+PID pid(&depth, &motorValues[4], &setpoint, 1, 1, 1, DIRECT);
 
 Adafruit_BMP085 bmp;
 
@@ -48,7 +51,7 @@ void loop() {
   if (is_PID_on == true) {
     adjustDepthSetpoint();
     getSensorData();
-    pid.compute();
+    pid.Compute();
   }
   
   //actOnDepthValues();
@@ -57,13 +60,14 @@ void loop() {
 
 void initSensors() {
   if (!bmp.begin()) {
+    Serial.println("Could not find a valid BMP085. Feed me kittens");
     while(1) {}
   }
 }
 
 void initSerial() {
   // Initialize the serial
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 //intializes the PID
 void initPID() {
@@ -71,21 +75,72 @@ void initPID() {
 }
 
 String recievePacket() {
-  // E&Z's code for recieving from Serial goes here
+  int index = 0;
+  char data[32];
+  
+  while (Serial.available() <= 0 || Serial.read() != '!') {}
+  delay(1);
+  while (Serial.available() > 0) {
+    char input = Serial.read();
+    if (input == '$') { break; }
+    data[index] = input;
+    index ++;
+    delay(1);
+ }
+ data[index] = '\0';
+ inputData = String(data);
 }
 
 void parseThePacket(String packet) {
-  // Parse the packet also part of E&Z's code
+  // P
 }
 
-int getMotorValueAt(int mototIndex) {
-  // Ethan & Zane's code for getting motor values
+int getMotorValueAt(int motorNumber) {
+  int placeHolder = 0;
+  
+  switch (motorNumber) {
+    case 1:
+      placeHolder = 0;
+      break;
+    case 2:
+      placeHolder = 4;
+      break;
+    case 3:
+      placeHolder = 8;
+      break;
+    case 4:
+      placeHolder = 12;
+      break;
+    case 5:
+      placeHolder = 16;
+      break;
+  }
+  String val = inputData.substring(placeHolder, placeHolder + 3);
+  return val.toInt();
 }
 
-boolean getButtonValueAt(int buttonIndex) {
-  // Adaptation of E&Z's code
+boolean getButtonValueAt(int buttonNumber) {
+  int placeHolder = 0;
+  
+  switch (buttonNumber) {
+    case 1:
+      placeHolder = 22;
+      break;
+    case 2:
+      placeHolder = 24;
+      break;
+    case 3:
+      placeHolder = 26;
+      break;
+    case 4:
+      placeHolder = 28;
+      break;
+  }
+  String val = inputData.substring(placeHolder, placeHolder + 3);
+  return val.toInt();
 }
-// if the PID is not on this will allow the user to manually adjust the depth setpoint
+
+// if the PID is on this will allow the user to manually adjust the depth setpoint
 void adjustDepthSetpoint() {
   //Adjust depth setpoint
   double adjustment = motorValues[4];
@@ -94,24 +149,10 @@ void adjustDepthSetpoint() {
 }
 
 void getSensorData() {
-  // Get the sensor data
-}
-
-void actOnDepthValues() {
-  //Act on the depth values
-  control_value = motor_values[4];
-  
-  //Readjust the scale
-  control_value -= 256;
-  
-  //Set the motor value accordingly
-  if (control_value < 0) {
-    run_motor(4, abs(control_value), BACKWARD);
-    run_motor(5, abs(control_value), BACKWARD);
-  } else {
-    run_motor(4, abs(control_value), FORWARD);
-    run_motor(5, abs(control_value), FORWARD);
-  }
+  sensor = bmp.readPressure();
+  depth = (sensor - 101500)/101500;
+  Serial.print("Depth: ");
+  Serial.println(depth);
 }
 
 void act() {
@@ -122,7 +163,7 @@ void act() {
 
 void actOnMotors() {
   for (int i = 0; i < 4; i++) {
-    a = motorValues[i];
+    int a = motorValues[i];
     a -= 256;
     if (a < 0) {
       a = abs(a);
@@ -134,7 +175,7 @@ void actOnMotors() {
       digitalWrite(motorDirPins[i], 1);
     }
   }
-    a = motorValues[4];
+    int a = motorValues[4];
     a -= 256;
     if (a < 0) {
       a = abs(a);
