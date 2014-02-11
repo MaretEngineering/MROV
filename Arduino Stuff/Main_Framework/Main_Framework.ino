@@ -1,6 +1,5 @@
 #include <PID_v1.h>
 #include <Wire.h>
-#include <Adafruit_BMP085.h>
 #include <Servo.h>
 
 #define FORWARD HIGH
@@ -20,7 +19,7 @@ double clawServoVal       = 0;
 #define CLAW_SERVO_PIN 0
 Servo cameraTilt;
 Servo cameraRoll;
-Servo claw;
+Servo clawServo;
 
 // Motor Pins!
 #define motor1Pin 0
@@ -49,7 +48,7 @@ PID pid(&depth, &motorValues[4], &setpoint, 1, 1, 1, DIRECT);
 Adafruit_BMP085 bmp;
 
 void setup() {
-  initSensors();
+  //initSensors();
   initSerial();
   initPID();
   for (int i = 0; i < 6; i++) {
@@ -60,11 +59,11 @@ void setup() {
 }
 
 void loop() {
-  = recievePacket();
+  recievePacket();
   parseThePacket();
   if (is_PID_on == true) {
     adjustDepthSetpoint();
-    getSensorData();
+    //getSensorData();
     pid.Compute();
   }
   
@@ -92,7 +91,7 @@ void initPID() {
 void initServos() {
   clawServo.attach(CLAW_SERVO_PIN);
   cameraTilt.attach(CAMERA_TILT_PIN);
-  cameraRoll.attach(CAMREA_ROLL_PIN);
+  cameraRoll.attach(CAMERA_ROLL_PIN);
 }
 
 String recievePacket() {
@@ -252,7 +251,7 @@ void actOnMotors() {
       a = abs(a);
       a = constrain(a, 80, 256);
       analogWrite(motorValuePins[i], a);
-      digitalWrite(motorDirPins[i], BAKCKWARD;
+      digitalWrite(motorDirPins[i], BACKWARD);
     } else {
       a = abs(a);
       a = constrain(a, 80, 256);
@@ -282,7 +281,7 @@ void actOnMotors() {
 }
 
 void actOnServos() {
-  claw.write(clawServoVal);
+  clawServo.write(clawServoVal);
   cameraTilt.write(cameraServoTiltVal);
   cameraRoll.write(cameraServoRollVal);
 }
