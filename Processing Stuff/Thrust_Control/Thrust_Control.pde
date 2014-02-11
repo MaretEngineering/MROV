@@ -19,6 +19,7 @@ ControllButton xButton; //x
 ControllButton yButton; //y
 ControllButton dpadUp;
 ControllButton dpadDown;
+ControllButton xboxButton;
 
 int joy1x = 0;
 int joy1y = 0;
@@ -31,10 +32,11 @@ int l_trig = 0;
 //Thrust Values
 int[] thrustValues;
 
-boolean aButtonValue = false;
-boolean bButtonValue = false;
-boolean xButtonValue = false;
-boolean yButtonValue = false;
+boolean aButtonValue     = false;
+boolean bButtonValue     = false;
+boolean xButtonValue     = false;
+boolean yButtonValue     = false;
+boolean xboxButtonValue  = false;
 
 // Tuning Constants
 double Kx = 1.0000;
@@ -45,10 +47,11 @@ double aConst = 1;
 double bConst = 1;
 double aConstR = 1;
 double bConstR = 1;
-int debounceTime = 175;
+int DEBOUNCE_TIME = 175;
 
-int servoVal = 0;
-
+int camServo1Val = 0;
+int camServo2Val = 0;
+int clawServoVal = 0;
 
 
 
@@ -56,7 +59,6 @@ void setup(){
   size(1500, 900);
   stroke(150);
   textSize(32);
-  
   
   //Set up controller
   controllIO = ControllIO.getInstance(this);
@@ -78,6 +80,9 @@ void setup(){
   bButton = joypad.getButton(12);
   xButton = joypad.getButton(13);
   yButton = joypad.getButton(14);
+  xboxButton = joypad.getButton(10);
+  dpadUp = joypad.getButton(0);
+  dpadDown = joypad.getButton(1);
 
   //Set up serial
   println(Serial.list());
@@ -88,43 +93,73 @@ void setup(){
 void draw() {
   background(0.5);
   
+  // Joysticks!
   joy1y = (int) joy1.getX();
   joy1x = (int) joy1.getY();
   joy2y = (int) joy2.getX();
   joy2x = (int) joy2.getY(); 
   
+  text("x joystick 1: " + str(joy1x), 50, 50);
+  text("y joystick 1: " + str(joy1y), 50, 100);
+  text("x joystick 2: " + str(joy2x), 50, 150); 
+  text("y joystick 2: " + str(joy2y), 50, 200);
+  
+  // Triggers and Buttons!
   r_trig = (int) trigs.getX() + 128;
   l_trig = (int) trigs.getY() + 128;
   
   aButtonValue = aButton.pressed();
   bButtonValue = bButton.pressed();
-  if (xButton.pressed()) {
-    xButtonValue = !xButtonValue;
-    delay(debounceTime);
-  }
-  if (yButton.pressed()) {
-    yButtonValue = !yButtonValue;
-    delay(debounceTime);
+  xButtonValue = xButton.pressed();
+  yButtonValue = yButton.pressed();
+  
+  // Toggle PID
+  if (xboxButton.pressed()) {
+    xboxButtonValue = !xboxButtonValue;
+    delay(DEBOUNCE_TIME);
   }
   
-  text("x joystick 1: " + str(joy1x), 50, 50);
-  text("y joystick 1: " + str(joy1y), 50, 100);
-  text("x joystick 2: " + str(joy2x), 50, 150); 
-  text("y joystick 2: " + str(joy2y), 50, 200);
   text("a Toggle: " + str(aButtonValue), 50, 250);
   text("b Button: " + str(bButtonValue), 50, 300);
-  text("PID Button: " + str(xButtonValue), 50, 350);
+  text("x Button: " + str(xButtonValue), 50, 350);
   text("y Button: " + str(yButtonValue), 50, 400);
+  text("Dpad Up: " + str(dpadUp.pressed()), 50, 450);
+  text("Dpad Down: " + str(dpadDown.pressed()), 50, 500);
+  text("PID (XBox): " + str(xboxButtonValue), 50, 550);
   
+  // Deal w/ Servos (These calculations mirror those done on the craft)
+  //  Camera Servo 1
   if (aButtonValue) {
-    servoVal -= 1;
-    servoVal = constrain(servoVal, 0, 180);
+    camServo1Val -= 1;
+    camServo1Val = constrain(camServo1Val, 0, 179);
   }
   if (bButtonValue) {
-    servoVal += 1;
-    servoVal = constrain(servoVal, 0, 180);
+    camServo1Val += 1;
+    camServo1Val = constrain(camServo1Val, 0, 179);
   }
-  text("Servo: " + str(servoVal), 50, 700);
+  
+  // Camera Servo 2
+  if (xButtonValue) {
+    camServo2Val -= 1;
+    camServo2Val = constrain(camServo2Val, 0, 179);
+  }
+  if (yButtonValue) {
+    camServo2Val += 1;
+    camServo2Val = constrain(camServo2Val, 0, 179);
+  }
+  // Claw Servo
+  if (dpadDown.pressed()) {
+    clawServoVal -= 1;
+    clawServoVal = constrain(clawServoVal, 0, 179);
+  }
+  if (dpadUp.pressed()) {
+    clawServoVal += 1;
+    clawServoVal = constrain(clawServoVal, 0, 179);
+  }
+  
+  text("Camera Tilt  : " + str(camServo1Val), 50, 600);
+  text("Camera Roll : " + str(camServo2Val), 50, 650);
+  text("Claw Open   : " + str(clawServoVal), 50, 700);
   
   //Calculate thrust vectors
   if (joy1y != 0 || joy1x != 0) {
@@ -139,14 +174,9 @@ void draw() {
     thrustValues = getRotation(-joy2x);
   }
   
-  //Draw thrust vectors
-  text ("a:" + str(thrustValues[0]), 50, 450);
-  text ("b:" + str(thrustValues[1]), 50, 500);
-  text ("c:" + str(thrustValues[2]), 50, 550);
-  text ("d:" + str(thrustValues[3]), 50, 600);
   
-  text("Right Trigger: " + str(r_trig), 200, 500);
-  text("Left Trigger: " + str(l_trig), 200, 550);
+  text("Right Trigger: " + str(r_trig), 900, 50);
+  text("Left Trigger:  " + str(l_trig), 900, 100);
   
   //  Draw Motor A
   line (500, 100, 500+thrustValues[0]*cos(radians(225)), 100-thrustValues[0]*sin(radians(225)));
@@ -194,9 +224,12 @@ void draw() {
   toSend += str(int(bButtonValue)) + "|";
   toSend += str(int(xButtonValue)) + "|";
   toSend += str(int(yButtonValue)) + "|";
+  toSend += str(int(dpadDown.pressed())) + "|";
+  toSend += str(int(dpadUp.pressed())) + "|";
+  toSend += str(int(xboxButtonValue)) + "|";
   toSend += "$";
   
-  text(toSend, 50, 650);
+  text(toSend, 50, 850);
   
   /*
   port.write(toSend);

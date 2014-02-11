@@ -8,8 +8,8 @@
 
 // Variables!
 double motorValues[] = {0, 0, 0, 0, 0};
-#define NUM_BUTTONS 4
-double buttonValues[] = {0, 0, 0, 0};
+#define NUM_BUTTONS 7
+double buttonValues[] = {0, 0, 0, 0, 0, 0, 0};
 double cameraServoTiltVal = 0;
 double cameraServoRollVal = 0;
 double clawServoVal       = 0;
@@ -128,7 +128,44 @@ void parseButtonValues() {
     buttonValues[i-1] = getButtonValueAt(i);
   }
   
-  //
+  // Check if PID is still on
+  if (buttonValues[6] == 1) {
+    is_PID_on = true;
+  } else {
+    is_PID_on = false;
+  }
+  
+  //Increment all the servo values
+  //  Camera Roll
+  if (buttonValues[0] == 1) {
+    cameraServoTiltVal -= 1;
+    cameraServoTiltVal = constrain(cameraServoTiltVal, 0, 179);
+  }
+  if (buttonValues[1] == 1) {
+    cameraServoTiltVal += 1;
+    cameraServoTiltVal = constrain(cameraServoTiltVal, 0, 179);
+  }
+  
+  //   Camera Tilt
+  if (buttonValues[2] == 1) {
+    cameraServoRollVal -= 1;
+    cameraServoRollVal = constrain(cameraServoRollVal, 0, 179);
+  }
+  if (buttonValues[3] == 1) {
+    cameraServoRollVal += 1;
+    cameraServoRollVal = constrain(cameraServoRollVal, 0, 179);
+  }
+  
+  //   Claw
+  if (buttonValues[4] == 1) {
+    clawServoVal -= 1;
+    clawServoVal = constrain(clawServoVal, 0, 179);
+  }
+  if (buttonValues[5] == 1) {
+    clawServoVal += 1;
+    clawServoVal = constrain(clawServoVal, 0, 179);
+  }
+  
 }
 
 int getMotorValueAt(int motorNumber) {
@@ -170,6 +207,15 @@ boolean getButtonValueAt(int buttonNumber) {
       break;
     case 4:
       placeHolder = 28;
+      break;
+    case 5:
+      placeHolder = 30;
+      break;
+    case 6:
+      placeHolder = 32;
+      break;
+    case 7:
+      placeHolder = 34;
       break;
   }
   String val = inputData.substring(placeHolder, placeHolder + 1);
@@ -236,5 +282,7 @@ void actOnMotors() {
 }
 
 void actOnServos() {
-  //Act on the servos
+  claw.write(clawServoVal);
+  cameraTilt.write(cameraServoTiltVal);
+  cameraRoll.write(cameraServoRollVal);
 }
