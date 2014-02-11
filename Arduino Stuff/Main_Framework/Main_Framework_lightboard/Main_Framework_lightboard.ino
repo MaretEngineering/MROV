@@ -5,16 +5,16 @@
 double motorValues[] = {0, 0, 0, 0, 0};
 
 //Motor Pins
-#define motor1Pin 0
-#define motor2Pin 0
-#define motor3Pin 0
-#define motor4Pin 0
+#define motor1Pin 2
+#define motor2Pin 5
+#define motor3Pin 6
+#define motor4Pin 9
 #define motorUp1Pin 0
 #define motorUp2Pin 0
-#define motor1PinDir 0
-#define motor2PinDir 0
-#define motor3PinDir 0
-#define motor4PinDir 0
+#define motor1PinDir 3
+#define motor2PinDir 4
+#define motor3PinDir 7
+#define motor4PinDir 8
 #define motorUp1PinDir 0
 #define motorUp2PinDir 0
 int motorValuePins[] = {motor1Pin, motor2Pin, motor3Pin, motor4Pin, motorUp1Pin, motorUp2Pin};
