@@ -17,6 +17,8 @@ ControllButton aButton; //a
 ControllButton bButton; //b
 ControllButton xButton; //x
 ControllButton yButton; //y
+ControllButton dpadUp;
+ControllButton dpadDown;
 
 int joy1x = 0;
 int joy1y = 0;
@@ -45,10 +47,13 @@ double aConstR = 1;
 double bConstR = 1;
 int debounceTime = 175;
 
+int servoVal = 0;
+
+
 
 
 void setup(){
-  size(1500, 700);
+  size(1500, 900);
   stroke(150);
   textSize(32);
   
@@ -76,7 +81,7 @@ void setup(){
 
   //Set up serial
   println(Serial.list());
-  port = new Serial(this, Serial.list()[10], 115200);
+  //port = new Serial(this, Serial.list()[10], 115200);
 
 }
 
@@ -106,10 +111,20 @@ void draw() {
   text("y joystick 1: " + str(joy1y), 50, 100);
   text("x joystick 2: " + str(joy2x), 50, 150); 
   text("y joystick 2: " + str(joy2y), 50, 200);
-  text ("a Toggle: " + str(aButtonValue), 50, 250);
-  text ("b Button: " + str(bButtonValue), 50, 300);
-  text ("PID Button: " + str(xButtonValue), 50, 350);
-  text ("y Button: " + str(yButtonValue), 50, 400);
+  text("a Toggle: " + str(aButtonValue), 50, 250);
+  text("b Button: " + str(bButtonValue), 50, 300);
+  text("PID Button: " + str(xButtonValue), 50, 350);
+  text("y Button: " + str(yButtonValue), 50, 400);
+  
+  if (aButtonValue) {
+    servoVal -= 1;
+    servoVal = constrain(servoVal, 0, 180);
+  }
+  if (bButtonValue) {
+    servoVal += 1;
+    servoVal = constrain(servoVal, 0, 180);
+  }
+  text("Servo: " + str(servoVal), 50, 700);
   
   //Calculate thrust vectors
   if (joy1y != 0 || joy1x != 0) {
@@ -183,7 +198,16 @@ void draw() {
   
   text(toSend, 50, 650);
   
+  /*
   port.write(toSend);
+  
+  //Read in data from arduino
+  String val;
+  if(port.available() > 0) {
+    val = port.readStringUntil('\n');
+    println(val);
+  }
+  */
   
   delay(10);
 }

@@ -1,13 +1,26 @@
 #include <PID_v1.h>
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
+#include <Servo.h>
 
 #define FORWARD HIGH
 #define BACKWARD LOW
 
 // Variables!
 double motorValues[] = {0, 0, 0, 0, 0};
-double servoValues[] = {0, 0, 0, 0};
+#define NUM_BUTTONS 4
+double buttonValues[] = {0, 0, 0, 0};
+double cameraServoTiltVal = 0;
+double cameraServoRollVal = 0;
+double clawServoVal       = 0;
+
+//Servos!
+#define CAMERA_TILT_PIN 0
+#define CAMERA_ROLL_PIN 0
+#define CLAW_SERVO_PIN 0
+Servo cameraTilt;
+Servo cameraRoll;
+Servo claw;
 
 // Motor Pins!
 #define motor1Pin 0
@@ -43,11 +56,12 @@ void setup() {
     pinMode(motorValuePins[i], OUTPUT);
     pinMode(motorDirPins[i], OUTPUT);
   }
+  initServos();
 }
 
 void loop() {
-  String packet = recievePacket();
-  parseThePacket(packet);
+  = recievePacket();
+  parseThePacket();
   if (is_PID_on == true) {
     adjustDepthSetpoint();
     getSensorData();
@@ -69,9 +83,16 @@ void initSerial() {
   // Initialize the serial
   Serial.begin(115200);
 }
+
 //intializes the PID
 void initPID() {
   pid.SetMode(AUTOMATIC);
+}
+
+void initServos() {
+  clawServo.attach(CLAW_SERVO_PIN);
+  cameraTilt.attach(CAMERA_TILT_PIN);
+  cameraRoll.attach(CAMREA_ROLL_PIN);
 }
 
 String recievePacket() {
@@ -91,8 +112,23 @@ String recievePacket() {
  inputData = String(data);
 }
 
-void parseThePacket(String packet) {
-  // P
+void parseThePacket() {
+  parseMotorValues();
+  parseButtonValues();
+}
+
+void parseMotorValues() {
+  for (int i = 1; i <= 5; i++) {
+    motorValues[i-1] = getMotorValueAt(i);
+  }
+}
+
+void parseButtonValues() {
+  for (int i = 1; i <= NUM_BUTTONS; i++) {
+    buttonValues[i-1] = getButtonValueAt(i);
+  }
+  
+  //
 }
 
 int getMotorValueAt(int motorNumber) {
@@ -136,7 +172,7 @@ boolean getButtonValueAt(int buttonNumber) {
       placeHolder = 28;
       break;
   }
-  String val = inputData.substring(placeHolder, placeHolder + 3);
+  String val = inputData.substring(placeHolder, placeHolder + 1);
   return val.toInt();
 }
 
@@ -151,7 +187,7 @@ void adjustDepthSetpoint() {
 void getSensorData() {
   sensor = bmp.readPressure();
   depth = (sensor - 101500)/101500;
-  Serial.print("Depth: ");
+  Serial.print("D ");
   Serial.println(depth);
 }
 
@@ -162,34 +198,41 @@ void act() {
 }
 
 void actOnMotors() {
+  //Deal with horizontal motors
   for (int i = 0; i < 4; i++) {
     int a = motorValues[i];
     a -= 256;
     if (a < 0) {
       a = abs(a);
+      a = constrain(a, 80, 256);
       analogWrite(motorValuePins[i], a);
-      digitalWrite(motorDirPins[i], -1);
+      digitalWrite(motorDirPins[i], BAKCKWARD;
     } else {
       a = abs(a);
+      a = constrain(a, 80, 256);
       analogWrite(motorValuePins[i], a);
-      digitalWrite(motorDirPins[i], 1);
+      digitalWrite(motorDirPins[i], FORWARD);
     }
   }
-    int a = motorValues[4];
-    a -= 256;
-    if (a < 0) {
-      a = abs(a);
-      analogWrite(motorValuePins[4], a);
-      digitalWrite(motorDirPins[4], -1);
-      analogWrite(motorValuePins[5], a);
-      digitalWrite(motorDirPins[5], -1);
-    } else {
-      a = abs(a);
-      analogWrite(motorValuePins[4], a);
-      digitalWrite(motorDirPins[4], 1);
-      analogWrite(motorValuePins[5], a);
-      digitalWrite(motorDirPins[5], 1);
-    }
+  
+  //Now deal with those pesky depth motors
+  int a = motorValues[4];
+  a -= 256;
+  if (a < 0) {
+    a = abs(a);
+    a = constrain(a, 80, 256);
+    analogWrite(motorValuePins[4], a);
+    digitalWrite(motorDirPins[4], BACKWARD);
+    analogWrite(motorValuePins[5], a);
+    digitalWrite(motorDirPins[5], BACKWARD);
+  } else {
+    a = abs(a);
+    a = constrain(a, 80, 256);
+    analogWrite(motorValuePins[4], a);
+    digitalWrite(motorDirPins[4], FORWARD);
+    analogWrite(motorValuePins[5], a);
+    digitalWrite(motorDirPins[5], FORWARD);
+  }
 }
 
 void actOnServos() {
