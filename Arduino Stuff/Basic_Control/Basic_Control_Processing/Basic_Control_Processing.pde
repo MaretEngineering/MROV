@@ -1,4 +1,4 @@
-import serial.processing.*;
+import processing.serial.*;
 Serial botInstruction;
 int basicDir = 0;
 
