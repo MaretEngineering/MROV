@@ -86,7 +86,7 @@ void setup(){
 
   //Set up serial
   println(Serial.list());
-//  port = new Serial(this, Serial.list()[10], 115200);
+  port = new Serial(this, Serial.list()[10], 9600);
 
 }
 
@@ -211,11 +211,14 @@ void draw() {
   diff += 256;
   if (diff < 10) {
     toSend+= "00" + str(diff)  + "/";
+    toSend+= "00" + str(diff)  + "/";
   }
   if (diff >= 10 && diff < 100) {
+    toSend+= "0" + str(diff) + "/";
     toSend+= "0" + str(diff) + "/"; 
   }
   if (diff >= 100) {
+    toSend+= str(diff) + "/";
     toSend+= str(diff) + "/";
   } 
 
@@ -228,7 +231,7 @@ void draw() {
   text(toSend, 50, 850);
   
   
-//  port.write(toSend);
+  port.write(toSend);
 //  
 //  //Read in data from arduino
 //  char val;

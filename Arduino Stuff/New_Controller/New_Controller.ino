@@ -1,0 +1,214 @@
+#include <Servo.h>
+
+//###################################
+//###################################
+// Constants
+//###################################
+//###################################
+
+//************************************
+// Miscellaneous
+//************************************
+
+#define FORWARD HIGH
+#define BACKWARD LOW
+
+//************************************
+// Motor pins
+//************************************
+
+#define NUM_MOTORS 4
+
+//Motor thruster pins
+#define MT1t_PIN 3
+#define MT2t_PIN 5
+#define MT3t_PIN 6
+#define MT4t_PIN 9
+#define MT5t_PIN 0
+#define MT6t_PIN 0
+
+int motor_thrust_pins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
+
+//Motor direction pins
+#define MT1d_PIN 2
+#define MT2d_PIN 4
+#define MT3d_PIN 8
+#define MT4d_PIN 0
+#define MT5d_PIN 0
+#define MT6d_PIN 0
+
+int motor_dir_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_PIN};
+
+
+//************************************
+// Servo pins
+//************************************
+
+#define SERVO_1_PIN 0
+#define SERVO_2_PIN 0
+#define SERVO_3_PIN 0
+
+
+//###################################
+//###################################
+// Global Variables
+//###################################
+//###################################
+
+//************************************
+// Motor Values (signed 8-bit integers)
+//************************************
+
+int motor_values[] = {0, 0, 0, 0, 0};
+
+
+//************************************
+// Servo Values (unsigned 0-90 integers)
+//************************************
+
+int servo_values[] = {0, 0, 0};
+
+//************************************
+// Servo Values (unsigned 0-90 integers)
+//************************************
+
+Servo servo1;
+Servo servo2;
+Servo servo3;
+
+//###################################
+//###################################
+// Code!
+//###################################
+//###################################
+
+void setup() {
+  //*********************************
+  // Initialize Systems
+  //*********************************
+  
+  // Init Serial
+  Serial.begin(115200);
+  
+  // Set pins to output
+  pinMode(13, OUTPUT);
+  for (int i = 0; i < NUM_MOTORS; i++) {
+    pinMode(motor_thrust_pins[i], OUTPUT);
+    pinMode(motor_dir_pins[i], OUTPUT);
+  }
+  
+  // Attach servos
+  servo1.attach(SERVO_1_PIN);
+  servo2.attach(SERVO_2_PIN);
+  servo3.attach(SERVO_3_PIN);
+  
+  
+  //*********************************
+  // Test Systems
+  //*********************************
+  
+  // Blink to acknowledge
+  digitalWrite(13, HIGH);
+  delay(500);
+  digitalWrite(13, LOW);
+  delay(500);
+  digitalWrite(13, HIGH);
+  delay(500);
+  digitalWrite(13, LOW);
+  
+  //Test motors
+  for (int i = 0; i < NUM_MOTORS; i++) {
+    analogWrite(motor_thrust_pins[i], 255);
+    digitalWrite(motor_dir_pins[i], HIGH);
+    delay(500);
+    analogWrite(motor_thrust_pins[i], 0);
+    digitalWrite(motor_dir_pins[i], LOW);
+  }
+  
+  //Test servos
+  //  #1
+  servo1.write(0);
+  delay(500);
+  servo1.write(70);
+  //  #2
+  servo2.write(0);
+  delay(500);
+  servo2.write(70);
+  //  #3
+  servo3.write(0);
+  delay(500);
+  servo3.write(70);
+  
+} // End setup
+
+void loop() {
+  //*********************************
+  // Write out motor values
+  //*********************************
+  
+  for (int i = 0; i < NUM_MOTORS; i++){
+    int a = motor_values[i];
+    if (a < 0) {
+      a = -a;
+      a = constrain(a, 50, 256);
+      analogWrite(motor_thrust_pins[i], a);
+      digitalWrite(motor_dir_pins[i], BACKWARD);
+    } else if (a > 0) {
+      a = constrain(a, 50, 256);
+      analogWrite(motor_thrust_pins[i], a);
+      digitalWrite(motor_dir_pins[i], FORWARD);
+    } else {
+      analogWrite(motor_thrust_pins[i], 0);
+      digitalWrite(motor_dir_pins[i], BACKWARD);
+    }
+  }
+  
+  
+  //************************************
+  // Write out servo values
+  //************************************
+  
+  servo1.write(servo_values[0]);
+  servo2.write(servo_values[1]);
+  servo3.write(servo_values[2]);
+}
+
+// serialEvent is called by the arduino whenever new Serial data is recieved between each loop()
+void serialEvent() {
+  while (Serial.available() <= 0 || (char)Serial.read() != '!') {
+    // Wait for start signal...
+  }
+  delay(1); // To give the next byte a chance to come in
+  
+  // By this point we know that either there is nothing in the RX buffer
+  //   or the first byte in the buffer is the second byte of the message
+  //   (as we already read the first byte to see if it was a '!')
+  String inputString = "";
+  while (Serial.available() > 0) {
+    char in_char = (char)Serial.read();
+    
+    if (in_char == '$') {
+      break; // Stop byte recieved, breaking out
+    }
+    
+    inputString += in_char;
+  }
+  
+  
+  //************************************
+  // Parse the received values
+  //
+  //  Reference Message:
+  //    123/123/123/123/123/123/000/000/000/$
+  //************************************
+  
+  for (int i = 0; i < NUM_MOTORS; i++) {
+    int m_val = inputString.substring(i*4, i*4 + 3).toInt();
+    motor_values[i] = m_val - 256;
+  }
+  
+  for (int i = 0; i < 3; i++) {
+    int s_val = inputString.substring(24 + i*4, 24 + i*4 + 3).toInt();
+    servo_values[i] = s_val;
+  }
+}
