@@ -1,17 +1,17 @@
 #define FORWARD HIGH
 #define BACKWARD LOW
 
-#define motor1Pin 0
-#define motor2Pin 0
-#define motor3Pin 0
-#define motor4Pin 0
+#define motor1Pin 3
+#define motor2Pin 5
+#define motor3Pin 6
+#define motor4Pin 9
 #define motorUp1Pin 0
 #define motorUp2Pin 0
 //motor Direction
-#define motor1PinDir 0
-#define motor2PinDir 0
-#define motor3PinDir 0
-#define motor4PinDir 0
+#define motor1PinDir 2
+#define motor2PinDir 4
+#define motor3PinDir 7
+#define motor4PinDir 8
 #define motorUp1PinDir 0
 #define motorUp2PinDir 0
 int motorValuePins[] = {motor1Pin, motor2Pin, motor3Pin, motor4Pin, motorUp1Pin, motorUp2Pin};
@@ -29,10 +29,12 @@ void setup() {
 
 void loop() {
   int val;
-  while (Serial.available() <= 0) {
-    val = Serial.read();
+  while (Serial.available() > 0) {
+  val = Serial.parseInt();
+  Serial.println(val);
   }
   switch (val) {
+    Serial.println(val);
     case 0:
     //Off
       for (int i = 0; i < 6; i++) {
@@ -106,9 +108,9 @@ void loop() {
       digitalWrite(motorValuePins[1], LOW);
       digitalWrite(motorDirPins[1], BACKWARD);
       digitalWrite(motorValuePins[2], LOW);
-      digitalWrite(motorDirPins[2], FORWARD);
+      digitalWrite(motorDirPins[2], BACKWARD);
       digitalWrite(motorValuePins[3], LOW);
-      digitalWrite(motorDirPins[3], FORWARD);
+      digitalWrite(motorDirPins[3], BACKWARD);
       digitalWrite(motorValuePins[4], HIGH);
       digitalWrite(motorDirPins[4], FORWARD);
       digitalWrite(motorValuePins[5], HIGH);
@@ -121,9 +123,9 @@ void loop() {
       digitalWrite(motorValuePins[1], LOW);
       digitalWrite(motorDirPins[1], BACKWARD);
       digitalWrite(motorValuePins[2], LOW);
-      digitalWrite(motorDirPins[2], FORWARD);
+      digitalWrite(motorDirPins[2], BACKWARD);
       digitalWrite(motorValuePins[3], LOW);
-      digitalWrite(motorDirPins[3], FORWARD);
+      digitalWrite(motorDirPins[3], BACKWARD);
       digitalWrite(motorValuePins[4], HIGH);
       digitalWrite(motorDirPins[4], BACKWARD);
       digitalWrite(motorValuePins[5], HIGH);
