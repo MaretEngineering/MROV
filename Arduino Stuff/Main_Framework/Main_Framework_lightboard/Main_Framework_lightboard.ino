@@ -5,13 +5,21 @@
 double motorValues[] = {0, 0, 0, 0, 0};
 
 //Motor Pins
+<<<<<<< HEAD
 #define motor1Pin 3
+=======
+#define motor1Pin 2
+>>>>>>> 776b462ea472f9fe6b2637f6fad5401ac3b57919
 #define motor2Pin 5
 #define motor3Pin 6
 #define motor4Pin 9
 #define motorUp1Pin 0
 #define motorUp2Pin 0
+<<<<<<< HEAD
 #define motor1PinDir 2
+=======
+#define motor1PinDir 3
+>>>>>>> 776b462ea472f9fe6b2637f6fad5401ac3b57919
 #define motor2PinDir 4
 #define motor3PinDir 7
 #define motor4PinDir 8
