@@ -44,9 +44,13 @@ int motor_dir_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_P
 // Servo pins
 //************************************
 
-#define SERVO_1_PIN 0
-#define SERVO_2_PIN 0
-#define SERVO_3_PIN 0
+#define USE_SERVOS
+
+#ifdef USE_SERVOS
+  #define SERVO_1_PIN 0
+  #define SERVO_2_PIN 0
+  #define SERVO_3_PIN 0
+#endif
 
 
 //###################################
@@ -65,17 +69,17 @@ int motor_values[] = {0, 0, 0, 0, 0};
 //************************************
 // Servo Values (unsigned 0-90 integers)
 //************************************
-
-int servo_values[] = {0, 0, 0};
+#ifdef USE_SERVOS
+  int servo_values[] = {0, 0, 0};
 
 //************************************
 // Servo Values (unsigned 0-90 integers)
 //************************************
 
-Servo servo1;
-Servo servo2;
-Servo servo3;
-
+  Servo servo1;
+  Servo servo2;
+  Servo servo3;
+#endif
 //###################################
 //###################################
 // Code!
@@ -97,11 +101,12 @@ void setup() {
     pinMode(motor_dir_pins[i], OUTPUT);
   }
   
+#ifdef USE_SERVOS
   // Attach servos
   servo1.attach(SERVO_1_PIN);
   servo2.attach(SERVO_2_PIN);
   servo3.attach(SERVO_3_PIN);
-  
+#endif
   
   //*********************************
   // Test Systems
@@ -125,6 +130,7 @@ void setup() {
     digitalWrite(motor_dir_pins[i], LOW);
   }
   
+#ifdef USE_SERVOS
   //Test servos
   //  #1
   servo1.write(0);
@@ -138,6 +144,7 @@ void setup() {
   servo3.write(0);
   delay(500);
   servo3.write(70);
+#endif
   
 } // End setup
 
@@ -167,10 +174,11 @@ void loop() {
   //************************************
   // Write out servo values
   //************************************
-  
+#ifdef USE_SERVOS
   servo1.write(servo_values[0]);
   servo2.write(servo_values[1]);
   servo3.write(servo_values[2]);
+#endif
 }
 
 // serialEvent is called by the arduino whenever new Serial data is recieved between each loop()
