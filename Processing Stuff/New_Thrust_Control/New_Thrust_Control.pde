@@ -86,7 +86,7 @@ void setup(){
 
   //Set up serial
   println(Serial.list());
-  port = new Serial(this, Serial.list()[10], 115200);
+//  port = new Serial(this, Serial.list()[10], 115200);
 
 }
 
@@ -219,27 +219,23 @@ void draw() {
     toSend+= str(diff) + "/";
   } 
 
-  toSend += "{";
-  toSend += str(int(aButtonValue)) + "|";
-  toSend += str(int(bButtonValue)) + "|";
-  toSend += str(int(xButtonValue)) + "|";
-  toSend += str(int(yButtonValue)) + "|";
-//  toSend += str(int(dpadDown.pressed())) + "|";
-//  toSend += str(int(dpadUp.pressed())) + "|";
-//  toSend += str(int(xboxButtonValue)) + "|";
+  toSend += make_constant_servo_value_length(camServo1Val);
+  toSend += make_constant_servo_value_length(camServo2Val);
+  toSend += make_constant_servo_value_length(clawServoVal);
+  
   toSend += "$";
   
   text(toSend, 50, 850);
   
   
-  port.write(toSend);
-  
-  //Read in data from arduino
-  char val;
-  while(port.available() > 0) {
-    val = (char)port.read();
-    println(val);
-  }
+//  port.write(toSend);
+//  
+//  //Read in data from arduino
+//  char val;
+//  while(port.available() > 0) {
+//    val = (char)port.read();
+//    println(val);
+//  }
   
   
   delay(10);
@@ -269,4 +265,18 @@ int[] getRotation(int x) {
   vals[2] = c;
   vals[3] = d;
   return vals;
+}
+
+String make_constant_servo_value_length(int val) {
+  String toRet = "";
+  if (val < 10) {
+    toRet += "00" + str(val)  + "/";
+  }
+  if (val >= 10 && val < 100) {
+    toRet += "0" + str(val) + "/"; 
+  }
+  if (val >= 100) {
+    toRet += str(val) + "/";
+  } 
+  return toRet;
 }

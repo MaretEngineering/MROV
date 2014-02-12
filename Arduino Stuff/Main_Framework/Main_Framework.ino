@@ -73,14 +73,14 @@ void loop() {
 
 void initSensors() {
   if (!bmp.begin()) {
-    Serial.println("Could not find a valid BMP085. Feed me kittens");
+    Serial1.println("Could not find a valid BMP085. Feed me kittens");
     while(1) {}
   }
 }
 
 void initSerial() {
   // Initialize the serial
-  Serial.begin(115200);
+  Serial1.begin(115200);
 }
 
 //intializes the PID
@@ -98,10 +98,10 @@ String recievePacket() {
   int index = 0;
   char data[32];
   
-  while (Serial.available() <= 0 || Serial.read() != '!') {}
+  while (Serial1.available() <= 0 || Serial1.read() != '!') {}
   delay(1);
-  while (Serial.available() > 0) {
-    char input = Serial.read();
+  while (Serial1.available() > 0) {
+    char input = Serial1.read();
     if (input == '$') { break; }
     data[index] = input;
     index ++;
@@ -232,8 +232,8 @@ void adjustDepthSetpoint() {
 void getSensorData() {
   sensor = bmp.readPressure();
   depth = (sensor - 101500)/101500;
-  Serial.print("D ");
-  Serial.println(depth);
+  Serial1.print("D ");
+  Serial1.println(depth);
 }
 
 void act() {
