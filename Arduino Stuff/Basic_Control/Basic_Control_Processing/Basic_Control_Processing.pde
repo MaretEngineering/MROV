@@ -1,10 +1,11 @@
-import serial.processing.*;
+import processing.serial.*;
+
 Serial botInstruction;
 int basicDir = 0;
 
 void setup() {
   size(640, 360);
-  botInstruction = new Serial(this, "/dev/tty.usbmodem1451", 9600);
+  botInstruction = new Serial(this, "/dev/tty.usbmodem1411", 9600);
 }
 
 void draw() {
