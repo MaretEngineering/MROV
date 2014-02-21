@@ -86,7 +86,7 @@ void setup(){
 
   //Set up serial
   println(Serial.list());
-  port = new Serial(this, Serial.list()[10], 115200);
+  //port = new Serial(this, Serial.list()[10], 115200);
 
 }
 
@@ -231,7 +231,7 @@ void draw() {
   text(toSend, 50, 850);
   
   
-  port.write(toSend);
+//  port.write(toSend);
 //  
 //  //Read in data from arduino
 //  char val;
