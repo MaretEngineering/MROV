@@ -37,7 +37,7 @@ int motor_thrust_pins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6
 #define MT5d_PIN 12
 #define MT6d_PIN 13
 
-int motor_dir_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_PIN};
+int motor_reverse_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_PIN};
 
 
 //************************************
@@ -101,7 +101,7 @@ void setup() {
   pinMode(13, OUTPUT);
   for (int i = 0; i < NUM_MOTORS; i++) {
     pinMode(motor_thrust_pins[i], OUTPUT);
-    pinMode(motor_dir_pins[i], OUTPUT);
+    pinMode(motor_reverse_pins[i], OUTPUT);
   }
   
 #ifdef USE_SERVOS
@@ -126,15 +126,13 @@ void setup() {
   
   //Test motors
   for (int i = 0; i < NUM_MOTORS; i++) {
-    digitalWrite(motor_dir_pins[i], HIGH);    
     for (int j = 0; j < 256; j++) {
       analogWrite(motor_thrust_pins[i], j);
       delay(1);
     }
     
-    digitalWrite(motor_dir_pins[i], LOW);
     for (int j = 255; j >= 0; j--) {
-      analogWrite(motor_thrust_pins[i], j);
+      analogWrite(motor_reverse_pins[i], j);
       delay(1);
     }
     
@@ -169,15 +167,12 @@ void loop() {
     if (a < 0) {
       a = -a;
       a = constrain(a, 50, 256);
-      analogWrite(motor_thrust_pins[i], a);
-      digitalWrite(motor_dir_pins[i], BACKWARD);
+      analogWrite(motor_reverse_pins[i], a);
     } else if (a > 0) {
       a = constrain(a, 50, 256);
       analogWrite(motor_thrust_pins[i], a);
-      digitalWrite(motor_dir_pins[i], FORWARD);
     } else {
       analogWrite(motor_thrust_pins[i], 0);
-      digitalWrite(motor_dir_pins[i], BACKWARD);
     }
   }
   
