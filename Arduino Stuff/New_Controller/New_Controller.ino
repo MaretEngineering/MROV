@@ -29,7 +29,7 @@
 
 int motor_thrust_pins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
 
-//Motor direction pins
+//Motor revers pins
 #define MT1d_PIN 2
 #define MT2d_PIN 4
 #define MT3d_PIN 7
@@ -132,11 +132,19 @@ void setup() {
     }
     
     for (int j = 255; j >= 0; j--) {
-      analogWrite(motor_reverse_pins[i], j);
+      analogWrite(motor_thrust_pins[i], j);
       delay(1);
     }
     
+    for (int j = 0; j < 256; j++) {
+      analogWrite(motor_dir_pins[i], j);
+      delay(1);
+    }
     
+    for (int j = 255; j >= 0; j--) {
+      analogWrite(motor_dir_pins[i], j);
+      delay(1);
+    }
   }
   
 #ifdef USE_SERVOS
