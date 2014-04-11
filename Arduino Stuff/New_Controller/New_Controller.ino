@@ -49,9 +49,9 @@ int motor_reverse_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT
 //#define USE_SERVOS
 
 #ifdef USE_SERVOS
-  #define SERVO_1_PIN 0
-  #define SERVO_2_PIN 0
-  #define SERVO_3_PIN 0
+#define SERVO_1_PIN 0
+#define SERVO_2_PIN 0
+#define SERVO_3_PIN 0
 #endif
 
 
@@ -137,12 +137,12 @@ void setup() {
     }
     
     for (int j = 0; j < 256; j++) {
-      analogWrite(motor_dir_pins[i], j);
+      analogWrite(motor_reverse_pins[i], j);
       delay(1);
     }
     
     for (int j = 255; j >= 0; j--) {
-      analogWrite(motor_dir_pins[i], j);
+      analogWrite(motor_reverse_pins[i], j);
       delay(1);
     }
   }
