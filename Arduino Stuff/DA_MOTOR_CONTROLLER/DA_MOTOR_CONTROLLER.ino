@@ -128,15 +128,15 @@ void setup() {
     }
   }
   
-//  //Test servos
-//  //  #1
-//  servo1.write(0);
-//  delay(500);
-//  servo1.write(70);
-//  //  #2
-//  servo2.write(0);
-//  delay(500);
-//  servo2.write(70);
+  //Test servos
+  //  #1
+  servo1.write(0);
+  delay(500);
+  servo1.write(70);
+  //  #2
+  servo2.write(0);
+  delay(500);
+  servo2.write(70);
   
 } // End setup
 
