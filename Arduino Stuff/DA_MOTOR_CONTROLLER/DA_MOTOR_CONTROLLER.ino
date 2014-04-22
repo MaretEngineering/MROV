@@ -24,7 +24,7 @@
 #define MT3t_PIN 7
 #define MT4t_PIN 5
 #define MT5t_PIN 12
-#define MT6t_PIN 13
+#define MT6t_PIN 13 // 6 Controls vertical motors
 int motor_thrust_pins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
 
 //Motor revers pins
@@ -40,8 +40,8 @@ int motor_dir_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_P
 // Servo Values (unsigned 0-90 integers)
 //************************************
 
-#define SERVO_1_PIN 1
-#define SERVO_2_PIN 0
+#define SERVO_1_PIN 41
+#define SERVO_2_PIN 48
 
 Servo servo1;
 Servo servo2;
@@ -96,8 +96,8 @@ void setup() {
   Serial.println("Direction initialized");
   
 //  // Attach servos
-//  servo1.attach(SERVO_1_PIN);
-//  servo2.attach(SERVO_2_PIN);
+  servo1.attach(SERVO_1_PIN);
+  servo2.attach(SERVO_2_PIN);
   
   //*********************************
   // Test Systems
@@ -128,6 +128,7 @@ void setup() {
     }
   }
   
+  Serial.println("Testing servos...");
   //Test servos
   //  #1
   servo1.write(0);
@@ -137,6 +138,7 @@ void setup() {
   servo2.write(0);
   delay(500);
   servo2.write(70);
+  Serial.println("Servos tested");
   
 } // End setup
 
@@ -150,7 +152,6 @@ void loop() {
     // Wait for start signal...
   }
   delay(1); // To give the next byte a chance to come in
-  
   // By this point we know that either there is nothing in the RX buffer
   //   or the first byte in the buffer is the second byte of the message
   //   (as we already read the first byte to see if it was a '!')
@@ -168,7 +169,7 @@ void loop() {
     delay(1);
   }
   
-  Serial.print("Values received: ");
+  Serial.println("Values received: ");
   Serial.println(inputString);
   
   //************************************
@@ -199,18 +200,18 @@ void loop() {
   }
   Serial.println("}");
   
-//  // Parse servo values
-//  for (int i = 0; i < 2; i++) {
-//    char input_buffer[4];
-//    for (int j = 0; j < 3; j++) {
-//      input_buffer[j] = inputString[24 + i*4 + j];
-//    }
-//    input_buffer[3] = '\0';
-//    int s_val = atoi(input_buffer);
-//    Serial.print("Parsing servo value: ");
-//    Serial.println(s_val);
-//    servo_values[i] = s_val;
-//  }
+  // Parse servo values
+  for (int i = 0; i < 2; i++) {
+    char input_buffer[4];
+    for (int j = 0; j < 3; j++) {
+      input_buffer[j] = inputString[24 + i*4 + j];
+    }
+    input_buffer[3] = '\0';
+    int s_val = atoi(input_buffer);
+    Serial.print("Parsing servo value: ");
+    Serial.println(s_val);
+    servo_values[i] = s_val;
+  }
     
   //*********************************
   // Write out motor values
@@ -248,15 +249,15 @@ void loop() {
     delay(1);
   }
   
-//  // Write out servo values
-//  Serial.print("Writing ");
-//  Serial.print(servo_values[0]);
-//  Serial.println(" to servo 1");
-//  servo1.write(servo_values[0]);
-//  
-//  Serial.print("Writing ");
-//  Serial.print(servo_values[1]);
-//  Serial.println(" to servo 2");
-//  servo2.write(servo_values[1]);
+  // Write out servo values
+  Serial.print("Writing ");
+  Serial.print(servo_values[0]);
+  Serial.println(" to servo 1");
+  servo1.write(servo_values[0]);
+  
+  Serial.print("Writing ");
+  Serial.print(servo_values[1]);
+  Serial.println(" to servo 2");
+  servo2.write(servo_values[1]);
 
 }

@@ -87,9 +87,10 @@ void setup(){
   dpadDown = joypad.getButton(1);
 
   //Set up serial
-//  println(Serial.list());
-//  port = new Serial(this, Serial.list()[11], 115200);
+  println(Serial.list());
+  port = new Serial(this, Serial.list()[7], 115200);
 
+  delay(6000);
 }
 
 void draw() {
@@ -106,7 +107,7 @@ void draw() {
   text("x joystick 2: " + str(joy2x), 50, 150); 
   text("y joystick 2: " + str(joy2y), 50, 200);
   
-  println("Joysticks done");
+//  println("Joysticks done");
   
   // Triggers and Buttons!
   r_trig = (int) trigs.getX() + 128;
@@ -171,7 +172,7 @@ void draw() {
     // Map thrust vectors to between -256 and +256
     for (int i = 0; i < 4; i++) {
       if (thrustValues[i] > 512 || thrustValues[i] < -512) { println("WHAT THE FRACK ARE YOU DOING? Motor #" + str(i) + " is " + str(thrustValues[i])); }
-      thrustValues[i] = (int) map(thrustValues[i], -512, 512, -256, 256);
+//      thrustValues[i] = (int) map(thrustValues[i], -512, 512, -256, 256);
     }
   } else {
     thrustValues = getRotation(-joy2x);
@@ -182,13 +183,13 @@ void draw() {
   text("Left Trigger:  " + str(l_trig), 900, 100);
   
   //  Draw Motor A
-  line (500, 100, 500+thrustValues[0]*cos(radians(225)), 100-thrustValues[0]*sin(radians(225)));
+  line (500, 100, 500-thrustValues[2]*cos(radians(225)), 100+thrustValues[2]*sin(radians(225)));
   //  Draw Motor B
-  line (750, 100, 750+thrustValues[1]*cos(radians(315)), 100-thrustValues[1]*sin(radians(315)));
+  line (750, 100, 750-thrustValues[0]*cos(radians(315)), 100+thrustValues[0]*sin(radians(315)));
   //  Draw Motor C
-  line (500, 350, 500+thrustValues[2]*cos(radians(135)), 350-thrustValues[2]*sin(radians(135)));
+  line (500, 350, 500-thrustValues[1]*cos(radians(135)), 350+thrustValues[1]*sin(radians(135)));
   //  Draw Motor D
-  line (750, 350, 750+thrustValues[3]*cos(radians(45)), 350-thrustValues[3]*sin(radians(45)));
+  line (750, 350, 750-thrustValues[3]*cos(radians(45)), 350+thrustValues[3]*sin(radians(45)));
   
   // Draw Depth control lines
   int diff = l_trig - r_trig;
@@ -227,14 +228,19 @@ void draw() {
 
   toSend += make_constant_servo_value_length(camServo1Val);
   toSend += make_constant_servo_value_length(camServo2Val);
-  toSend += make_constant_servo_value_length(clawServoVal);
+//  toSend += make_constant_servo_value_length(clawServoVal);
+  
+  toSend = toSend.substring(0, toSend.length() - 1);
   
   toSend += "$";
   
+  toSend = toSend;
+  
   text(toSend, 50, 850);
   
+  println(toSend);
   
-//  port.write(toSend);
+  port.write(toSend);
   
 //  //Read in data from arduino
 //  char val;
@@ -244,28 +250,46 @@ void draw() {
 //  }
   
   
-  delay(10);
+  delay(100);
 }
 
-int[] getTranslation(int x, int y){
+int[] getTranslation(int y, int x){
   int[] vals = new int[] {0, 0, 0, 0};
-  double theta = atan(y/x);
+  double theta = 0;
+  if (x == 0) {
+    if (y > 0) {
+      theta = PI/2;
+    } else if (y < 0) {
+      theta = PI*3/2;
+    } else {
+      theta = PI/2;
+    }
+  } else {
+    theta = atan(y/x);
+    if (x < 0) {
+      theta += PI;
+    }
+  }
   if ( PI*1/4 <= theta && theta < PI*3/4 ){
 //    vals = [0, y, 0, y];
-    vals[1] = y;
-    vals[3] = y;
+//    println("UP");
+    vals[1] = abs(y);
+    vals[3] = abs(y);
   } else if ( PI*3/4 <= theta && theta < PI*5/4 ) {
 //    vals = [0, x, x, 0];
-    vals[1] = x;
-    vals[2] = x;
+//    println("LEFT");
+    vals[1] = abs(x);
+    vals[2] = abs(x);
   } else if ( PI*5/4 <= theta && theta < PI*7/4 ) {
 //    vals = [y, 0, y, 0];
-    vals[0] = y;
-    vals[2] = y;
+//    println("DOWN");
+    vals[0] = abs(y);
+    vals[2] = abs(y);
   } else {
 //    vals = [x, 0, 0, x];
-    vals[0] = x;
-    vals[3] = x;
+//    println("RIGHT");
+    vals[0] = abs(x);
+    vals[3] = abs(x);
   }
   return vals;
 }
