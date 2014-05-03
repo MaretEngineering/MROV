@@ -51,9 +51,9 @@ double aConstR = 1;
 double bConstR = 1;
 int DEBOUNCE_TIME = 175;
 
-int camServo1Val = 0;
-int camServo2Val = 0;
-int clawServoVal = 0;
+int camServo1Val = 90;
+int camServo2Val = 90;
+int clawServoVal = 90;
 
 
 
@@ -88,9 +88,9 @@ void setup(){
 
   //Set up serial
   println(Serial.list());
-  port = new Serial(this, Serial.list()[7], 115200);
+//  port = new Serial(this, Serial.list()[7], 115200);
 
-  delay(6000);
+//  delay(6000);
 }
 
 void draw() {
@@ -135,31 +135,31 @@ void draw() {
   // Deal w/ Servos (These calculations mirror those done on the craft)
   //  Camera Servo 1
   if (aButtonValue) {
-    camServo1Val -= 1;
-    camServo1Val = constrain(camServo1Val, 0, 179);
+    camServo1Val -= 5;
+    camServo1Val = constrain(camServo1Val, 65, 140);
   }
   if (bButtonValue) {
-    camServo1Val += 1;
-    camServo1Val = constrain(camServo1Val, 0, 179);
+    camServo1Val += 5;
+    camServo1Val = constrain(camServo1Val, 65, 140);
   }
   
   // Camera Servo 2
   if (xButtonValue) {
-    camServo2Val -= 1;
-    camServo2Val = constrain(camServo2Val, 0, 179);
+    camServo2Val -= 5;
+    camServo2Val = constrain(camServo2Val, 55, 110);
   }
   if (yButtonValue) {
-    camServo2Val += 1;
-    camServo2Val = constrain(camServo2Val, 0, 179);
+    camServo2Val += 5;
+    camServo2Val = constrain(camServo2Val, 55, 110);
   }
   // Claw Servo
   if (dpadDown.pressed()) {
-    clawServoVal -= 1;
-    clawServoVal = constrain(clawServoVal, 0, 179);
+    clawServoVal -= 5;
+    clawServoVal = constrain(clawServoVal, 55, 110);
   }
   if (dpadUp.pressed()) {
-    clawServoVal += 1;
-    clawServoVal = constrain(clawServoVal, 0, 179);
+    clawServoVal += 5;
+    clawServoVal = constrain(clawServoVal, 55, 110);
   }
   
   text("Camera Tilt  : " + str(camServo1Val), 50, 600);
@@ -182,14 +182,22 @@ void draw() {
   text("Right Trigger: " + str(r_trig), 900, 50);
   text("Left Trigger:  " + str(l_trig), 900, 100);
   
+  // Reference
+  text("^", 613, 200); // Front
+  line(500, 200, 750, 200);
+  line(750, 200, 750, 450);
+  line(750, 450, 500, 450);
+  line(500, 450, 500, 200);
+  
+  
   //  Draw Motor A
-  line (500, 100, 500-thrustValues[2]*cos(radians(225)), 100+thrustValues[2]*sin(radians(225)));
+  line (500, 200, 500-thrustValues[0]*cos(radians(225)), 200+thrustValues[0]*sin(radians(225)));
   //  Draw Motor B
-  line (750, 100, 750-thrustValues[0]*cos(radians(315)), 100+thrustValues[0]*sin(radians(315)));
+  line (750, 200, 750-thrustValues[3]*cos(radians(315)), 200+thrustValues[3]*sin(radians(315)));
   //  Draw Motor C
-  line (500, 350, 500-thrustValues[1]*cos(radians(135)), 350+thrustValues[1]*sin(radians(135)));
+  line (500, 450, 500-thrustValues[2]*cos(radians(135)), 450+thrustValues[2]*sin(radians(135)));
   //  Draw Motor D
-  line (750, 350, 750-thrustValues[3]*cos(radians(45)), 350+thrustValues[3]*sin(radians(45)));
+  line (750, 450, 750-thrustValues[1]*cos(radians(45)), 450+thrustValues[1]*sin(radians(45)));
   
   // Draw Depth control lines
   int diff = l_trig - r_trig;
@@ -240,7 +248,7 @@ void draw() {
   
   println(toSend);
   
-  port.write(toSend);
+
   
 //  //Read in data from arduino
 //  char val;
@@ -250,7 +258,7 @@ void draw() {
 //  }
   
   
-  delay(100);
+  delay(200);
 }
 
 int[] getTranslation(int y, int x){
@@ -274,21 +282,21 @@ int[] getTranslation(int y, int x){
 //    vals = [0, y, 0, y];
 //    println("UP");
     vals[1] = abs(y);
-    vals[3] = abs(y);
+    vals[2] = abs(y);
   } else if ( PI*3/4 <= theta && theta < PI*5/4 ) {
 //    vals = [0, x, x, 0];
 //    println("LEFT");
-    vals[1] = abs(x);
+    vals[0] = abs(x);
     vals[2] = abs(x);
   } else if ( PI*5/4 <= theta && theta < PI*7/4 ) {
 //    vals = [y, 0, y, 0];
 //    println("DOWN");
     vals[0] = abs(y);
-    vals[2] = abs(y);
+    vals[3] = abs(y);
   } else {
 //    vals = [x, 0, 0, x];
 //    println("RIGHT");
-    vals[0] = abs(x);
+    vals[1] = abs(x);
     vals[3] = abs(x);
   }
   return vals;
@@ -296,11 +304,11 @@ int[] getTranslation(int y, int x){
 
 int[] getRotation(int x) {
   int[] vals = new int[] {0, 0, 0, 0};
-  if (x > 0) {
+  if (x < 0) {
 //    int[] vals = new int[] {x, x, 0, 0};
     vals[0] = x;
     vals[1] = x;
-  } else if (x < 0) {
+  } else if (x >= 0) {
 //    int[] vals = new int[] {0, 0, x, x};
     vals[2] = x;
     vals[3] = x;

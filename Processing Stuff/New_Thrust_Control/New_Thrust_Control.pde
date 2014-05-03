@@ -49,9 +49,9 @@ double aConstR = 1;
 double bConstR = 1;
 int DEBOUNCE_TIME = 175;
 
-int camServo1Val = 0;
-int camServo2Val = 0;
-int clawServoVal = 0;
+int camServo1Val = 90;
+int camServo2Val = 90;
+int clawServoVal = 90;
 
 
 
@@ -85,8 +85,8 @@ void setup(){
   dpadDown = joypad.getButton(1);
 
   //Set up serial
-  println(Serial.list());
-  port = new Serial(this, Serial.list()[11], 115200);
+//  println(Serial.list());
+//  port = new Serial(this, Serial.list()[11], 115200);
 
 }
 
@@ -131,21 +131,21 @@ void draw() {
   //  Camera Servo 1
   if (aButtonValue) {
     camServo1Val -= 1;
-    camServo1Val = constrain(camServo1Val, 0, 179);
+    camServo1Val = constrain(camServo1Val, 65, 140);
   }
   if (bButtonValue) {
     camServo1Val += 1;
-    camServo1Val = constrain(camServo1Val, 0, 179);
+    camServo1Val = constrain(camServo1Val, 65, 140);
   }
   
   // Camera Servo 2
   if (xButtonValue) {
     camServo2Val -= 1;
-    camServo2Val = constrain(camServo2Val, 0, 179);
+    camServo2Val = constrain(camServo2Val, 55, 110);
   }
   if (yButtonValue) {
     camServo2Val += 1;
-    camServo2Val = constrain(camServo2Val, 0, 179);
+    camServo2Val = constrain(camServo2Val, 55, 110);
   }
   // Claw Servo
   if (dpadDown.pressed()) {
@@ -178,14 +178,26 @@ void draw() {
   text("Right Trigger: " + str(r_trig), 900, 50);
   text("Left Trigger:  " + str(l_trig), 900, 100);
   
+  // Reference
+  text("^", 614, 200); // Front
+  line(500, 200, 750, 200); // Body
+  line(750, 200, 750, 450);
+  line(750, 450, 500, 450);
+  line(500, 450, 500, 200);
+  
   //  Draw Motor A
-  line (500, 100, 500+thrustValues[0]*cos(radians(225)), 100-thrustValues[0]*sin(radians(225)));
+  line (500, 200, 500+thrustValues[0]*cos(radians(225)), 200-thrustValues[0]*sin(radians(225)));
   //  Draw Motor B
-  line (750, 100, 750+thrustValues[1]*cos(radians(315)), 100-thrustValues[1]*sin(radians(315)));
+  line (750, 200, 750+thrustValues[1]*cos(radians(315)), 200-thrustValues[1]*sin(radians(315)));
   //  Draw Motor C
-  line (500, 350, 500+thrustValues[2]*cos(radians(135)), 350-thrustValues[2]*sin(radians(135)));
+  line (500, 450, 500+thrustValues[2]*cos(radians(135)), 450-thrustValues[2]*sin(radians(135)));
   //  Draw Motor D
-  line (750, 350, 750+thrustValues[3]*cos(radians(45)), 350-thrustValues[3]*sin(radians(45)));
+  line (750, 450, 750+thrustValues[3]*cos(radians(45)), 450-thrustValues[3]*sin(radians(45)));
+  
+  // Draw control vector for reference
+  stroke(255, 0, 0);
+  line(625, 325, 625-joy1x, 325-joy1y);
+  stroke(255);
   
   // Draw Depth control lines
   int diff = l_trig - r_trig;
@@ -231,7 +243,7 @@ void draw() {
   text(toSend, 50, 850);
   
   
-  port.write(toSend);
+//  port.write(toSend);
   
 //  //Read in data from arduino
 //  char val;

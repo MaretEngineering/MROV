@@ -23,8 +23,8 @@
 #define MT2t_PIN 9
 #define MT3t_PIN 7
 #define MT4t_PIN 5
-#define MT5t_PIN 12
-#define MT6t_PIN 13 // 6 Controls vertical motors
+#define MT5t_PIN 13
+#define MT6t_PIN 12 // 6 Controls vertical motors
 int motor_thrust_pins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
 
 //Motor revers pins
@@ -41,7 +41,7 @@ int motor_dir_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_P
 //************************************
 
 #define SERVO_1_PIN 41
-#define SERVO_2_PIN 48
+#define SERVO_2_PIN 39
 
 Servo servo1;
 Servo servo2;
@@ -131,13 +131,13 @@ void setup() {
   Serial.println("Testing servos...");
   //Test servos
   //  #1
-  servo1.write(0);
-  delay(500);
   servo1.write(70);
-  //  #2
-  servo2.write(0);
   delay(500);
-  servo2.write(70);
+  servo1.write(100);
+  //  #2
+  servo2.write(30);
+  delay(500);
+  servo2.write(50);
   Serial.println("Servos tested");
   
 } // End setup
