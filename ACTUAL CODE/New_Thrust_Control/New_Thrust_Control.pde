@@ -85,9 +85,10 @@ void setup(){
   dpadDown = joypad.getButton(1);
 
   //Set up serial
-//  println(Serial.list());
-//  port = new Serial(this, Serial.list()[11], 115200);
-
+  println(Serial.list());
+  port = new Serial(this, Serial.list()[5], 115200);
+  
+  delay(1000);
 }
 
 void draw() {
@@ -243,7 +244,7 @@ void draw() {
   text(toSend, 50, 850);
   
   
-//  port.write(toSend);
+  port.write(toSend);
   
 //  //Read in data from arduino
 //  char val;
@@ -253,7 +254,7 @@ void draw() {
 //  }
   
   
-  delay(10);
+  delay(100);
 }
 
 int[] getTranslation(int x, int y){

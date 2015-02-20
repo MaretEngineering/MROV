@@ -24,18 +24,18 @@
 #define MT2t_PIN 9
 #define MT3t_PIN 7
 #define MT4t_PIN 5
-#define MT5t_PIN 13
+#define MT5t_PIN 2
 #define MT6t_PIN 12 // 6 Controls vertical motors
 int motor_thrust_pins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
 
 //Motor direction pins
 // ADJUST THESE WHEN PINS ARE FINALIZED
 #define MT1d_PIN 10
-#define MT2d_PIN 8
+#define MT2d_PIN 1
 #define MT3d_PIN 60
 #define MT4d_PIN 4
-#define MT5d_PIN 2
-#define MT6d_PIN 2
+#define MT5d_PIN 1
+#define MT6d_PIN 1
 int motor_dir_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_PIN};
 
 //************************************
@@ -171,6 +171,8 @@ void loop() {
     delay(1);
   }
   
+  delay(1);
+  
   Serial.println("Values received: ");
   Serial.println(inputString);
   
@@ -220,7 +222,9 @@ void loop() {
   //*********************************
   
   for (int i = 0; i < NUM_MOTORS; i++){
-    int speed = motor_values[i];
+    int motorSpeed = motor_values[i];
+    
+    controlMotor(i, motorSpeed);
     
     delay(1);
   }
