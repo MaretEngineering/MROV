@@ -53,7 +53,10 @@ int camServo1Val = 90;
 int camServo2Val = 90;
 int clawServoVal = 90;
 
-
+//Vars for reading data from arduino (Note: Ethan added these
+//please delete if you dislike)
+char arduinoInfo;
+char tempChar;
 
 void setup(){
   size(1500, 900);
@@ -259,7 +262,15 @@ void draw() {
   
   
   port.write(toSend);
-  
+
+  //Prints arduino info to the consol
+  if (port.available() > 0) {
+    arduinoInfo = (char)port.read();
+    if (tempChar != arduinoInfo) {  
+      println(arduinoInfo);
+    }
+    tempChar = arduinoInfo;
+  }
 //  //Read in data from arduino
 //  char val;
 //  while(port.available() > 0) {
