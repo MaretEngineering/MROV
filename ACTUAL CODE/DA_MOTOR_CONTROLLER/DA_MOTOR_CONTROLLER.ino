@@ -42,11 +42,19 @@ int motor_dir_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_P
 // Servo Values (unsigned 0-90 integers)
 //************************************
 
-#define SERVO_1_PIN 41
-#define SERVO_2_PIN 39
+// Change this to match spec
+#define NUM_SERVOS 6
 
-Servo servo1;
-Servo servo2;
+// Change to match setup
+#define SERVO_1_PIN 40
+#define SERVO_2_PIN 41
+#define SERVO_3_PIN 42
+#define SERVO_4_PIN 43
+#define SERVO_5_PIN 44
+#define SERVO_6_PIN 45
+int servo_pins[] = {SERVO_1_PIN, SERVO_2_PIN, SERVO_3_PIN, SERVO_4_PIN, SERVO_5_PIN, SERVO_6_PIN};
+
+Servo servos[NUM_SERVOS];
 
 //###################################
 //###################################
@@ -59,7 +67,7 @@ Servo servo2;
 //************************************
 
 int motor_values[] = {0, 0, 0, 0, 0};
-int servo_values[] = {0, 0};
+int servo_values[] = {0, 0, 0, 0, 0, 0};
 
 
 //###################################
@@ -87,7 +95,7 @@ void setup() {
   pinMode(MT6t_PIN, OUTPUT);
   Serial.println("Motors initialized");
   
-//  // Set direction pins to output
+  // Set direction pins to output
   pinMode(13, OUTPUT);
   pinMode(MT1d_PIN, OUTPUT);
   pinMode(MT2d_PIN, OUTPUT);
@@ -97,9 +105,12 @@ void setup() {
   pinMode(MT6d_PIN, OUTPUT);
   Serial.println("Direction initialized");
   
-//  // Attach servos
-  servo1.attach(SERVO_1_PIN);
-  servo2.attach(SERVO_2_PIN);
+  // Attach servos
+  for (int i = 0; i < NUM_SERVOS; i++) {
+    Servo servo = servos[i];
+    int servo_pin = servo_pins[i];
+    servo.attach(SERVO_1_PIN);
+  }
   
   //*********************************
   // Test Systems
@@ -131,15 +142,13 @@ void setup() {
   }
   
   Serial.println("Testing servos...");
-  //Test servos
-  //  #1
-  servo1.write(70);
-  delay(500);
-  servo1.write(100);
-  //  #2
-  servo2.write(30);
-  delay(500);
-  servo2.write(50);
+  for (int i = 0; i < NUM_SERVOS; i++) {
+    Servo servo = servos[i];
+    servo.write(80);
+    delay(500);
+    servo.write(100);
+    delay(500);
+  }
   Serial.println("Servos tested");
   
 } // End setup
@@ -205,7 +214,7 @@ void loop() {
   Serial.println("}");
   
   // Parse servo values
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < NUM_SERVOS; i++) {
     char input_buffer[4];
     for (int j = 0; j < 3; j++) {
       input_buffer[j] = inputString[24 + i*4 + j];
@@ -230,15 +239,15 @@ void loop() {
   }
   
   // Write out servo values
-  Serial.print("Writing ");
-  Serial.print(servo_values[0]);
-  Serial.println(" to servo 1");
-  servo1.write(servo_values[0]);
-  
-  Serial.print("Writing ");
-  Serial.print(servo_values[1]);
-  Serial.println(" to servo 2");
-  servo2.write(servo_values[1]);
+  for (int i = 0; i < NUM_MOTORS; i++) {
+    Serial.print("Writing ");
+    Serial.print(servo_values[1]);
+    Serial.print(" to servo ");
+    Serial.println(i+1);
+    
+    Servo servo = servos[i];
+    servo.write(servo_values[0]);
+  }
 
 }
 
@@ -250,7 +259,6 @@ boolean controlMotor(int motorNum, int motorSpeed){
   
   if (motorSpeed < 0) {
       motorSpeed = -motorSpeed;
-//      motorSpeed = constrain(motorSpeed, 50, 255);
       analogWrite(motor_thrust_pins[motorNum], motorSpeed);
       digitalWrite(motor_dir_pins[motorNum], forward);
       Serial.print("Writing ");
@@ -260,7 +268,6 @@ boolean controlMotor(int motorNum, int motorSpeed){
       Serial.print(" reversing on pin ");
       Serial.println(motor_dir_pins[motorNum]);
     } else if (motorSpeed > 0) {
-//      motorSpeed = constrain(motorSpeed, 50, 255);
       analogWrite(motor_thrust_pins[motorNum], motorSpeed);
       digitalWrite(motor_dir_pins[motorNum], reverse);
       Serial.print("Writing ");
