@@ -44,7 +44,8 @@ int DEBOUNCE_TIME = 175;
 int[] servoValues = {
   90, // Cam 1   0
   90, // Cam 2   1
-  90  // Claw    2
+  90, // Claw    2
+  90, // Test    3
 };
 
 
@@ -75,8 +76,10 @@ void setup(){
     joypad.getButton(13), // x                    2
     joypad.getButton(14), // y                    3
     joypad.getButton(0), // dpad up               4
-    joypad.getButton(1), // dpad down              5
-    joypad.getButton(10) // xbox button          6
+    joypad.getButton(1), // dpad down             5
+    joypad.getButton(2), // dpad left             6
+    joypad.getButton(3), // dpad right            7
+    joypad.getButton(10) // xbox button           8
   };
 
   //Set up serial
@@ -119,7 +122,7 @@ void draw() {
 
   
   // Toggle PID
-  if (buttons[6].pressed()) {
+  if (buttons[8].pressed()) {
     xboxButtonValue = !xboxButtonValue;
     delay(DEBOUNCE_TIME);
   }
@@ -160,6 +163,14 @@ void draw() {
           servoValues[2] -= 1;
           servoValues[2] = constrain(servoValues[2], 0, 179);
           break;
+        case 6: // Dpad left
+          servoValues[3] -= 1;
+          servoValues[3] = constrain(servoValues[3], 0, 179);
+          break;
+        case 7: // Dpad right
+          servoValues[3] -= 1;
+          servoValues[3] = constrain(servoValues[3], 0, 179);
+          break;
       }
     }
   }
@@ -167,6 +178,7 @@ void draw() {
   text("Camera Tilt  : " + str(servoValues[0]), 50, 600);
   text("Camera Roll : " + str(servoValues[1]), 50, 650);
   text("Claw Open   : " + str(servoValues[2]), 50, 700);
+  text("Claw Other  : " + str(servoValues[3]), 50, 750);
   
   //Calculate thrust vectors
   if (joy1y != 0 || joy1x != 0) {
