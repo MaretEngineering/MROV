@@ -94,16 +94,29 @@ void setup(){
 void draw() {
   background(0.5);
   
+  // Debugging stuff
+  fill(0);
+  ellipse(625, 325, 2*sqrt(2)*255, 2*sqrt(2)*255);
+  rectMode(CENTER);
+  rect(625, 325, 2*255, 2*255);
+  fill(255);
+  
   // Joysticks!
   joy1y = (int) joy1.getX();
   joy1x = (int) joy1.getY();
   joy2y = (int) joy2.getX();
-  joy2x = (int) joy2.getY(); 
+  joy2x = (int) joy2.getY();
   
   text("x joystick 1: " + str(joy1x), 50, 50);
   text("y joystick 1: " + str(joy1y), 50, 100);
   text("x joystick 2: " + str(joy2x), 50, 150); 
   text("y joystick 2: " + str(joy2y), 50, 200);
+  
+  // Filter out joystick float/noise by not sending values below 50
+  if (abs(joy1y) < 50) { joy1y = 0; }
+  if (abs(joy1x) < 50) { joy1x = 0; }
+  if (abs(joy2y) < 50) { joy2y = 0; }
+  if (abs(joy2x) < 50) { joy2x = 0; }
   
   // Triggers and Buttons!
   r_trig = (int) trigs.getX() + 128;
@@ -169,8 +182,7 @@ void draw() {
     for (int i = 0; i < 4; i++) {
       if (thrustValues[i] > 512 || thrustValues[i] < -512) { println("WHAT THE FRACK ARE YOU DOING? Motor #" + str(i) + " is " + str(thrustValues[i])); }
       thrustValues[i] = (int) map(thrustValues[i], -512, 512, -256, 256);
-    
-  }
+    }
   } else {
     thrustValues = getRotation(-joy2x);
   }
@@ -195,8 +207,10 @@ void draw() {
   //  Draw Motor D
   line (750, 450, 750+thrustValues[3]*cos(radians(45)), 450-thrustValues[3]*sin(radians(45)));
   
-  // Draw control vector for reference
+  // Draw control vector for reference (both unscaled and scaled)
   stroke(255, 0, 0);
+  line(625, 325, 625+thrustValues[5], 325-thrustValues[4]);
+  stroke(0, 255, 0);
   line(625, 325, 625-joy1x, 325-joy1y);
   stroke(255);
   
@@ -235,9 +249,9 @@ void draw() {
     toSend+= str(diff) + "/";
   } 
 
-  toSend += make_constant_servo_value_length(camServo1Val);
+  toSend += make_constant_servo_value_length(camServo1Val) + "/";
   toSend += make_constant_servo_value_length(camServo2Val);
-  toSend += make_constant_servo_value_length(clawServoVal);
+//  toSend += make_constant_servo_value_length(clawServoVal);
   
   toSend += "$";
   
@@ -258,7 +272,31 @@ void draw() {
 }
 
 int[] getTranslation(int x, int y){
-  int[] vals = new int[4];
+  // The code below maps the joystick input vector (constrained by a square of side length 512 centered around (0, 0))
+  // . to a joystick "output vector" constrained by a circle.
+  // . This ensures that we get maximum possible thrust regardless of the direction we want to move
+  // Voodoo magic alert
+  float s_input_mag = sqrt(x*x + y*y);
+  float s_output_mag = 1.41421 * 255.0; // sqrt(2) * 255
+  float dimension_scaling_factor;
+  if (abs(y) > abs(x)) {
+    // y-constrained regime
+    dimension_scaling_factor = float(y) / 255.0;
+  } else if (abs(y) < abs(x)) {
+    // x-constrained regime
+    dimension_scaling_factor = float(x) / 255.0;
+  } else {
+    // Diagonal regime
+    dimension_scaling_factor = 1;
+  }
+  double scaling_factor = (s_output_mag / s_input_mag) * abs(dimension_scaling_factor);
+  x *= scaling_factor;
+  y *= scaling_factor;
+  
+  // The code below takes a single vector of arbitrary direction and magnitude
+  // . and finds the magnitudes of four vectors of fixed direction
+  // . (basically translating the joystick vector to the four motor vectors)
+  int[] vals = new int[6]; // vals[0:3] contain motor values, vals[4:5] contain x and y of the rescaled control vector
   int a = (int)((x + y)*aConst);
   int b = -(int)((y - x)*bConst);
   int d = -a;
@@ -267,11 +305,14 @@ int[] getTranslation(int x, int y){
   vals[1] = b;
   vals[2] = c;
   vals[3] = d;
+  
+  vals[4] = x;
+  vals[5] = y;
   return vals;
 }
 
 int[] getRotation(int x) {
-  int[] vals = new int[4];
+  int[] vals = new int[6]; // vals[0:3] contain motor values, vals[4:5] contain x and y of the rescaled control vector
   int a = (int)(x*aConstR);
   int b = -(int)(x*bConstR);
   int d = a;
@@ -280,19 +321,22 @@ int[] getRotation(int x) {
   vals[1] = b;
   vals[2] = c;
   vals[3] = d;
+  
+  vals[4] = x;
+  vals[5] = 0;
   return vals;
 }
 
 String make_constant_servo_value_length(int val) {
   String toRet = "";
   if (val < 10) {
-    toRet += "00" + str(val)  + "/";
+    toRet += "00" + str(val);
   }
   if (val >= 10 && val < 100) {
-    toRet += "0" + str(val) + "/"; 
+    toRet += "0" + str(val); 
   }
   if (val >= 100) {
-    toRet += str(val) + "/";
+    toRet += str(val);
   } 
   return toRet;
 }

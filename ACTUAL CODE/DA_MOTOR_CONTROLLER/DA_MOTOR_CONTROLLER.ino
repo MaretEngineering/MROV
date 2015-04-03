@@ -24,18 +24,18 @@
 #define MT2t_PIN 9
 #define MT3t_PIN 7
 #define MT4t_PIN 5
-#define MT5t_PIN 2
-#define MT6t_PIN 12 // 6 Controls vertical motors
+#define MT5t_PIN 3
+#define MT6t_PIN 2
 int motor_thrust_pins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
 
 //Motor direction pins
 // ADJUST THESE WHEN PINS ARE FINALIZED
-#define MT1d_PIN 10
-#define MT2d_PIN 1
-#define MT3d_PIN 60
-#define MT4d_PIN 4
-#define MT5d_PIN 1
-#define MT6d_PIN 1
+#define MT1d_PIN 22
+#define MT2d_PIN 24
+#define MT3d_PIN 26
+#define MT4d_PIN 28
+#define MT5d_PIN 30
+#define MT6d_PIN 32
 int motor_dir_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_PIN};
 
 //************************************
@@ -250,7 +250,7 @@ boolean controlMotor(int motorNum, int motorSpeed){
   
   if (motorSpeed < 0) {
       motorSpeed = -motorSpeed;
-      motorSpeed = constrain(motorSpeed, 50, 255);
+//      motorSpeed = constrain(motorSpeed, 50, 255);
       analogWrite(motor_thrust_pins[motorNum], motorSpeed);
       digitalWrite(motor_dir_pins[motorNum], forward);
       Serial.print("Writing ");
@@ -260,7 +260,7 @@ boolean controlMotor(int motorNum, int motorSpeed){
       Serial.print(" reversing on pin ");
       Serial.println(motor_dir_pins[motorNum]);
     } else if (motorSpeed > 0) {
-      motorSpeed = constrain(motorSpeed, 50, 255);
+//      motorSpeed = constrain(motorSpeed, 50, 255);
       analogWrite(motor_thrust_pins[motorNum], motorSpeed);
       digitalWrite(motor_dir_pins[motorNum], reverse);
       Serial.print("Writing ");
