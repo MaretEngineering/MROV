@@ -13,13 +13,9 @@ ControllDevice joypad;
 ControllStick joy1;
 ControllStick joy2;
 ControllStick trigs;
-ControllButton aButton; //a
-ControllButton bButton; //b
-ControllButton xButton; //x
-ControllButton yButton; //y
-ControllButton dpadUp;
-ControllButton dpadDown;
-ControllButton xboxButton;
+
+
+ControllButton buttons[];
 
 int joy1x = 0;
 int joy1y = 0;
@@ -32,10 +28,6 @@ int l_trig = 0;
 //Thrust Values
 int[] thrustValues;
 
-boolean aButtonValue     = false;
-boolean bButtonValue     = false;
-boolean xButtonValue     = false;
-boolean yButtonValue     = false;
 boolean xboxButtonValue  = false;
 
 // Tuning Constants
@@ -49,6 +41,7 @@ double aConstR = 1;
 double bConstR = 1;
 int DEBOUNCE_TIME = 175;
 
+<<<<<<< HEAD
 int camServo1Val = 90;
 int camServo2Val = 90;
 int clawServoVal = 90;
@@ -57,6 +50,14 @@ int clawServoVal = 90;
 //please delete if you dislike)
 char arduinoInfo;
 char tempChar;
+=======
+int[] servoValues = {
+  90, // Cam 1   0
+  90, // Cam 2   1
+  90  // Claw    2
+};
+
+>>>>>>> origin/master
 
 void setup(){
   size(1500, 900);
@@ -79,13 +80,15 @@ void setup(){
   trigs.setMultiplier(-128);
   
   //Setup buttons
-  aButton = joypad.getButton(11);
-  bButton = joypad.getButton(12);
-  xButton = joypad.getButton(13);
-  yButton = joypad.getButton(14);
-  xboxButton = joypad.getButton(10);
-  dpadUp = joypad.getButton(0);
-  dpadDown = joypad.getButton(1);
+  buttons = new ControllButton[] {
+    joypad.getButton(11), // a                    0
+    joypad.getButton(12), // b                    1
+    joypad.getButton(13), // x                    2
+    joypad.getButton(14), // y                    3
+    joypad.getButton(0), // dpad up               4
+    joypad.getButton(1), // dpad down              5
+    joypad.getButton(10) // xbox button          6
+  };
 
   //Set up serial
   println(Serial.list());
@@ -124,59 +127,57 @@ void draw() {
   // Triggers and Buttons!
   r_trig = (int) trigs.getX() + 128;
   l_trig = (int) trigs.getY() + 128;
-  
-  aButtonValue = aButton.pressed();
-  bButtonValue = bButton.pressed();
-  xButtonValue = xButton.pressed();
-  yButtonValue = yButton.pressed();
+
   
   // Toggle PID
-  if (xboxButton.pressed()) {
+  if (buttons[6].pressed()) {
     xboxButtonValue = !xboxButtonValue;
     delay(DEBOUNCE_TIME);
   }
   
-  text("a Toggle: " + str(aButtonValue), 50, 250);
-  text("b Button: " + str(bButtonValue), 50, 300);
-  text("x Button: " + str(xButtonValue), 50, 350);
-  text("y Button: " + str(yButtonValue), 50, 400);
-  text("Dpad Up: " + str(dpadUp.pressed()), 50, 450);
-  text("Dpad Down: " + str(dpadDown.pressed()), 50, 500);
+  text("a Toggle: " + str(buttons[0].pressed()), 50, 250);
+  text("b Button: " + str(buttons[1].pressed()), 50, 300);
+  text("x Button: " + str(buttons[2].pressed()), 50, 350);
+  text("y Button: " + str(buttons[3].pressed()), 50, 400);
+  text("Dpad Up: " + str(buttons[4].pressed()), 50, 450);
+  text("Dpad Down: " + str(buttons[5].pressed()), 50, 500);
   text("PID (XBox): " + str(xboxButtonValue), 50, 550);
   
   // Deal w/ Servos (These calculations mirror those done on the craft)
-  //  Camera Servo 1
-  if (aButtonValue) {
-    camServo1Val -= 1;
-    camServo1Val = constrain(camServo1Val, 65, 140);
-  }
-  if (bButtonValue) {
-    camServo1Val += 1;
-    camServo1Val = constrain(camServo1Val, 65, 140);
+  for(int i=0; i<(buttons.length-1); i++){
+    if (buttons[i].pressed()){
+      switch(i){
+        case 0: // A
+          servoValues[0] -= 1;
+          servoValues[0] = constrain(servoValues[0], 65, 140);
+          break;
+        case 1: // B
+          servoValues[0] += 1;
+          servoValues[0] = constrain(servoValues[0], 65, 140);
+          break;
+        case 2: // X
+          servoValues[1] -= 1;
+          servoValues[1] = constrain(servoValues[1], 55, 110);
+          break;
+        case 3: // Y
+          servoValues[1] += 1;
+          servoValues[1] = constrain(servoValues[1], 55, 110);
+          break;
+        case 4: // Dpad Up
+          servoValues[2] += 1;
+          servoValues[2] = constrain(servoValues[2], 0, 179);
+          break;
+        case 5: // Dpad down
+          servoValues[2] -= 1;
+          servoValues[2] = constrain(servoValues[2], 0, 179);
+          break;
+      }
+    }
   }
   
-  // Camera Servo 2
-  if (xButtonValue) {
-    camServo2Val -= 1;
-    camServo2Val = constrain(camServo2Val, 55, 110);
-  }
-  if (yButtonValue) {
-    camServo2Val += 1;
-    camServo2Val = constrain(camServo2Val, 55, 110);
-  }
-  // Claw Servo
-  if (dpadDown.pressed()) {
-    clawServoVal -= 1;
-    clawServoVal = constrain(clawServoVal, 0, 179);
-  }
-  if (dpadUp.pressed()) {
-    clawServoVal += 1;
-    clawServoVal = constrain(clawServoVal, 0, 179);
-  }
-  
-  text("Camera Tilt  : " + str(camServo1Val), 50, 600);
-  text("Camera Roll : " + str(camServo2Val), 50, 650);
-  text("Claw Open   : " + str(clawServoVal), 50, 700);
+  text("Camera Tilt  : " + str(servoValues[0]), 50, 600);
+  text("Camera Roll : " + str(servoValues[1]), 50, 650);
+  text("Claw Open   : " + str(servoValues[2]), 50, 700);
   
   //Calculate thrust vectors
   if (joy1y != 0 || joy1x != 0) {
@@ -252,13 +253,16 @@ void draw() {
     toSend+= str(diff) + "/";
   } 
 
-  toSend += make_constant_servo_value_length(camServo1Val) + "/";
-  toSend += make_constant_servo_value_length(camServo2Val);
-//  toSend += make_constant_servo_value_length(clawServoVal);
-  
+  for (int i=0; i<servoValues.length; i++){
+    if (i == servoValues.length - 1){
+      toSend += make_constant_servo_value_length(servoValues[i]);
+    }else {
+      toSend += make_constant_servo_value_length(servoValues[i]) + "/";
+    }
+  }
   toSend += "$";
   
-  text(toSend, 50, 850);
+  text(toSend, 450, 750);
   
   
   port.write(toSend);
