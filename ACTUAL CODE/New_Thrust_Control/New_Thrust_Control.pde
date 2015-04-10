@@ -41,24 +41,17 @@ double aConstR = 1;
 double bConstR = 1;
 int DEBOUNCE_TIME = 175;
 
-<<<<<<< HEAD
-int camServo1Val = 90;
-int camServo2Val = 90;
-int clawServoVal = 90;
-
 //Vars for reading data from arduino (Note: Ethan added these
 //please delete if you dislike)
 char arduinoInfo;
 char tempChar;
-=======
+
 int[] servoValues = {
   90, // Cam 1   0
   90, // Cam 2   1
   90, // Claw    2
   90, // Test    3
 };
-
->>>>>>> origin/master
 
 void setup(){
   size(1500, 900);

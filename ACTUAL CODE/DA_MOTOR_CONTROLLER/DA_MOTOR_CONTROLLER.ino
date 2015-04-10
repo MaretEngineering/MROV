@@ -43,7 +43,7 @@ int motor_dir_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_P
 //************************************
 
 // Change this to match spec
-#define NUM_SERVOS 6
+#define NUM_SERVOS 4
 
 // Change to match setup
 #define SERVO_1_PIN 40
@@ -239,14 +239,14 @@ void loop() {
   }
   
   // Write out servo values
-  for (int i = 0; i < NUM_MOTORS; i++) {
+  for (int i = 0; i < NUM_SERVOS; i++) {
     Serial.print("Writing ");
-    Serial.print(servo_values[1]);
+    Serial.print(servo_values[i]);
     Serial.print(" to servo ");
     Serial.println(i+1);
     
     Servo servo = servos[i];
-    servo.write(servo_values[0]);
+    servo.write(servo_values[i]);
   }
 
 }
