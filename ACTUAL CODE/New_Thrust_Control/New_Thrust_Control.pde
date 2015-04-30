@@ -144,35 +144,35 @@ void draw() {
     if (buttons[i].pressed()){
       switch(i){
         case 0: // A
-          servoValues[0] -= 1;
+          servoValues[0] -= 5;
           servoValues[0] = constrain(servoValues[0], 65, 140);
           break;
         case 1: // B
-          servoValues[0] += 1;
+          servoValues[0] += 5;
           servoValues[0] = constrain(servoValues[0], 65, 140);
           break;
         case 2: // X
-          servoValues[1] -= 1;
+          servoValues[1] -= 5;
           servoValues[1] = constrain(servoValues[1], 55, 110);
           break;
         case 3: // Y
-          servoValues[1] += 1;
+          servoValues[1] += 5;
           servoValues[1] = constrain(servoValues[1], 55, 110);
           break;
         case 4: // Dpad Up
-          servoValues[2] += 1;
+          servoValues[2] += 5;
           servoValues[2] = constrain(servoValues[2], 0, 179);
           break;
         case 5: // Dpad down
-          servoValues[2] -= 1;
+          servoValues[2] -= 5;
           servoValues[2] = constrain(servoValues[2], 0, 179);
           break;
         case 6: // Dpad left
-          servoValues[3] -= 1;
+          servoValues[3] -= 5;
           servoValues[3] = constrain(servoValues[3], 0, 179);
           break;
         case 7: // Dpad right
-          servoValues[3] -= 1;
+          servoValues[3] += 5;
           servoValues[3] = constrain(servoValues[3], 0, 179);
           break;
       }
@@ -245,6 +245,11 @@ void draw() {
     
   //makes the diff value 3 characters long + "/"
   diff += 256;
+  if (diff == 512) {
+    diff -= 1;
+  } else if (diff == 0) {
+    diff += 1;
+  }
   if (diff < 10) {
     toSend+= "00" + str(diff)  + "/";
     toSend+= "00" + str(diff)  + "/";
@@ -271,24 +276,27 @@ void draw() {
   
   
   port.write(toSend);
+//  println(toSend);
 
-  //Prints arduino info to the consol
-  if (port.available() > 0) {
-    arduinoInfo = (char)port.read();
-    if (tempChar != arduinoInfo) {  
-      println(arduinoInfo);
-    }
-    tempChar = arduinoInfo;
-  }
+//  //Prints arduino info to the consol
+//  if (port.available() > 0) {
+//    while (port.available() > 0) {
+//      arduinoInfo = (char)port.read();
+//      if (tempChar != arduinoInfo) {  
+//        print(arduinoInfo);
+//      }
+//      tempChar = arduinoInfo;
+//    }  
+//  }
 //  //Read in data from arduino
 //  char val;
 //  while(port.available() > 0) {
 //    val = (char)port.read();
-//    println(val);
+//    print(val);
 //  }
   
   
-  delay(100);
+  delay(250);
 }
 
 int[] getTranslation(int x, int y){

@@ -19,39 +19,52 @@
 #define NUM_MOTORS 6
 
 //Motor thruster pins
-// ADJUST THESE WHEN PINS ARE FINALIZED
-#define MT1t_PIN 11
+// finalized:
+/*
+
+SEE THE MAP FOR CONVERSIONS BETWEEN DWORKEN AND DAVID SYSTEMS 
+
+ 6        3
+ 
+    2-1
+ 
+ 5        4
+
+*/
+#define MT1t_PIN 13
 #define MT2t_PIN 9
-#define MT3t_PIN 7
-#define MT4t_PIN 5
-#define MT5t_PIN 3
-#define MT6t_PIN 2
+#define MT3t_PIN 12
+#define MT4t_PIN 8
+#define MT5t_PIN 11
+#define MT6t_PIN 10
 int motor_thrust_pins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
 
 //Motor direction pins
 // ADJUST THESE WHEN PINS ARE FINALIZED
-#define MT1d_PIN 22
-#define MT2d_PIN 24
-#define MT3d_PIN 26
-#define MT4d_PIN 28
-#define MT5d_PIN 30
-#define MT6d_PIN 32
+#define MT1d_PIN 41
+#define MT2d_PIN 33
+#define MT3d_PIN 39
+#define MT4d_PIN 31
+#define MT5d_PIN 37
+#define MT6d_PIN 35
 int motor_dir_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_PIN};
+
+bool suck_blow_table[] = {false, true, true, true, false, false};
 
 //************************************
 // Servo Values (unsigned 0-90 integers)
 //************************************
 
 // Change this to match spec
-#define NUM_SERVOS 4
+#define NUM_SERVOS 3
 
 // Change to match setup
-#define SERVO_1_PIN 40
-#define SERVO_2_PIN 41
-#define SERVO_3_PIN 42
-#define SERVO_4_PIN 43
-#define SERVO_5_PIN 44
-#define SERVO_6_PIN 45
+#define SERVO_1_PIN 3
+#define SERVO_2_PIN 5
+#define SERVO_3_PIN 2
+#define SERVO_4_PIN 0
+#define SERVO_5_PIN 0
+#define SERVO_6_PIN 0
 int servo_pins[] = {SERVO_1_PIN, SERVO_2_PIN, SERVO_3_PIN, SERVO_4_PIN, SERVO_5_PIN, SERVO_6_PIN};
 
 Servo servos[NUM_SERVOS];
@@ -86,7 +99,6 @@ void setup() {
   Serial.println("Serial initialized");
 
   // Set thrust pins to output
-  pinMode(13, OUTPUT);
   pinMode(MT1t_PIN, OUTPUT);
   pinMode(MT2t_PIN, OUTPUT);
   pinMode(MT3t_PIN, OUTPUT);
@@ -96,7 +108,6 @@ void setup() {
   Serial.println("Motors initialized");
   
   // Set direction pins to output
-  pinMode(13, OUTPUT);
   pinMode(MT1d_PIN, OUTPUT);
   pinMode(MT2d_PIN, OUTPUT);
   pinMode(MT3d_PIN, OUTPUT);
@@ -109,21 +120,13 @@ void setup() {
   for (int i = 0; i < NUM_SERVOS; i++) {
     Servo servo = servos[i];
     int servo_pin = servo_pins[i];
-    servo.attach(SERVO_1_PIN);
+    servo.attach(servo_pin);
+    servo.write(0);
   }
   
   //*********************************
   // Test Systems
   //*********************************
-  
-  // Blink to acknowledge
-  digitalWrite(13, HIGH);
-  delay(500);
-  digitalWrite(13, LOW);
-  delay(500);
-  digitalWrite(13, HIGH);
-  delay(500);
-  digitalWrite(13, LOW);
     
   //Test motors
   for (int i = 0; i < NUM_MOTORS; i++) {
@@ -143,6 +146,8 @@ void setup() {
   
   Serial.println("Testing servos...");
   for (int i = 0; i < NUM_SERVOS; i++) {
+    Serial.print("Testing servo ");
+    Serial.println(i+1);
     Servo servo = servos[i];
     servo.write(80);
     delay(500);
@@ -233,6 +238,10 @@ void loop() {
   for (int i = 0; i < NUM_MOTORS; i++){
     int motorSpeed = motor_values[i];
     
+    if (!suck_blow_table[i]) {
+      motorSpeed = -motorSpeed;
+    }
+    
     controlMotor(i, motorSpeed);
     
     delay(1);
@@ -247,6 +256,7 @@ void loop() {
     
     Servo servo = servos[i];
     servo.write(servo_values[i]);
+    delay(1);
   }
 
 }
@@ -257,29 +267,31 @@ boolean controlMotor(int motorNum, int motorSpeed){
   int forward = HIGH;
   int reverse = LOW;
   
-  if (motorSpeed < 0) {
+  int stallThreshold = 80;
+  
+  if (motorSpeed < -stallThreshold) {
       motorSpeed = -motorSpeed;
       analogWrite(motor_thrust_pins[motorNum], motorSpeed);
       digitalWrite(motor_dir_pins[motorNum], forward);
       Serial.print("Writing ");
       Serial.print(motorSpeed);
-      Serial.print(" to motor " );
+      Serial.print(" to motor on pin " );
       Serial.print(motor_thrust_pins[motorNum]);
       Serial.print(" reversing on pin ");
       Serial.println(motor_dir_pins[motorNum]);
-    } else if (motorSpeed > 0) {
+    } else if (motorSpeed > stallThreshold) {
       analogWrite(motor_thrust_pins[motorNum], motorSpeed);
       digitalWrite(motor_dir_pins[motorNum], reverse);
       Serial.print("Writing ");
       Serial.print(motorSpeed);
-      Serial.print(" to motor ");
+      Serial.print(" to motor on pin ");
       Serial.println(motor_thrust_pins[motorNum]);
     } else {
       analogWrite(motor_thrust_pins[motorNum], 0);
       digitalWrite(motor_dir_pins[motorNum], LOW);
       Serial.print("Writing ");
-      Serial.print(motorSpeed);
-      Serial.print(" to motor ");
+      Serial.print(0);
+      Serial.print(" to motor on pin ");
       Serial.println(motor_thrust_pins[motorNum]);
     }
 }
