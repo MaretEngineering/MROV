@@ -153,27 +153,27 @@ void draw() {
           break;
         case 2: // X
           servoValues[1] -= 5;
-          servoValues[1] = constrain(servoValues[1], 55, 110);
+          servoValues[1] = constrain(servoValues[1], 55, 115);
           break;
         case 3: // Y
           servoValues[1] += 5;
-          servoValues[1] = constrain(servoValues[1], 55, 110);
+          servoValues[1] = constrain(servoValues[1], 55, 115);
           break;
         case 4: // Dpad Up
           servoValues[2] += 5;
-          servoValues[2] = constrain(servoValues[2], 0, 179);
+          servoValues[2] = constrain(servoValues[2], 50, 120);
           break;
         case 5: // Dpad down
           servoValues[2] -= 5;
-          servoValues[2] = constrain(servoValues[2], 0, 179);
+          servoValues[2] = constrain(servoValues[2], 50, 120);
           break;
         case 6: // Dpad left
           servoValues[3] -= 5;
-          servoValues[3] = constrain(servoValues[3], 0, 179);
+          servoValues[3] = constrain(servoValues[3], 50, 100);
           break;
         case 7: // Dpad right
           servoValues[3] += 5;
-          servoValues[3] = constrain(servoValues[3], 0, 179);
+          servoValues[3] = constrain(servoValues[3], 50, 100);
           break;
       }
     }
@@ -208,13 +208,13 @@ void draw() {
   line(500, 450, 500, 200);
   
   //  Draw Motor A
-  line (500, 200, 500+thrustValues[0]*cos(radians(225)), 200-thrustValues[0]*sin(radians(225)));
+  line (500, 200, 500+thrustValues[0]*cos(radians(45)), 200-thrustValues[0]*sin(radians(45)));
   //  Draw Motor B
-  line (750, 200, 750+thrustValues[1]*cos(radians(315)), 200-thrustValues[1]*sin(radians(315)));
-  //  Draw Motor C
-  line (500, 450, 500+thrustValues[2]*cos(radians(135)), 450-thrustValues[2]*sin(radians(135)));
+  line (750, 200, 750+thrustValues[1]*cos(radians(135)), 200-thrustValues[1]*sin(radians(135)));
   //  Draw Motor D
-  line (750, 450, 750+thrustValues[3]*cos(radians(45)), 450-thrustValues[3]*sin(radians(45)));
+  line (500, 450, 500+thrustValues[3]*cos(radians(315)), 450-thrustValues[3]*sin(radians(315)));
+  //  Draw Motor C
+  line (750, 450, 750+thrustValues[2]*cos(radians(225)), 450-thrustValues[2]*sin(radians(225)));
   
   // Draw control vector for reference (both unscaled and scaled)
   stroke(255, 0, 0);
@@ -263,8 +263,8 @@ void draw() {
     toSend+= str(diff) + "/";
   } 
 
-  for (int i=0; i<servoValues.length; i++){
-    if (i == servoValues.length - 1){
+  for (int i=0; i<servoValues.length - 1; i++){
+    if (i == servoValues.length - 2){
       toSend += make_constant_servo_value_length(servoValues[i]);
     }else {
       toSend += make_constant_servo_value_length(servoValues[i]) + "/";
@@ -276,7 +276,7 @@ void draw() {
   
   
   port.write(toSend);
-//  println(toSend);
+  println(toSend);
 
 //  //Prints arduino info to the consol
 //  if (port.available() > 0) {
@@ -327,12 +327,12 @@ int[] getTranslation(int x, int y){
   int[] vals = new int[6]; // vals[0:3] contain motor values, vals[4:5] contain x and y of the rescaled control vector
   int a = (int)((x + y)*aConst);
   int b = -(int)((y - x)*bConst);
-  int d = -a;
-  int c = -b;
-  vals[0] = a;
-  vals[1] = b;
-  vals[2] = c;
-  vals[3] = d;
+  int c = -a;
+  int d = -b;
+  vals[0] = -a;
+  vals[1] = -b;
+  vals[2] = -c;
+  vals[3] = -d;
   
   vals[4] = x;
   vals[5] = y;
@@ -343,15 +343,15 @@ int[] getRotation(int x) {
   int[] vals = new int[6]; // vals[0:3] contain motor values, vals[4:5] contain x and y of the rescaled control vector
   int a = (int)(x*aConstR);
   int b = -(int)(x*bConstR);
-  int d = a;
-  int c = b;
+  int c = a;
+  int d = b;
   vals[0] = a;
   vals[1] = b;
   vals[2] = c;
   vals[3] = d;
   
-  vals[4] = x;
-  vals[5] = 0;
+  vals[4] = 0;
+  vals[5] = x;
   return vals;
 }
 

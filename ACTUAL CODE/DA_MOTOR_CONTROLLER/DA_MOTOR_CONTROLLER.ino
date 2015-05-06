@@ -31,25 +31,26 @@ SEE THE MAP FOR CONVERSIONS BETWEEN DWORKEN AND DAVID SYSTEMS
  5        4
 
 */
-#define MT1t_PIN 13
+#define MT1t_PIN 12
 #define MT2t_PIN 9
-#define MT3t_PIN 12
-#define MT4t_PIN 8
+#define MT3t_PIN 8
+#define MT4t_PIN 13
 #define MT5t_PIN 11
 #define MT6t_PIN 10
 int motor_thrust_pins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
 
 //Motor direction pins
 // ADJUST THESE WHEN PINS ARE FINALIZED
-#define MT1d_PIN 41
+#define MT1d_PIN 39
 #define MT2d_PIN 33
-#define MT3d_PIN 39
+#define MT3d_PIN 41
 #define MT4d_PIN 31
 #define MT5d_PIN 37
 #define MT6d_PIN 35
 int motor_dir_pins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_PIN};
 
-bool suck_blow_table[] = {false, true, true, true, false, false};
+bool suck_blow_table[] = {true, false, false, false, false, false};
+// bool suck_blow_table[] = {true, false, false, false, false, false};
 
 //************************************
 // Servo Values (unsigned 0-90 integers)
@@ -264,15 +265,15 @@ void loop() {
 //motorNum is one of the motor IDs defined in motor_thrust_pins & motor_dir_pins (0 through NUM_MOTORS - 1)
 //motorSpeed is number between -255 and 255 (it is constrained below to be so).
 boolean controlMotor(int motorNum, int motorSpeed){
-  int forward = HIGH;
-  int reverse = LOW;
+  int forward = LOW;
+  int reverse = HIGH;
   
   int stallThreshold = 80;
   
   if (motorSpeed < -stallThreshold) {
       motorSpeed = -motorSpeed;
       analogWrite(motor_thrust_pins[motorNum], motorSpeed);
-      digitalWrite(motor_dir_pins[motorNum], forward);
+      digitalWrite(motor_dir_pins[motorNum], reverse);
       Serial.print("Writing ");
       Serial.print(motorSpeed);
       Serial.print(" to motor on pin " );
@@ -281,7 +282,7 @@ boolean controlMotor(int motorNum, int motorSpeed){
       Serial.println(motor_dir_pins[motorNum]);
     } else if (motorSpeed > stallThreshold) {
       analogWrite(motor_thrust_pins[motorNum], motorSpeed);
-      digitalWrite(motor_dir_pins[motorNum], reverse);
+      digitalWrite(motor_dir_pins[motorNum], forward);
       Serial.print("Writing ");
       Serial.print(motorSpeed);
       Serial.print(" to motor on pin ");
