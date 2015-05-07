@@ -66,7 +66,7 @@ void setup(){
   joy1.setMultiplier(-255);
   //Set Up 2nd joystick w/ proper multiplier for x and y values (see above for why)
   joy2 = joypad.getStick(1); 
-  joy2.setMultiplier(-255); 
+  joy2.setMultiplier(255); 
   
   // Set up triggers
   trigs = joypad.getStick(2);
@@ -87,7 +87,7 @@ void setup(){
 
   //Set up serial
   println(Serial.list());
-  port = new Serial(this, Serial.list()[Serial.list().length - 1], 115200);
+  port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
   
   delay(1000);
 }
@@ -142,28 +142,28 @@ void draw() {
   for(int i=0; i<(buttons.length-1); i++){
     if (buttons[i].pressed()){
       switch(i){
-        case 0: // A
-          servoValues[0] -= 5;
+        case 6: // Dpad Down
+          servoValues[0] -= 1;
           servoValues[0] = constrain(servoValues[0], 65, 115);
           break;
-        case 1: // B
-          servoValues[0] += 5;
+        case 7: // Dpad Up
+          servoValues[0] += 1;
           servoValues[0] = constrain(servoValues[0], 65, 115);
           break;
         case 2: // X
-          servoValues[1] -= 5;
+          servoValues[1] -= 1;
           servoValues[1] = constrain(servoValues[1], 70, 120);
           break;
         case 3: // Y
-          servoValues[1] += 5;
+          servoValues[1] += 1;
           servoValues[1] = constrain(servoValues[1], 70, 120);
           break;
         case 4: // Dpad Up
-          servoValues[2] += 5;
+          servoValues[2] += 1;
           servoValues[2] = constrain(servoValues[2], 90, 145);
           break;
         case 5: // Dpad down
-          servoValues[2] -= 5;
+          servoValues[2] -= 1;
           servoValues[2] = constrain(servoValues[2], 90, 145);
           break;
       }
@@ -266,9 +266,9 @@ void draw() {
   
   
   port.write(toSend);
-  println(toSend);
+//  println(toSend);
 
-//  //Prints arduino info to the consol
+//  //Prints arduino info to the console
 //  if (port.available() > 0) {
 //    while (port.available() > 0) {
 //      arduinoInfo = (char)port.read();
@@ -286,7 +286,7 @@ void draw() {
 //  }
   
   
-  delay(250);
+  delay(30);
 }
 
 int[] getTranslation(int x, int y){

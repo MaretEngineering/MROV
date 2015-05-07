@@ -9,6 +9,9 @@
 // Miscellaneous
 //************************************
 
+// True if you want debug information
+#define DEBUG false
+
 #define FORWARD HIGH
 #define BACKWARD LOW
 
@@ -100,7 +103,7 @@ void setup() {
   //*********************************
   
   // Init Serial
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("Serial initialized");
 
   // Set thrust pins to output
@@ -126,7 +129,7 @@ void setup() {
     Servo servo = servos[i];
     int servo_pin = servo_pins[i];
     servo.attach(servo_pin);
-    servo.write(0);
+//    servo.write(0);
   }
   
   //*********************************
@@ -161,6 +164,12 @@ void setup() {
   }
   Serial.println("Servos tested");
   
+  Serial.println("Clearing serial buffer");
+  while (Serial.available() > 0) {
+    Serial.print((char)Serial.read());
+  }
+  Serial.println("Done clearing buffer");
+  
 } // End setup
 
 void loop() {
@@ -168,11 +177,11 @@ void loop() {
   //*********************************
   // Receive serial input
   //*********************************
-  Serial.println("Waiting for values...");
+  if(DEBUG){Serial.println("Waiting for values...");}
   while (Serial.available() <= 0 || (char)Serial.read() != '!') {
     // Wait for start signal...
   }
-  delay(1); // To give the next byte a chance to come in
+  delay(10); // To give the next byte a chance to come in
   // By this point we know that either there is nothing in the RX buffer
   //   or the first byte in the buffer is the second byte of the message
   //   (as we already read the first byte to see if it was a '!')
@@ -192,8 +201,8 @@ void loop() {
   
   delay(1);
   
-  Serial.println("Values received: ");
-  Serial.println(inputString);
+  if(DEBUG){Serial.println("Values received: ");}
+  if(DEBUG){Serial.println(inputString);}
   
   //************************************
   // Parse the received values
@@ -210,18 +219,18 @@ void loop() {
     }
     input_buffer[3] = '\0';
     int m_val = atoi(input_buffer);
-    Serial.print("Parsing value: ");
-    Serial.println(m_val);
+    if(DEBUG){Serial.print("Parsing value: ");}
+    if(DEBUG){Serial.println(m_val);}
     motor_values[i] = m_val - 256;
   }
   
   // For debugging, print out the motor values
-  Serial.print("Parsed motor values: {");
+  if(DEBUG){Serial.print("Parsed motor values: {");}
   for (int i = 0; i < NUM_MOTORS; i++) {
-    Serial.print(motor_values[i]);
-    Serial.print(", ");
+    if(DEBUG){Serial.print(motor_values[i]);}
+    if(DEBUG){Serial.print(", ");}
   }
-  Serial.println("}");
+  if(DEBUG){Serial.println("}");}
   
   // Parse servo values
   for (int i = 0; i < NUM_SERVOS; i++) {
@@ -231,8 +240,8 @@ void loop() {
     }
     input_buffer[3] = '\0';
     int s_val = atoi(input_buffer);
-    Serial.print("Parsing servo value: ");
-    Serial.println(s_val);
+    if(DEBUG){Serial.print("Parsing servo value: ");}
+    if(DEBUG){Serial.println(s_val);}
     servo_values[i] = s_val;
   }
     
@@ -254,10 +263,10 @@ void loop() {
   
   // Write out servo values
   for (int i = 0; i < NUM_SERVOS; i++) {
-    Serial.print("Writing ");
-    Serial.print(servo_values[i]);
-    Serial.print(" to servo ");
-    Serial.println(i+1);
+    if(DEBUG){Serial.print("Writing ");}
+    if(DEBUG){Serial.print(servo_values[i]);}
+    if(DEBUG){Serial.print(" to servo ");}
+    if(DEBUG){Serial.println(i+1);}
     
     Servo servo = servos[i];
     servo.write(servo_values[i]);
@@ -278,25 +287,25 @@ boolean controlMotor(int motorNum, int motorSpeed){
       motorSpeed = -motorSpeed;
       analogWrite(motor_thrust_pins[motorNum], motorSpeed);
       digitalWrite(motor_dir_pins[motorNum], reverse);
-      Serial.print("Writing ");
-      Serial.print(motorSpeed);
-      Serial.print(" to motor on pin " );
-      Serial.print(motor_thrust_pins[motorNum]);
-      Serial.print(" reversing on pin ");
-      Serial.println(motor_dir_pins[motorNum]);
+      if(DEBUG){Serial.print("Writing ");}
+      if(DEBUG){Serial.print(motorSpeed);}
+      if(DEBUG){Serial.print(" to motor on pin " );}
+      if(DEBUG){Serial.print(motor_thrust_pins[motorNum]);}
+      if(DEBUG){Serial.print(" reversing on pin ");}
+      if(DEBUG){Serial.println(motor_dir_pins[motorNum]);}
     } else if (motorSpeed > stallThreshold) {
       analogWrite(motor_thrust_pins[motorNum], motorSpeed);
       digitalWrite(motor_dir_pins[motorNum], forward);
-      Serial.print("Writing ");
-      Serial.print(motorSpeed);
-      Serial.print(" to motor on pin ");
-      Serial.println(motor_thrust_pins[motorNum]);
+      if(DEBUG){Serial.print("Writing ");}
+      if(DEBUG){Serial.print(motorSpeed);}
+      if(DEBUG){Serial.print(" to motor on pin ");}
+      if(DEBUG){Serial.println(motor_thrust_pins[motorNum]);}
     } else {
       analogWrite(motor_thrust_pins[motorNum], 0);
       digitalWrite(motor_dir_pins[motorNum], LOW);
-      Serial.print("Writing ");
-      Serial.print(0);
-      Serial.print(" to motor on pin ");
-      Serial.println(motor_thrust_pins[motorNum]);
+      if(DEBUG){Serial.print("Writing ");}
+      if(DEBUG){Serial.print(0);}
+      if(DEBUG){Serial.print(" to motor on pin ");}
+      if(DEBUG){Serial.println(motor_thrust_pins[motorNum]);}
     }
 }
