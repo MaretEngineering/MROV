@@ -49,8 +49,7 @@ char tempChar;
 int[] servoValues = {
   90, // Cam 1   0
   90, // Cam 2   1
-  90, // Claw    2
-  90, // Test    3
+  90 // Claw    2
 };
 
 void setup(){
@@ -88,7 +87,7 @@ void setup(){
 
   //Set up serial
   println(Serial.list());
-  port = new Serial(this, Serial.list()[5], 115200);
+  port = new Serial(this, Serial.list()[Serial.list().length - 1], 115200);
   
   delay(1000);
 }
@@ -145,44 +144,35 @@ void draw() {
       switch(i){
         case 0: // A
           servoValues[0] -= 5;
-          servoValues[0] = constrain(servoValues[0], 60, 140);
+          servoValues[0] = constrain(servoValues[0], 65, 115);
           break;
         case 1: // B
           servoValues[0] += 5;
-          servoValues[0] = constrain(servoValues[0], 60, 140);
+          servoValues[0] = constrain(servoValues[0], 65, 115);
           break;
         case 2: // X
           servoValues[1] -= 5;
-          servoValues[1] = constrain(servoValues[1], 60, 145);
+          servoValues[1] = constrain(servoValues[1], 70, 120);
           break;
         case 3: // Y
           servoValues[1] += 5;
-          servoValues[1] = constrain(servoValues[1], 60, 145);
+          servoValues[1] = constrain(servoValues[1], 70, 120);
           break;
         case 4: // Dpad Up
           servoValues[2] += 5;
-          servoValues[2] = constrain(servoValues[2], 50, 120);
+          servoValues[2] = constrain(servoValues[2], 90, 145);
           break;
         case 5: // Dpad down
           servoValues[2] -= 5;
-          servoValues[2] = constrain(servoValues[2], 50, 120);
-          break;
-        case 6: // Dpad left
-          servoValues[3] -= 5;
-          servoValues[3] = constrain(servoValues[3], 50, 100);
-          break;
-        case 7: // Dpad right
-          servoValues[3] += 5;
-          servoValues[3] = constrain(servoValues[3], 50, 100);
+          servoValues[2] = constrain(servoValues[2], 90, 145);
           break;
       }
     }
   }
   
-  text("Camera Tilt  : " + str(servoValues[0]), 50, 600);
-  text("Camera Roll : " + str(servoValues[1]), 50, 650);
-  text("Claw Open   : " + str(servoValues[2]), 50, 700);
-  text("Claw Other  : " + str(servoValues[3]), 50, 750);
+  text("Camera Pan  : " + str(servoValues[0]), 50, 600);
+  text("Claw Open : " + str(servoValues[1]), 50, 650);
+  text("Camera Tilt   : " + str(servoValues[2]), 50, 700);
   
   //Calculate thrust vectors
   if (joy1y != 0 || joy1x != 0) {
@@ -263,8 +253,8 @@ void draw() {
     toSend+= str(diff) + "/";
   } 
 
-  for (int i=0; i<servoValues.length - 1; i++){
-    if (i == servoValues.length - 2){
+  for (int i=0; i<servoValues.length; i++){
+    if (i == servoValues.length - 1){
       toSend += make_constant_servo_value_length(servoValues[i]);
     }else {
       toSend += make_constant_servo_value_length(servoValues[i]) + "/";
