@@ -145,19 +145,19 @@ void draw() {
       switch(i){
         case 0: // A
           servoValues[0] -= 5;
-          servoValues[0] = constrain(servoValues[0], 65, 140);
+          servoValues[0] = constrain(servoValues[0], 60, 140);
           break;
         case 1: // B
           servoValues[0] += 5;
-          servoValues[0] = constrain(servoValues[0], 65, 140);
+          servoValues[0] = constrain(servoValues[0], 60, 140);
           break;
         case 2: // X
           servoValues[1] -= 5;
-          servoValues[1] = constrain(servoValues[1], 55, 115);
+          servoValues[1] = constrain(servoValues[1], 60, 145);
           break;
         case 3: // Y
           servoValues[1] += 5;
-          servoValues[1] = constrain(servoValues[1], 55, 115);
+          servoValues[1] = constrain(servoValues[1], 60, 145);
           break;
         case 4: // Dpad Up
           servoValues[2] += 5;
