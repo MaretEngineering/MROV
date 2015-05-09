@@ -87,7 +87,7 @@ void setup(){
 
   //Set up serial
   println(Serial.list());
-  port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
+//  port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
   
   delay(1000);
 }
@@ -183,7 +183,6 @@ void draw() {
       thrustValues[i] = (int) map(thrustValues[i], -512, 512, -256, 256);
     }
   } else if ((joy1x == 0 && joy1y == 0) && (joy2x != 0)) {
-    println("Rotation only " + str(random(50)));
     thrustValues = getRotation(-joy2x);
   } else if ((joy1x != 0 || joy1y != 0) && (joy2x != 0)) {
     int[] transValues = getTranslation(joy1y, -joy1x);
@@ -285,7 +284,7 @@ void draw() {
   text(toSend, 450, 750);
   
   
-  port.write(toSend);
+//  port.write(toSend);
 //  println(toSend);
 
 //  //Prints arduino info to the console
