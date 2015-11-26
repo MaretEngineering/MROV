@@ -4,5 +4,13 @@ All Arduino-related code is in `Ardunio Stuff`, and all Processing-related code 
 Current Setup
 =============
 
-As of now, we are using `Thrust_Control` as our dockside controller, and nothing as our Arduino controller (yet).
+working code for code that is not final
+processing - POOLSIDE
+arduino - ONBOARD
 
+Processing setup
+================
+Need to be using Processing 2 (not 3)
+Controller name = "Wireless 360 Controller"
+(unconfirmed, need to test this) need 64 bit version of one of the procontroll library files
+from here: http://ci.newdawnsoftware.com/job/JInput-git/3488/label=OSX/ (libjinput-osx.jnilib)
