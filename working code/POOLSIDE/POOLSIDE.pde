@@ -59,7 +59,7 @@ void setup(){
   
   //Set up controller
   controllIO = ControllIO.getInstance(this);
-  joypad = controllIO.getDevice("Afterglow Gamepad for Xbox 360");
+  joypad = controllIO.getDevice("Wireless 360 Controller");
  
   //Set up joystick w/ proper multiplier for x and y values (negative because otehrwise it's inverted)
   joy1 = joypad.getStick(0);
