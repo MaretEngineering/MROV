@@ -11,6 +11,6 @@ arduino - ONBOARD
 Processing setup
 ================
 Need to be using Processing 2 (not 3)
+need 64 bit version of one of the procontroll library files from here:
+http://ci.newdawnsoftware.com/job/JInput-git/3488/label=OSX/ (libjinput-osx.jnilib)
 Controller name = "Wireless 360 Controller"
-(unconfirmed, need to test this) need 64 bit version of one of the procontroll library files
-from here: http://ci.newdawnsoftware.com/job/JInput-git/3488/label=OSX/ (libjinput-osx.jnilib)
