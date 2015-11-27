@@ -72,7 +72,7 @@ void setup(){
 
     //Set up serial
     println(Serial.list());
-    port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
+//    port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
   
     delay(1000);
 }
@@ -252,7 +252,7 @@ void draw() {
     text(toSend, 450, 750);
   
   
-    port.write(toSend);
+//    port.write(toSend);
   
     delay(30);
 }
