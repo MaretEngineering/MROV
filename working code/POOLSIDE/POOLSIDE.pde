@@ -29,7 +29,7 @@ int lTrig = 0;
 int[] thrustValues;
 
 boolean xboxButtonValue = false;
-const int DEBOUNCE_TIME = 175; //for xbox button toggle
+int DEBOUNCE_TIME = 175; //for xbox button toggle
 
 int[] servoValues = {
     90, // Cam 1   0
