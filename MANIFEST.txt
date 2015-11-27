@@ -14,3 +14,10 @@ Need to be using Processing 2 (not 3)
 need 64 bit version of one of the procontroll library files from here:
 http://ci.newdawnsoftware.com/job/JInput-git/3488/label=OSX/ (libjinput-osx.jnilib)
 Controller name = "Wireless 360 Controller"
+
+
+Coding Conventions
+==================
+camelCase for variables and function names
+CAPITALS_WITH_UNDERSCORE for constants
+tabwidth = 4
