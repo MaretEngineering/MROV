@@ -22,14 +22,14 @@ int joy1y = 0;
 int joy2x = 0; 
 int joy2y = 0;
 
-int r_trig = 0;
-int l_trig = 0;
+int rTrig = 0;
+int lTrig = 0;
 
 //Thrust Values
 int[] thrustValues;
 
 boolean xboxButtonValue = false;
-int DEBOUNCE_TIME = 175; //for xbox button toggle
+const int DEBOUNCE_TIME = 175; //for xbox button toggle
 
 int[] servoValues = {
     90, // Cam 1   0
@@ -105,8 +105,8 @@ void draw() {
     if (abs(joy2x) < 50) { joy2x = 0; }
   
     // Triggers and Buttons!
-    r_trig = (int) trigs.getX() + 128;
-    l_trig = (int) trigs.getY() + 128;
+    rTrig = (int) trigs.getX() + 128;
+    lTrig = (int) trigs.getY() + 128;
 
   
     // Toggle PID
@@ -174,8 +174,8 @@ void draw() {
     }
   
   
-    text("Right Trigger: " + str(r_trig), 900, 50);
-    text("Left Trigger:  " + str(l_trig), 900, 100);
+    text("Right Trigger: " + str(rTrig), 900, 50);
+    text("Left Trigger:  " + str(lTrig), 900, 100);
   
     // Reference
     text("^", 614, 200); // Front
@@ -201,7 +201,7 @@ void draw() {
     stroke(255);
   
     // Draw Depth control lines
-    int diff = l_trig - r_trig;
+    int diff = lTrig - rTrig;
     line (1300, 350, 1300, 350 - (diff));
   
     String toSend = "!";
@@ -242,9 +242,9 @@ void draw() {
 
     for (int i=0; i<servoValues.length; i++){
         if (i == servoValues.length - 1){
-            toSend += make_constant_servo_value_length(servoValues[i]);
+            toSend += constantLength(servoValues[i]);
         }else {
-            toSend += make_constant_servo_value_length(servoValues[i]) + "/";
+            toSend += constantLength(servoValues[i]) + "/";
         }
     }
     toSend += "$";
@@ -258,26 +258,26 @@ void draw() {
 }
 
 int[] getTranslation(int x, int y){
-    // The code below maps the joystick input vector (constrained by a square of side length 512 centered around (0, 0))
+    // The code below maps the joystick input vector (constrained by a square of side lengths 512 centered around (0, 0))
     // . to a joystick "output vector" constrained by a circle.
     // . This ensures that we get maximum possible thrust regardless of the direction we want to move
     // Voodoo magic alert
-    float s_input_mag = sqrt(x*x + y*y);
-    float s_output_mag = 1.41421 * 255.0; // sqrt(2) * 255
-    float dimension_scaling_factor;
+    float sInputMag = sqrt(x*x + y*y);
+    float sOutputMag = 1.41421 * 255.0; // sqrt(2) * 255
+    float dimensionScalingFactor;
     if (abs(y) > abs(x)) {
         // y-constrained regime
-        dimension_scaling_factor = float(y) / 255.0;
+        dimensionScalingFactor = float(y) / 255.0;
     } else if (abs(y) < abs(x)) {
         // x-constrained regime
-        dimension_scaling_factor = float(x) / 255.0;
+        dimensionScalingFactor = float(x) / 255.0;
     } else {
         // Diagonal regime
-        dimension_scaling_factor = 1;
+        dimensionScalingFactor = 1;
     }
-    double scaling_factor = (s_output_mag / s_input_mag) * abs(dimension_scaling_factor);
-    x *= scaling_factor;
-    y *= scaling_factor;
+    double scalingFactor = (sOutputMag / sInputMag) * abs(dimensionScalingFactor);
+    x *= scalingFactor;
+    y *= scalingFactor;
   
     // The code below takes a single vector of arbitrary direction and magnitude
     // . and finds the magnitudes of four vectors of fixed direction
@@ -313,7 +313,7 @@ int[] getRotation(int x) {
     return vals;
 }
 
-String make_constant_servo_value_length(int val) {
+String constantLength(int val) {
     String toRet = "";
     if (val < 10) {
         toRet += "00" + str(val);
