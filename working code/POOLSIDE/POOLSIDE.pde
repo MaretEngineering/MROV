@@ -29,7 +29,8 @@ int lTrig = 0;
 int[] thrustValues;
 
 boolean xboxButtonValue = false;
-int DEBOUNCE_TIME = 175; //for xbox button toggle
+final int DEBOUNCE_TIME = 175; //for xbox button toggle
+final int JOYSTICK_NOISE = 50; //wiggle room on joysticks. min = 40 with current controller
 
 int[] servoValues = {
     90, // Cam 1   0
@@ -98,11 +99,11 @@ void draw() {
     text("x joystick 2: " + str(joy2x), 50, 150); 
     text("y joystick 2: " + str(joy2y), 50, 200);
   
-    // Filter out joystick float/noise by not sending values below 50
-    if (abs(joy1y) < 50) { joy1y = 0; }
-    if (abs(joy1x) < 50) { joy1x = 0; }
-    if (abs(joy2y) < 50) { joy2y = 0; }
-    if (abs(joy2x) < 50) { joy2x = 0; }
+    // Filter out joystick float/noise by not sending values below JOYSTICK_NOISE
+    if (abs(joy1y) < JOYSTICK_NOISE) { joy1y = 0; }
+    if (abs(joy1x) < JOYSTICK_NOISE) { joy1x = 0; }
+    if (abs(joy2y) < JOYSTICK_NOISE) { joy2y = 0; }
+    if (abs(joy2x) < JOYSTICK_NOISE) { joy2x = 0; }
   
     // Triggers and Buttons!
     rTrig = (int) trigs.getX() + 128;
