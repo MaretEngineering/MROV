@@ -156,9 +156,9 @@ void draw() {
         }
     }
   
-    text("Camera Pan  : " + str(servoValues[0]), 50, 600);
-    text("Claw Open : " + str(servoValues[1]), 50, 650);
-    text("Camera Tilt   : " + str(servoValues[2]), 50, 700);
+    text("Camera Pan: " + str(servoValues[0]), 50, 600); //CAREFUL
+    text("Camera Tilt: " + str(servoValues[2]), 50, 650); //displayed in a different order than array 
+    text("Claw Open (X/Y): " + str(servoValues[1]), 50, 700); 
   
     //Calculate thrust vectors
     if (joy1y != 0 || joy1x != 0) {
@@ -195,10 +195,12 @@ void draw() {
     line (750, 450, 750+thrustValues[2]*cos(radians(225)), 450-thrustValues[2]*sin(radians(225)));
   
     // Draw control vector for reference (both unscaled and scaled)
-    stroke(255, 0, 0);
+    stroke(255, 0, 0); //red line
     line(625, 325, 625+thrustValues[5], 325-thrustValues[4]);
-    stroke(0, 255, 0);
+
+    stroke(0, 255, 0); //green line
     line(625, 325, 625-joy1x, 325-joy1y);
+
     stroke(255);
   
     // Draw Depth control lines
