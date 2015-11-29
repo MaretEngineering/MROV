@@ -108,7 +108,6 @@ void draw() {
     // Triggers and Buttons!
     rTrig = (int) trigs.getX() + 128;
     lTrig = (int) trigs.getY() + 128;
-
   
     // Toggle PID
     if (buttons[8].pressed()) {
@@ -124,7 +123,7 @@ void draw() {
     text("Dpad Down: " + str(buttons[5].pressed()), 50, 500);
     text("PID (XBox): " + str(xboxButtonValue), 50, 550);
   
-    // Deal w/ Servos (These calculations mirror those done on the craft)
+    // Deal w/ Servos (These calculations mirror those done on the craft) ?? not sure about this
     for(int i=0; i<(buttons.length-1); i++){
         if (buttons[i].pressed()){
             switch(i){

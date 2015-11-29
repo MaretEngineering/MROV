@@ -237,7 +237,10 @@ void loop() {
     for (int i = 0; i < NUM_SERVOS; i++) {
 	char inputBuffer[4];
 	for (int j = 0; j < 3; j++) {
-	    inputBuffer[j] = inputString[24 + i*4 + j];
+	    //24 is the start of the servo values (with 6 motors)
+	    //i*4 is servo number * characters per servo (###/ = 4)
+	    //j is the digit of the servo value
+	    inputBuffer[j] = inputString[24 + i*4 + j]; 
 	}
 	inputBuffer[3] = '\0';
 	int sVal = atoi(inputBuffer);
