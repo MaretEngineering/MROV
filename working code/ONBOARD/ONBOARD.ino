@@ -20,6 +20,7 @@
 //************************************
 
 #define NUM_MOTORS 6
+#define NUM_SERVOS 3
 
 //Motor thruster pins
 // finalized:
@@ -34,12 +35,12 @@
   5        4
 
 */
-#define MT1t_PIN 12
+#define MT1t_PIN 8
 #define MT2t_PIN 9
-#define MT3t_PIN 8
-#define MT4t_PIN 13
-#define MT5t_PIN 11
-#define MT6t_PIN 10
+#define MT3t_PIN 10
+#define MT4t_PIN 11
+#define MT5t_PIN 12
+#define MT6t_PIN 13
 int motorThrustPins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
 
 //Motor direction pins
@@ -58,9 +59,6 @@ bool suckBlowTable[] = {true, false, false, false, false, false};
 //************************************
 // Servo Values (unsigned 0-90 integers)
 //************************************
-
-// Change this to match spec
-#define NUM_SERVOS 3
 
 // Change to match setup
 
@@ -107,29 +105,17 @@ void setup() {
     Serial.println("Serial initialized");
 
     // Set thrust pins to output
-    pinMode(MT1t_PIN, OUTPUT);
-    pinMode(MT2t_PIN, OUTPUT);
-    pinMode(MT3t_PIN, OUTPUT);
-    pinMode(MT4t_PIN, OUTPUT);
-    pinMode(MT5t_PIN, OUTPUT);
-    pinMode(MT6t_PIN, OUTPUT);
+    for (int i = 0; i < NUM_MOTORS; i++) {
+        pinMode(motorThrustPins[i], OUTPUT);
+        pinMode(motorDirPins[i], OUTPUT);
+    }
     Serial.println("Motors initialized");
-  
-    // Set direction pins to output
-    pinMode(MT1d_PIN, OUTPUT);
-    pinMode(MT2d_PIN, OUTPUT);
-    pinMode(MT3d_PIN, OUTPUT);
-    pinMode(MT4d_PIN, OUTPUT);
-    pinMode(MT5d_PIN, OUTPUT);
-    pinMode(MT6d_PIN, OUTPUT);
     Serial.println("Direction initialized");
   
     // Attach servos
     for (int i = 0; i < NUM_SERVOS; i++) {
-	Servo servo = servos[i];
-	int servoPin = servoPins[i];
-	servo.attach(servoPin);
-//    servo.write(0);
+	    Servo servo = servos[i];
+	    servo.attach(servoPins[i]);
     }
   
     //*********************************
