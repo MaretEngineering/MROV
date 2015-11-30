@@ -12,8 +12,10 @@
 // True if you want debug information
 #define DEBUG
 
-#define FORWARD HIGH
-#define BACKWARD LOW
+#define FORWARD LOW
+#define BACKWARD HIGH
+// Movement Threshold
+#define STALL_THRESHOLD 80
 
 //************************************
 // Motor pins
@@ -312,10 +314,9 @@ boolean controlMotor(int motorNum, int motorSpeed){
 	analogWrite(motorThrustPins[motorNum], 0);
 	digitalWrite(motorDirPins[motorNum], LOW);
 #ifdef DEBUG
-	Serial.print("Writing ");
-	Serial.print(0);
-	Serial.print(" to motor on pin ");
+	Serial.print("Writing 0 to motor on pin ");
 	Serial.println(motorThrustPins[motorNum]);
 #endif     
     }
 }
+
