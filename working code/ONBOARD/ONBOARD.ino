@@ -10,7 +10,7 @@
 //************************************
 
 // True if you want debug information
-#define DEBUG false
+#define DEBUG
 
 #define FORWARD HIGH
 #define BACKWARD LOW
@@ -177,7 +177,10 @@ void loop() {
     //*********************************
     // Receive serial input
     //*********************************
-    if(DEBUG){Serial.println("Waiting for values...");}
+#ifdef DEBUG
+    Serial.println("Waiting for values...");
+#endif
+    
     while (Serial.available() <= 0 || (char)Serial.read() != '!') {
 	// Wait for start signal...
     }
@@ -202,8 +205,10 @@ void loop() {
   
     delay(1);
   
-    if(DEBUG){Serial.println("Values received: ");}
-    if(DEBUG){Serial.println(inputString);}
+#ifdef DEBUG
+    Serial.println("Values received: ");
+    Serial.println(inputString);
+#endif
   
     //************************************
     // Parse the received values
@@ -220,18 +225,22 @@ void loop() {
 	}
 	inputBuffer[3] = '\0';
 	int mVal = atoi(inputBuffer);
-	if(DEBUG){Serial.print("Parsing value: ");}
-	if(DEBUG){Serial.println(mVal);}
+#ifdef DEBUG
+	Serial.print("Parsing value: ");
+	Serial.println(mVal);
+#endif
 	motorValues[i] = mVal - 256;
     }
   
     // For debugging, print out the motor values
-    if(DEBUG){Serial.print("Parsed motor values: {");}
+#ifdef DEBUG
+    Serial.print("Parsed motor values: {");
     for (int i = 0; i < NUM_MOTORS; i++) {
-	if(DEBUG){Serial.print(motorValues[i]);}
-	if(DEBUG){Serial.print(", ");}
+	Serial.print(motorValues[i]);
+        Serial.print(", ");
     }
-    if(DEBUG){Serial.println("}");}
+    Serial.println("}");
+#endif
   
     // Parse servo values
     for (int i = 0; i < NUM_SERVOS; i++) {
@@ -244,8 +253,10 @@ void loop() {
 	}
 	inputBuffer[3] = '\0';
 	int sVal = atoi(inputBuffer);
-	if(DEBUG){Serial.print("Parsing servo value: ");}
-	if(DEBUG){Serial.println(sVal);}
+#ifdef DEBUG
+	Serial.print("Parsing servo value: ");
+        Serial.println(sVal);
+#endif
 	servoValues[i] = sVal;
     }
     
@@ -267,11 +278,12 @@ void loop() {
   
     // Write out servo values
     for (int i = 0; i < NUM_SERVOS; i++) {
-	if(DEBUG){Serial.print("Writing ");}
-	if(DEBUG){Serial.print(servoValues[i]);}
-	if(DEBUG){Serial.print(" to servo ");}
-	if(DEBUG){Serial.println(i+1);}
-    
+#ifdef DEBUG
+	Serial.print("Writing ");
+	Serial.print(servoValues[i]);
+	Serial.print(" to servo ");
+	Serial.println(i+1);
+#endif
 	Servo servo = servos[i];
 	servo.write(servoValues[i]);
 	delay(1);
@@ -291,27 +303,33 @@ boolean controlMotor(int motorNum, int motorSpeed){
 	motorSpeed = -motorSpeed;
 	analogWrite(motorThrustPins[motorNum], motorSpeed);
 	digitalWrite(motorDirPins[motorNum], reverse);
-	if(DEBUG){Serial.print("Writing ");}
-	if(DEBUG){Serial.print(motorSpeed);}
-	if(DEBUG){Serial.print(" to motor on pin " );}
-	if(DEBUG){Serial.print(motorThrustPins[motorNum]);}
-	if(DEBUG){Serial.print(" reversing on pin ");}
-	if(DEBUG){Serial.println(motorDirPins[motorNum]);}
+#ifdef DEBUG
+	Serial.print("Writing ");
+	Serial.print(motorSpeed);
+	Serial.print(" to motor on pin " );
+	Serial.print(motorThrustPins[motorNum]);
+	Serial.print(" reversing on pin ");
+	Serial.println(motorDirPins[motorNum]);
+#endif
     }
     else if (motorSpeed > stallThreshold) {
 	analogWrite(motorThrustPins[motorNum], motorSpeed);
 	digitalWrite(motorDirPins[motorNum], forward);
-	if(DEBUG){Serial.print("Writing ");}
-	if(DEBUG){Serial.print(motorSpeed);}
-	if(DEBUG){Serial.print(" to motor on pin ");}
-	if(DEBUG){Serial.println(motorThrustPins[motorNum]);}
+#ifdef DEBUG
+	Serial.print("Writing ");}
+	Serial.print(motorSpeed);}
+	Serial.print(" to motor on pin ");}
+	Serial.println(motorThrustPins[motorNum]);}
+#endif
     }
     else {
 	analogWrite(motorThrustPins[motorNum], 0);
 	digitalWrite(motorDirPins[motorNum], LOW);
-	if(DEBUG){Serial.print("Writing ");}
-	if(DEBUG){Serial.print(0);}
-	if(DEBUG){Serial.print(" to motor on pin ");}
-	if(DEBUG){Serial.println(motorThrustPins[motorNum]);}
+#ifdef DEBUG
+	Serial.print("Writing ");
+	Serial.print(0);
+	Serial.print(" to motor on pin ");
+	Serial.println(motorThrustPins[motorNum]);
+#endif     
     }
 }
