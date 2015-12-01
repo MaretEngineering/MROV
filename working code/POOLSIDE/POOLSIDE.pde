@@ -39,7 +39,7 @@ int[] servoValues = {
 };
 
 void setup(){
-    size(1500, 900);
+    size(1440, 900);
     stroke(150);
     textSize(32);
   
@@ -93,11 +93,11 @@ void draw() {
     joy1x = (int) joy1.getY();
     joy2y = (int) joy2.getX();
     joy2x = (int) joy2.getY();
-  
-    text("x joystick 1: " + str(joy1x), 50, 50);
-    text("y joystick 1: " + str(joy1y), 50, 100);
-    text("x joystick 2: " + str(joy2x), 50, 150); 
-    text("y joystick 2: " + str(joy2y), 50, 200);
+    
+    text("x joystick 1: " + str(joy1x), 10, 50);
+    text("y joystick 1: " + str(joy1y), 10, 100);
+    text("x joystick 2: " + str(joy2x), 10, 150); 
+    text("y joystick 2: " + str(joy2y), 10, 200);
   
     // Filter out joystick float/noise by not sending values below JOYSTICK_NOISE
     if (abs(joy1y) < JOYSTICK_NOISE) { joy1y = 0; }
@@ -115,13 +115,13 @@ void draw() {
         delay(DEBOUNCE_TIME);
     }
   
-    text("a Toggle: " + str(buttons[0].pressed()), 50, 250);
-    text("b Button: " + str(buttons[1].pressed()), 50, 300);
-    text("x Button: " + str(buttons[2].pressed()), 50, 350);
-    text("y Button: " + str(buttons[3].pressed()), 50, 400);
-    text("Dpad Up: " + str(buttons[4].pressed()), 50, 450);
-    text("Dpad Down: " + str(buttons[5].pressed()), 50, 500);
-    text("PID (XBox): " + str(xboxButtonValue), 50, 550);
+    text("a Toggle: " + str(buttons[0].pressed()), 10, 250);
+    text("b Button: " + str(buttons[1].pressed()), 10, 300);
+    text("x Button: " + str(buttons[2].pressed()), 10, 350);
+    text("y Button: " + str(buttons[3].pressed()), 10, 400);
+    text("Dpad Up: " + str(buttons[4].pressed()), 10, 450);
+    text("Dpad Down: " + str(buttons[5].pressed()), 10, 500);
+    text("PID (XBox): " + str(xboxButtonValue), 10, 550);
   
     // Deal w/ Servos (These calculations mirror those done on the craft) ?? not sure about this
     for(int i=0; i<(buttons.length-1); i++){
@@ -155,9 +155,9 @@ void draw() {
         }
     }
   
-    text("Camera Pan: " + str(servoValues[0]), 50, 600); //CAREFUL
-    text("Camera Tilt: " + str(servoValues[2]), 50, 650); //displayed in a different order than array 
-    text("Claw Open (X/Y): " + str(servoValues[1]), 50, 700); 
+    text("Camera Pan: " + str(servoValues[0]), 10, 600); //CAREFUL
+    text("Camera Tilt: " + str(servoValues[2]), 10, 650); //displayed in a different order than array 
+    text("Claw Open (X/Y): " + str(servoValues[1]), 10, 700); 
   
     //Calculate thrust vectors
     if (joy1y != 0 || joy1x != 0) {
