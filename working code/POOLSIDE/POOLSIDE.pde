@@ -317,14 +317,14 @@ int[] getRotation(int x) {
 
 String constantLength(int val) {
     String toRet = "";
-    if (val < 10) {
-        toRet += "00" + str(val);
-    }
-    if (val >= 10 && val < 100) {
-        toRet += "0" + str(val); 
-    }
     if (val >= 100) {
         toRet += str(val);
+    }
+    else if (val >= 10) {
+        toRet += "0" + str(val); 
     } 
+    else {
+        toRet += "00" + str(val);
+    }
     return toRet;
 }
