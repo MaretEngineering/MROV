@@ -38,7 +38,7 @@ int[] servoValues = {
     90 // Claw    2
 };
 
-void setup(){
+void setup() {
     size(1440, 900);
     stroke(150);
     textSize(32);
@@ -216,14 +216,14 @@ void draw() {
     // makes all thrust value strings going out 3 characters long + the "/"
     for (int counter = 0; counter < 4; counter++) {
         thrustValues[counter] += 256;
-        if (thrustValues[counter] < 10) {
-            toSend+= "00" + str(thrustValues[counter]) + "/";
-        }
-        if (thrustValues[counter] >=10 && thrustValues[counter] < 100) {
-            toSend+= "0" + str(thrustValues[counter]) + "/"; 
-        }
         if (thrustValues[counter] >= 100) {
-            toSend+= str(thrustValues[counter]) + "/";
+            toSend += str(thrustValues[counter]) + "/";
+        }
+        else if (thrustValues[counter] >= 10) {
+            toSend += "0" + str(thrustValues[counter]) + "/"; 
+        }
+        else {
+            toSend += "00" + str(thrustValues[counter]) + "/";
         }
     }
     
@@ -234,18 +234,18 @@ void draw() {
     } else if (diff == 0) {
         diff += 1;
     }
-    if (diff < 10) {
-        toSend+= "00" + str(diff)  + "/";
-        toSend+= "00" + str(diff)  + "/";
-    }
-    if (diff >= 10 && diff < 100) {
-        toSend+= "0" + str(diff) + "/";
-        toSend+= "0" + str(diff) + "/"; 
-    }
     if (diff >= 100) {
-        toSend+= str(diff) + "/";
-        toSend+= str(diff) + "/";
+        toSend += str(diff) + "/";
+        toSend += str(diff) + "/";
     } 
+    else if (diff >= 10) {
+        toSend += "0" + str(diff) + "/";
+        toSend += "0" + str(diff) + "/"; 
+    }
+    else {
+        toSend+= "00" + str(diff)  + "/";
+        toSend+= "00" + str(diff)  + "/";
+    }
 
     for (int i=0; i<servoValues.length; i++){
         if (i == servoValues.length - 1){
@@ -322,14 +322,14 @@ int[] getRotation(int x) {
 
 String constantLength(int val) {
     String toRet = "";
-    if (val < 10) {
-        toRet += "00" + str(val);
-    }
-    if (val >= 10 && val < 100) {
-        toRet += "0" + str(val); 
-    }
     if (val >= 100) {
         toRet += str(val);
+    }
+    else if (val >= 10) {
+        toRet += "0" + str(val); 
     } 
+    else {
+        toRet += "00" + str(val);
+    }
     return toRet;
 }
