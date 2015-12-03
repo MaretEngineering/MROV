@@ -120,7 +120,7 @@ void draw() {
         delay(DEBOUNCE_TIME);
     }
   
-    text("a Toggle: " + str(buttons[0].pressed()), 10, 350);
+    text("a Button: " + str(buttons[0].pressed()), 10, 350);
     text("b Button: " + str(buttons[1].pressed()), 10, 400);
     text("x Button: " + str(buttons[2].pressed()), 10, 450);
     text("y Button: " + str(buttons[3].pressed()), 10, 500);
