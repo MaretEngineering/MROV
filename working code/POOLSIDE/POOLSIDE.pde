@@ -80,12 +80,17 @@ void setup(){
 
 void draw() {
     background(0.5);
-  
+    
+    //header (for space filler -- it looked empty)
+    textSize(48);
+    text("Maret MROV", 50, 75);
+    textSize(32);
+    
     // Debugging stuff
     fill(0);
-    ellipse(625, 325, 2*sqrt(2)*255, 2*sqrt(2)*255);
+    ellipse(625, 425, 2*sqrt(2)*255, 2*sqrt(2)*255);
     rectMode(CENTER);
-    rect(625, 325, 2*255, 2*255);
+    rect(625, 425, 2*255, 2*255);
     fill(255);
   
     // Joysticks!
@@ -94,10 +99,10 @@ void draw() {
     joy2y = (int) joy2.getX();
     joy2x = (int) joy2.getY();
     
-    text("x joystick 1: " + str(joy1x), 10, 50);
-    text("y joystick 1: " + str(joy1y), 10, 100);
-    text("x joystick 2: " + str(joy2x), 10, 150); 
-    text("y joystick 2: " + str(joy2y), 10, 200);
+    text("x joystick 1: " + str(joy1x), 10, 150);
+    text("y joystick 1: " + str(joy1y), 10, 200);
+    text("x joystick 2: " + str(joy2x), 10, 250); 
+    text("y joystick 2: " + str(joy2y), 10, 300);
   
     // Filter out joystick float/noise by not sending values below JOYSTICK_NOISE
     if (abs(joy1y) < JOYSTICK_NOISE) { joy1y = 0; }
@@ -115,13 +120,13 @@ void draw() {
         delay(DEBOUNCE_TIME);
     }
   
-    text("a Toggle: " + str(buttons[0].pressed()), 10, 250);
-    text("b Button: " + str(buttons[1].pressed()), 10, 300);
-    text("x Button: " + str(buttons[2].pressed()), 10, 350);
-    text("y Button: " + str(buttons[3].pressed()), 10, 400);
-    text("Dpad Up: " + str(buttons[4].pressed()), 10, 450);
-    text("Dpad Down: " + str(buttons[5].pressed()), 10, 500);
-    text("PID (XBox): " + str(xboxButtonValue), 10, 550);
+    text("a Toggle: " + str(buttons[0].pressed()), 10, 350);
+    text("b Button: " + str(buttons[1].pressed()), 10, 400);
+    text("x Button: " + str(buttons[2].pressed()), 10, 450);
+    text("y Button: " + str(buttons[3].pressed()), 10, 500);
+    text("Dpad Up: " + str(buttons[4].pressed()), 10, 550);
+    text("Dpad Down: " + str(buttons[5].pressed()), 10, 600);
+    text("PID (XBox): " + str(xboxButtonValue), 10, 650);
   
     // Deal w/ Servos (These calculations mirror those done on the craft) ?? not sure about this
     for(int i=0; i<(buttons.length-1); i++){
@@ -155,9 +160,9 @@ void draw() {
         }
     }
   
-    text("Camera Pan: " + str(servoValues[0]), 10, 600); //CAREFUL
-    text("Camera Tilt: " + str(servoValues[2]), 10, 650); //displayed in a different order than array 
-    text("Claw Open (X/Y): " + str(servoValues[1]), 10, 700); 
+    text("Camera Pan: " + str(servoValues[0]), 10, 700); //CAREFUL
+    text("Camera Tilt: " + str(servoValues[2]), 10, 750); //displayed in a different order than array 
+    text("Claw Open (X/Y): " + str(servoValues[1]), 10, 800); 
   
     //Calculate thrust vectors
     if (joy1y != 0 || joy1x != 0) {
@@ -174,37 +179,37 @@ void draw() {
     }
   
   
-    text("Right Trigger: " + str(rTrig), 900, 50);
-    text("Left Trigger:  " + str(lTrig), 900, 100);
+    text("Right Trigger: " + str(rTrig), 900, 100);
+    text("Left Trigger:  " + str(lTrig), 900, 150);
   
     // Reference
-    text("^", 614, 200); // Front
-    line(500, 200, 750, 200); // Body
-    line(750, 200, 750, 450);
-    line(750, 450, 500, 450);
-    line(500, 450, 500, 200);
+    text("^", 614, 300); // Front
+    line(500, 300, 750, 300); // Body
+    line(750, 300, 750, 550);
+    line(750, 550, 500, 550);
+    line(500, 550, 500, 300);
   
     //  Draw Motor A
-    line (500, 200, 500+thrustValues[0]*cos(radians(45)), 200-thrustValues[0]*sin(radians(45)));
+    line (500, 300, 500+thrustValues[0]*cos(radians(45)), 300-thrustValues[0]*sin(radians(45)));
     //  Draw Motor B
-    line (750, 200, 750+thrustValues[1]*cos(radians(135)), 200-thrustValues[1]*sin(radians(135)));
+    line (750, 300, 750+thrustValues[1]*cos(radians(135)), 300-thrustValues[1]*sin(radians(135)));
     //  Draw Motor D
-    line (500, 450, 500+thrustValues[3]*cos(radians(315)), 450-thrustValues[3]*sin(radians(315)));
+    line (500, 550, 500+thrustValues[3]*cos(radians(315)), 550-thrustValues[3]*sin(radians(315)));
     //  Draw Motor C
-    line (750, 450, 750+thrustValues[2]*cos(radians(225)), 450-thrustValues[2]*sin(radians(225)));
+    line (750, 550, 750+thrustValues[2]*cos(radians(225)), 550-thrustValues[2]*sin(radians(225)));
   
     // Draw control vector for reference (both unscaled and scaled)
     stroke(255, 0, 0); //red line
-    line(625, 325, 625+thrustValues[5], 325-thrustValues[4]);
+    line(625, 425, 625+thrustValues[5], 425-thrustValues[4]);
 
     stroke(0, 255, 0); //green line
-    line(625, 325, 625-joy1x, 325-joy1y);
+    line(625, 425, 625-joy1x, 425-joy1y);
 
     stroke(255);
   
     // Draw Depth control lines
     int diff = lTrig - rTrig;
-    line (1300, 350, 1300, 350 - (diff));
+    line (1050, 425, 1050, 425 - (diff));
   
     String toSend = "!";
 
@@ -251,7 +256,7 @@ void draw() {
     }
     toSend += "$";
   
-    text(toSend, 450, 750);
+    text(toSend, 300, 850);
   
   
 //    port.write(toSend);
