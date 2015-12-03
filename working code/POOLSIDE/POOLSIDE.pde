@@ -83,15 +83,22 @@ void draw() {
     
     //header (for space filler -- it looked empty)
     textSize(48);
-    text("Maret MROV", 50, 75);
+    text("Placeholder Text", 50, 75);
     textSize(32);
     
     // Debugging stuff
-    fill(0);
+    noFill();
+
+    stroke(255, 0, 0); //red circle for trust bound
     ellipse(625, 425, 2*sqrt(2)*255, 2*sqrt(2)*255);
+
+    stroke(0, 255, 0);
+    ellipse(625, 425, 2*255, 2*255);
+
+    
     rectMode(CENTER);
+    stroke(255);
     rect(625, 425, 2*255, 2*255);
-    fill(255);
   
     // Joysticks!
     joy1y = (int) joy1.getX();
@@ -209,8 +216,12 @@ void draw() {
   
     // Draw Depth control lines
     int diff = lTrig - rTrig;
-    line (1050, 425, 1050, 425 - (diff));
-  
+    //line (1050, 425, 1050, 425 - (diff));
+    rectMode(CORNERS);
+    fill(255);
+    rect(1050, 425, 1060, 425 - (diff));
+    noFill();
+    
     String toSend = "!";
 
     // makes all thrust value strings going out 3 characters long + the "/"
