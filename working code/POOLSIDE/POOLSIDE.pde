@@ -38,7 +38,7 @@ int[] servoValues = {
     90 // Claw    2
 };
 
-void setup(){
+void setup() {
     size(1440, 900);
     stroke(150);
     textSize(32);
