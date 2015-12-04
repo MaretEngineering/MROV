@@ -89,17 +89,17 @@ void draw() {
     // Debugging stuff
     noFill();
 
-    stroke(255, 0, 0); //red circle for trust bound
+    stroke(255, 0, 0); //red circle for thrust bound
     ellipse(625, 425, 2*sqrt(2)*255, 2*sqrt(2)*255);
 
-    stroke(0, 255, 0);
+    stroke(0, 255, 0); //green circle for controller bound
     ellipse(625, 425, 2*255, 2*255);
 
-    
-    rectMode(CENTER);
-    stroke(255);
+    rectMode(CENTER); //green square for controller bound
     rect(625, 425, 2*255, 2*255);
-  
+
+    stroke(255); //other lines are white
+        
     // Joysticks!
     joy1y = (int) joy1.getX();
     joy1x = (int) joy1.getY();
@@ -181,7 +181,8 @@ void draw() {
             }
             thrustValues[i] = (int) map(thrustValues[i], -512, 512, -256, 256);
         }
-    } else {
+    }
+    else {
         thrustValues = getRotation(-joy2x);
     }
   
