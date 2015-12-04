@@ -101,17 +101,17 @@ void draw() {
     joy2Vec[1] = (int) joy2.getX();
     joy2Vec[0] = (int) joy2.getY();
     
-    text("x joystick 1: " + str(joy1Vec[0]), 10, 50);
-    text("y joystick 1: " + str(joy1Vec[1]), 10, 100);
-    text("x joystick 2: " + str(joy2Vec[0]), 10, 150); 
-    text("y joystick 2: " + str(joy2Vec[1]), 10, 200);
+    text("x joystick 1: " + str(joy1Vec[0]), 10, 150);
+    text("y joystick 1: " + str(joy1Vec[1]), 10, 200);
+    text("x joystick 2: " + str(joy2Vec[0]), 10, 250); 
+    text("y joystick 2: " + str(joy2Vec[0]), 10, 300);
 
   
     // Filter out joystick float/noise by not sending values below JOYSTICK_NOISE
-    for (int i = 0; i < joy1Vec; i++) {
+    for (int i = 0; i < joy1Vec.length; i++) {
         if (abs(joy1Vec[i]) < JOYSTICK_NOISE) { joy1Vec[i] = 0; }
     }
-    for (int i = 0; i < joy2Vec; i++) {
+    for (int i = 0; i < joy2Vec.length; i++) {
         if (abs(joy2Vec[i]) < JOYSTICK_NOISE) { joy2Vec[i] = 0; }
     }
   
@@ -177,7 +177,7 @@ void draw() {
   
     //Calculate thrust vectors
     if (joy1Vec[0] != 0 || joy1Vec[1] != 0) {
-        thrustValues = getTranslation(joy1Vec[1], -joy1Vec[0]);
+        thrustValues = getTranslationCircle(joy1Vec[1], -joy1Vec[0]);
         // Map thrust vectors to between -256 and +256
         for (int i = 0; i < 4; i++) {
             if (thrustValues[i] > 512 || thrustValues[i] < -512) {
@@ -196,7 +196,8 @@ void draw() {
   
     // Reference
     text("^", 614, 300); // Front
-    rect(500,300,250,250); //Body
+    rectMode(CORNERS);
+    rect(500,300,750,550); //Body
   
     //  Draw Motor A
     line (500, 300, 500+thrustValues[0]*cos(radians(45)), 300-thrustValues[0]*sin(radians(45)));
@@ -212,7 +213,7 @@ void draw() {
     line(625, 425, 625+thrustValues[5], 425-thrustValues[4]);
 
     stroke(0, 255, 0); //green line
-    line(625, 325, 625-joy1Vec[0], 325-joy1Vec[1]);
+    line(625, 425, 625-joy1Vec[0], 425-joy1Vec[1]);
 
 
     stroke(255);
