@@ -17,10 +17,8 @@ ControllStick trigs;
 
 ControllButton buttons[];
 
-int joy1x = 0;
-int joy1y = 0;
-int joy2x = 0; 
-int joy2y = 0;
+int[] joy1Vec = {0,0};
+int[] joy2Vec = {0,0};
 
 int rTrig = 0;
 int lTrig = 0;
@@ -31,12 +29,9 @@ int[] thrustValues;
 boolean xboxButtonValue = false;
 final int DEBOUNCE_TIME = 175; //for xbox button toggle
 final int JOYSTICK_NOISE = 50; //wiggle room on joysticks. min = 40 with current controller
+final int NUM_SERVOS = 6; //Number of servo motors
 
-int[] servoValues = {
-    90, // Cam 1   0
-    90, // Cam 2   1
-    90 // Claw    2
-};
+int[] servoValues = new int[NUM_SERVOS];
 
 void setup() {
     size(1440, 900);
@@ -89,21 +84,23 @@ void draw() {
     fill(255);
   
     // Joysticks!
-    joy1y = (int) joy1.getX();
-    joy1x = (int) joy1.getY();
-    joy2y = (int) joy2.getX();
-    joy2x = (int) joy2.getY();
+    joy1Vec[1] = (int) joy1.getX(); //Why are these inverted x and y??? -Ethan
+    joy1Vec[0] = (int) joy1.getY();
+    joy2Vec[1] = (int) joy2.getX();
+    joy2Vec[0] = (int) joy2.getY();
     
-    text("x joystick 1: " + str(joy1x), 10, 50);
-    text("y joystick 1: " + str(joy1y), 10, 100);
-    text("x joystick 2: " + str(joy2x), 10, 150); 
-    text("y joystick 2: " + str(joy2y), 10, 200);
+    text("x joystick 1: " + str(joy1Vec[0]), 10, 50);
+    text("y joystick 1: " + str(joy1Vec[1]), 10, 100);
+    text("x joystick 2: " + str(joy2Vec[0]), 10, 150); 
+    text("y joystick 2: " + str(joy2Vec[1]), 10, 200);
   
     // Filter out joystick float/noise by not sending values below JOYSTICK_NOISE
-    if (abs(joy1y) < JOYSTICK_NOISE) { joy1y = 0; }
-    if (abs(joy1x) < JOYSTICK_NOISE) { joy1x = 0; }
-    if (abs(joy2y) < JOYSTICK_NOISE) { joy2y = 0; }
-    if (abs(joy2x) < JOYSTICK_NOISE) { joy2x = 0; }
+    for (int i = 0; i < joy1Vec; i++) {
+        if (abs(joy1Vec[i]) < JOYSTICK_NOISE) { joy1Vec[i] = 0; }
+    }
+    for (int i = 0; i < joy2Vec; i++) {
+        if (abs(joy2Vec[i]) < JOYSTICK_NOISE) { joy2Vec[i] = 0; }
+    }
   
     // Triggers and Buttons!
     rTrig = (int) trigs.getX() + 128;
@@ -160,8 +157,8 @@ void draw() {
     text("Claw Open (X/Y): " + str(servoValues[1]), 10, 700); 
   
     //Calculate thrust vectors
-    if (joy1y != 0 || joy1x != 0) {
-        thrustValues = getTranslation(joy1y, -joy1x);
+    if (joy1Vec[0] != 0 || joy1Vec[1] != 0) {
+        thrustValues = getTranslation(joy1Vec[1], -joy1Vec[0]);
         // Map thrust vectors to between -256 and +256
         for (int i = 0; i < 4; i++) {
             if (thrustValues[i] > 512 || thrustValues[i] < -512) {
@@ -170,7 +167,7 @@ void draw() {
             thrustValues[i] = (int) map(thrustValues[i], -512, 512, -256, 256);
         }
     } else {
-        thrustValues = getRotation(-joy2x);
+        thrustValues = getRotation(-joy2Vec[0]);
     }
   
   
@@ -198,7 +195,7 @@ void draw() {
     line(625, 325, 625+thrustValues[5], 325-thrustValues[4]);
 
     stroke(0, 255, 0); //green line
-    line(625, 325, 625-joy1x, 325-joy1y);
+    line(625, 325, 625-joy1Vec[0], 325-joy1Vec[1]);
 
     stroke(255);
   
@@ -242,8 +239,8 @@ void draw() {
         toSend+= "00" + str(diff)  + "/";
     }
 
-    for (int i=0; i<servoValues.length; i++){
-        if (i == servoValues.length - 1){
+    for (int i=0; i < NUM_SERVOS; i++){
+        if (i == NUM_SERVOS - 1){
             toSend += constantLength(servoValues[i]);
         }else {
             toSend += constantLength(servoValues[i]) + "/";
