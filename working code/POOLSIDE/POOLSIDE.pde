@@ -6,8 +6,6 @@ import processing.serial.*;
 //   - Axis are inverted, so we used negative multipliers
 //   - The "x" axis is the y-axis irl, but the controller's wierd like that
 
-final boolean SERIAL = false;
-
 Serial port;
 
 ControllIO controllIO;
@@ -68,12 +66,10 @@ void setup() {
         joypad.getButton(10) // xbox button           8
     };
 
-    if(SERIAL){
-        //Set up serial
-        println(Serial.list());
-        port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
-    }
-        
+    //Set up serial
+    println(Serial.list());
+//    port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
+  
     delay(1000);
 }
 
@@ -242,15 +238,8 @@ void draw() {
     // makes all thrust value strings going out 3 characters long + the "/"
     for (int counter = 0; counter < 4; counter++) {
         thrustValues[counter] += 256;
-        if (thrustValues[counter] >= 100) {
-            toSend += str(thrustValues[counter]) + "/";
-        }
-        else if (thrustValues[counter] >= 10) {
-            toSend += "0" + str(thrustValues[counter]) + "/"; 
-        }
-        else {
-            toSend += "00" + str(thrustValues[counter]) + "/";
-        }
+        
+        toSend += formatInt(thrustValues[counter]) + "/";
     }
     
     //makes the diff value 3 characters long + "/"
@@ -260,18 +249,9 @@ void draw() {
     } else if (diff == 0) {
         diff += 1;
     }
-    if (diff >= 100) {
-        toSend += str(diff) + "/";
-        toSend += str(diff) + "/";
-    } 
-    else if (diff >= 10) {
-        toSend += "0" + str(diff) + "/";
-        toSend += "0" + str(diff) + "/"; 
-    }
-    else {
-        toSend+= "00" + str(diff)  + "/";
-        toSend+= "00" + str(diff)  + "/";
-    }
+    
+    toSend += formatInt(diff) + "/";
+    toSend += formatInt(diff) + "/";
 
     for (int i=0; i < NUM_SERVOS; i++){
         if (i == NUM_SERVOS - 1){
@@ -284,10 +264,9 @@ void draw() {
   
     text(toSend, 300, 850);
   
-    if(SERIAL){
-        port.write(toSend);
-    }
-        
+  
+//    port.write(toSend);
+  
     delay(30);
 }
 
@@ -296,45 +275,6 @@ int[] getTranslation(int x, int y){
     // . to a joystick "output vector" constrained by a circle.
     // . This ensures that we get maximum possible thrust regardless of the direction we want to move
     // Voodoo magic alert
-    float sInputMag = sqrt(x*x + y*y);
-    float sOutputMag = 1.41421 * 255.0; // sqrt(2) * 255
-    float dimensionScalingFactor;
-    if (abs(y) > abs(x)) {
-        // y-constrained regime
-        dimensionScalingFactor = float(y) / 255.0;
-    } else if (abs(y) < abs(x)) {
-        // x-constrained regime
-        dimensionScalingFactor = float(x) / 255.0;
-    } else {
-        // Diagonal regime
-        dimensionScalingFactor = 1;
-    }
-    double scalingFactor = (sOutputMag / sInputMag) * abs(dimensionScalingFactor);
-    x *= scalingFactor;
-    y *= scalingFactor;
-  
-    // The code below takes a single vector of arbitrary direction and magnitude
-    // . and finds the magnitudes of four vectors of fixed direction
-    // . (basically translating the joystick vector to the four motor vectors)
-    int[] vals = new int[6]; // vals[0:3] contain motor values, vals[4:5] contain x and y of the rescaled control vector
-    int a = (int)(x + y);
-    int b = -(int)(y - x);
-    int c = -a;
-    int d = -b;
-    vals[0] = -a;
-    vals[1] = -b;
-    vals[2] = -c;
-    vals[3] = -d;
-  
-    vals[4] = x;
-    vals[5] = y;
-    return vals;
-}
-
-int[] getTranslationCircle(int x, int y){
-    //1. cut off values outside radius of 255
-    //2. math
-    
     float sInputMag = sqrt(x*x + y*y);
     float sOutputMag = 1.41421 * 255.0; // sqrt(2) * 255
     float dimensionScalingFactor;
@@ -398,4 +338,15 @@ String constantLength(int val) {
         toRet += "00" + str(val);
     }
     return toRet;
+}
+
+String formatInt(int x){
+    String str = "";
+    String num = str(x);
+    
+    if(x < 10){str += "00" + num;}
+    else if(x < 100){str += "0" + num;}
+    else{str += num;}
+    
+    return str;
 }
