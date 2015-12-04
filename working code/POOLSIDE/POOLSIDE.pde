@@ -6,8 +6,6 @@ import processing.serial.*;
 //   - Axis are inverted, so we used negative multipliers
 //   - The "x" axis is the y-axis irl, but the controller's wierd like that
 
-final boolean SERIAL = false;
-
 Serial port;
 
 ControllIO controllIO;
@@ -19,10 +17,8 @@ ControllStick trigs;
 
 ControllButton buttons[];
 
-int joy1x = 0;
-int joy1y = 0;
-int joy2x = 0; 
-int joy2y = 0;
+int[] joy1Vec = {0,0};
+int[] joy2Vec = {0,0};
 
 int rTrig = 0;
 int lTrig = 0;
@@ -33,12 +29,9 @@ int[] thrustValues;
 boolean xboxButtonValue = false;
 final int DEBOUNCE_TIME = 175; //for xbox button toggle
 final int JOYSTICK_NOISE = 50; //wiggle room on joysticks. min = 40 with current controller
+final int NUM_SERVOS = 6; //Number of servo motors
 
-int[] servoValues = {
-    90, // Cam 1   0
-    90, // Cam 2   1
-    90 // Claw    2
-};
+int[] servoValues = new int[NUM_SERVOS];
 
 void setup() {
     size(1440, 900);
@@ -73,12 +66,10 @@ void setup() {
         joypad.getButton(10) // xbox button           8
     };
 
-    if(SERIAL){
-        //Set up serial
-        println(Serial.list());
-        port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
-    }
-        
+    //Set up serial
+    println(Serial.list());
+//    port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
+  
     delay(1000);
 }
 
@@ -105,21 +96,24 @@ void draw() {
     stroke(255); //other lines are white
         
     // Joysticks!
-    joy1y = (int) joy1.getX();
-    joy1x = (int) joy1.getY();
-    joy2y = (int) joy2.getX();
-    joy2x = (int) joy2.getY();
+    joy1Vec[1] = (int) joy1.getX(); //Why are these inverted x and y??? -Ethan
+    joy1Vec[0] = (int) joy1.getY();
+    joy2Vec[1] = (int) joy2.getX();
+    joy2Vec[0] = (int) joy2.getY();
     
-    text("x joystick 1: " + str(joy1x), 10, 150);
-    text("y joystick 1: " + str(joy1y), 10, 200);
-    text("x joystick 2: " + str(joy2x), 10, 250); 
-    text("y joystick 2: " + str(joy2y), 10, 300);
+    text("x joystick 1: " + str(joy1Vec[0]), 10, 50);
+    text("y joystick 1: " + str(joy1Vec[1]), 10, 100);
+    text("x joystick 2: " + str(joy2Vec[0]), 10, 150); 
+    text("y joystick 2: " + str(joy2Vec[1]), 10, 200);
+
   
     // Filter out joystick float/noise by not sending values below JOYSTICK_NOISE
-    if (abs(joy1y) < JOYSTICK_NOISE) { joy1y = 0; }
-    if (abs(joy1x) < JOYSTICK_NOISE) { joy1x = 0; }
-    if (abs(joy2y) < JOYSTICK_NOISE) { joy2y = 0; }
-    if (abs(joy2x) < JOYSTICK_NOISE) { joy2x = 0; }
+    for (int i = 0; i < joy1Vec; i++) {
+        if (abs(joy1Vec[i]) < JOYSTICK_NOISE) { joy1Vec[i] = 0; }
+    }
+    for (int i = 0; i < joy2Vec; i++) {
+        if (abs(joy2Vec[i]) < JOYSTICK_NOISE) { joy2Vec[i] = 0; }
+    }
   
     // Triggers and Buttons!
     rTrig = (int) trigs.getX() + 128;
@@ -182,8 +176,8 @@ void draw() {
     text("Claw Open (X/Y): " + str(servoValues[1]), 10, 800); 
   
     //Calculate thrust vectors
-    if (joy1y != 0 || joy1x != 0) {
-        thrustValues = getTranslationCircle(joy1y, -joy1x);
+    if (joy1Vec[0] != 0 || joy1Vec[1] != 0) {
+        thrustValues = getTranslation(joy1Vec[1], -joy1Vec[0]);
         // Map thrust vectors to between -256 and +256
         for (int i = 0; i < 4; i++) {
             if (thrustValues[i] > 512 || thrustValues[i] < -512) {
@@ -193,7 +187,7 @@ void draw() {
         }
     }
     else {
-        thrustValues = getRotation(-joy2x);
+        thrustValues = getRotation(-joy2Vec[0]);
     }
   
   
@@ -202,10 +196,7 @@ void draw() {
   
     // Reference
     text("^", 614, 300); // Front
-    line(500, 300, 750, 300); // Body
-    line(750, 300, 750, 550);
-    line(750, 550, 500, 550);
-    line(500, 550, 500, 300);
+    rect(500,300,250,250); //Body
   
     //  Draw Motor A
     line (500, 300, 500+thrustValues[0]*cos(radians(45)), 300-thrustValues[0]*sin(radians(45)));
@@ -221,7 +212,8 @@ void draw() {
     line(625, 425, 625+thrustValues[5], 425-thrustValues[4]);
 
     stroke(0, 255, 0); //green line
-    line(625, 425, 625-joy1x, 425-joy1y);
+    line(625, 325, 625-joy1Vec[0], 325-joy1Vec[1]);
+
 
     stroke(255);
   
@@ -238,15 +230,8 @@ void draw() {
     // makes all thrust value strings going out 3 characters long + the "/"
     for (int counter = 0; counter < 4; counter++) {
         thrustValues[counter] += 256;
-        if (thrustValues[counter] >= 100) {
-            toSend += str(thrustValues[counter]) + "/";
-        }
-        else if (thrustValues[counter] >= 10) {
-            toSend += "0" + str(thrustValues[counter]) + "/"; 
-        }
-        else {
-            toSend += "00" + str(thrustValues[counter]) + "/";
-        }
+        
+        toSend += formatInt(thrustValues[counter]) + "/";
     }
     
     //makes the diff value 3 characters long + "/"
@@ -256,21 +241,12 @@ void draw() {
     } else if (diff == 0) {
         diff += 1;
     }
-    if (diff >= 100) {
-        toSend += str(diff) + "/";
-        toSend += str(diff) + "/";
-    } 
-    else if (diff >= 10) {
-        toSend += "0" + str(diff) + "/";
-        toSend += "0" + str(diff) + "/"; 
-    }
-    else {
-        toSend+= "00" + str(diff)  + "/";
-        toSend+= "00" + str(diff)  + "/";
-    }
+    
+    toSend += formatInt(diff) + "/";
+    toSend += formatInt(diff) + "/";
 
-    for (int i=0; i<servoValues.length; i++){
-        if (i == servoValues.length - 1){
+    for (int i=0; i < NUM_SERVOS; i++){
+        if (i == NUM_SERVOS - 1){
             toSend += constantLength(servoValues[i]);
         }else {
             toSend += constantLength(servoValues[i]) + "/";
@@ -280,10 +256,9 @@ void draw() {
   
     text(toSend, 300, 850);
   
-    if(SERIAL){
-        port.write(toSend);
-    }
-        
+  
+//    port.write(toSend);
+  
     delay(30);
 }
 
@@ -327,6 +302,7 @@ int[] getTranslation(int x, int y){
     return vals;
 }
 
+
 //this version of get translation uses the first (circle) method from this page on the wiki
 //https://github.com/MaretEngineering/MROV/wiki/Joystick-Problem
 int[] getTranslationCircle(int x, int y){ 
@@ -363,6 +339,7 @@ int[] getTranslationCircle(int x, int y){
     return vals;
 }
 
+
 int[] getRotation(int x) {
     int[] vals = new int[6]; // vals[0:3] contain motor values, vals[4:5] contain x and y of the rescaled control vector
     int a = (int)(x);
@@ -391,4 +368,15 @@ String constantLength(int val) {
         toRet += "00" + str(val);
     }
     return toRet;
+}
+
+String formatInt(int x){
+    String str = "";
+    String num = str(x);
+    
+    if(x < 10){str += "00" + num;}
+    else if(x < 100){str += "0" + num;}
+    else{str += num;}
+    
+    return str;
 }
