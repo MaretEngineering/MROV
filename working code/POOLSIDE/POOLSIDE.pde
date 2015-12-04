@@ -205,10 +205,7 @@ void draw() {
   
     // Reference
     text("^", 614, 300); // Front
-    line(500, 300, 750, 300); // Body
-    line(750, 300, 750, 550);
-    line(750, 550, 500, 550);
-    line(500, 550, 500, 300);
+    rect(500,300,250,250); //Body
   
     //  Draw Motor A
     line (500, 300, 500+thrustValues[0]*cos(radians(45)), 300-thrustValues[0]*sin(radians(45)));
