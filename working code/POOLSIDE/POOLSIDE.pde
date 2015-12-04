@@ -130,11 +130,17 @@ void draw() {
         xboxButtonValue = !xboxButtonValue;
         delay(DEBOUNCE_TIME);
     }
-  
+
+    fill(0,255,0); //got bored lol
     text("a Button: " + str(buttons[0].pressed()), 10, 350);
+    fill(255,0,0);
     text("b Button: " + str(buttons[1].pressed()), 10, 400);
+    fill(0,0,255);
     text("x Button: " + str(buttons[2].pressed()), 10, 450);
+    fill(255,255,0);
     text("y Button: " + str(buttons[3].pressed()), 10, 500);
+    fill(255);
+    noFill();
     text("Dpad Up: " + str(buttons[4].pressed()), 10, 550);
     text("Dpad Down: " + str(buttons[5].pressed()), 10, 600);
     text("PID (XBox): " + str(xboxButtonValue), 10, 650);
@@ -177,7 +183,7 @@ void draw() {
   
     //Calculate thrust vectors
     if (joy1y != 0 || joy1x != 0) {
-        thrustValues = getTranslation(joy1y, -joy1x);
+        thrustValues = getTranslationCircle(joy1y, -joy1x);
         // Map thrust vectors to between -256 and +256
         for (int i = 0; i < 4; i++) {
             if (thrustValues[i] > 512 || thrustValues[i] < -512) {
@@ -321,26 +327,23 @@ int[] getTranslation(int x, int y){
     return vals;
 }
 
-int[] getTranslationCircle(int x, int y){
+//this version of get translation uses the first (circle) method from this page on the wiki
+//https://github.com/MaretEngineering/MROV/wiki/Joystick-Problem
+int[] getTranslationCircle(int x, int y){ 
     //1. cut off values outside radius of 255
     //2. math
     
     float sInputMag = sqrt(x*x + y*y);
-    float sOutputMag = 1.41421 * 255.0; // sqrt(2) * 255
-    float dimensionScalingFactor;
-    if (abs(y) > abs(x)) {
-        // y-constrained regime
-        dimensionScalingFactor = float(y) / 255.0;
-    } else if (abs(y) < abs(x)) {
-        // x-constrained regime
-        dimensionScalingFactor = float(x) / 255.0;
-    } else {
-        // Diagonal regime
-        dimensionScalingFactor = 1;
+    if(sInputMag > 255){ //
+        x *= (255 / sInputMag);
+        y *= (255 / sInputMag);
     }
-    double scalingFactor = (sOutputMag / sInputMag) * abs(dimensionScalingFactor);
-    x *= scalingFactor;
-    y *= scalingFactor;
+
+    float sOutputMag = 1.41421 * 255.0; //sqrt(2)*255
+
+    //scale joystick vector to thrust vector
+    x *= 1.41421;
+    y *= 1.41421;    
   
     // The code below takes a single vector of arbitrary direction and magnitude
     // . and finds the magnitudes of four vectors of fixed direction
