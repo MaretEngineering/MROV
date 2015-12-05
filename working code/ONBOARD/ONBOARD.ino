@@ -15,6 +15,7 @@
 
 #define FORWARD HIGH
 #define BACKWARD LOW
+#define STALL_THRESHOLD 80
 
 //************************************
 // Motor pins
@@ -22,6 +23,7 @@
 
 #define NUM_MOTORS 6
 #define NUM_SERVOS 3
+#define MESSAGE_SIZE 40
 
 //Motor thruster pins
 // finalized:
@@ -87,8 +89,11 @@ Servo servos[NUM_SERVOS];
 // Motor Values (signed 8-bit integers)
 //************************************
 
-int motorValues[] = {0, 0, 0, 0, 0};
+int motorValues[] = {0, 0, 0, 0, 0}; 
+//5 because the vertical motors have the same
 int servoValues[] = {0, 0, 0, 0, 0, 0};
+char rawInput[MESSAGE_SIZE]; 
+//The raw message from serial
 
 //###################################
 //###################################

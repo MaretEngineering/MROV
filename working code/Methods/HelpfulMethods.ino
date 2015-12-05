@@ -5,6 +5,17 @@
 char rawInput[MESSAGE_SIZE]; //The raw message from serial
 //Will this 
 
+void loop() {
+	parseSerial();
+	parseThrustMotorVals();
+	parseServoVals();
+	for (int i = 0; i < NUM_MOTORS; i++) {
+		controlThrustMotor(i, motorValues[i]);
+	}
+	for (int i = 0; i < NUM_SERVOS; i++) {
+		controlServoMotor(i, servoValues[i]);
+	}
+}
 /**
  * Receives the message from serial and places it in the
  * char array rawInput[]
