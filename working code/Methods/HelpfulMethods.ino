@@ -2,6 +2,8 @@
 #define FORWARD LOW
 #define BACKWARD HIGH
 #define STALL_THRESHOLD 80
+#define START_DELIM '!'
+#define END_DELIM '$'
 char rawInput[MESSAGE_SIZE]; //The raw message from serial
 //Will this 
 
@@ -24,13 +26,13 @@ void parseSerial() {
 #ifdef DEBUG
 	Serial.println("Waiting to receive...");
 #endif
-	while (Serial.available() <= 0 || (char)Serial.read() != '!') {} //Wait for Serial
+	while (Serial.available() <= 0 || (char)Serial.read() != START_DELIM) {} //Wait for Serial
 	delay(10); //To give the next byte a chance to come in
 	int index = 0; //The array index of rawInput
 	while (Serial.available() > 0) {
 		char singleChar = (char) Serial.read();
 
-		if (singleChar == '$') {
+		if (singleChar == END_DELIM) {
 			break; //Stop receiving at the end of the message
 		}
 		rawInput[index] = singleChar;
@@ -76,7 +78,7 @@ void parseServoVals() {
 	for (int i = 0; i < NUM_SERVOS; i++) {
 		for (int j = 0; j < 3; j++) {
 			//24 is the start of the servo values (with 6 motors)
-			servoVal[j] = rawInput[24 + (i*4) + j];
+			servoVal[j] = rawInput[(NUM_MOTORS*4) + (i*4) + j];
 		}
 		servoVal[3] = '\0';
 		servoValues[i] = atoi(servoVal);
@@ -125,7 +127,7 @@ void controlThrustMotor(int motorNum, int motorSpeed) {
  * @param  int servoVal      The degree turn of the servo
  */
 void controlServoMotor(int servoNum, int servoVal) {
-	servoVal = constrain(servoVal, 0, 180); //Ensures value is in range
+	servoVal = constrain(servoVal, 0, 179); //Ensures value is in range
 	Servo servo = servos[servoNum];
 	servo.write(servoVal); //Writes the value to the servo
 #ifdef DEBUG
