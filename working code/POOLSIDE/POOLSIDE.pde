@@ -380,4 +380,8 @@ String formatInt(int x){
     else{str += num;}
     
     return str;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/master
