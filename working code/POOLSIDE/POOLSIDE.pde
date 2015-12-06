@@ -6,8 +6,6 @@ import processing.serial.*;
 //   - Axis are inverted, so we used negative multipliers
 //   - The "x" axis is the y-axis irl, but the controller's wierd like that
 
-final boolean SERIAL = false;
-
 Serial port;
 
 ControllIO controllIO;
@@ -68,12 +66,10 @@ void setup() {
         joypad.getButton(10) // xbox button           8
     };
 
-    if(SERIAL){
-        //Set up serial
-        println(Serial.list());
-        port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
-    }
-        
+    //Set up serial
+    println(Serial.list());
+//    port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
+  
     delay(1000);
 }
 
@@ -105,23 +101,17 @@ void draw() {
     joy2Vec[1] = (int) joy2.getX();
     joy2Vec[0] = (int) joy2.getY();
     
-<<<<<<< HEAD
-    text("x joystick 1: " + str(joy1Vec[0]), 10, 50);
-    text("y joystick 1: " + str(joy1Vec[1]), 10, 100);
-    text("x joystick 2: " + str(joy2Vec[0]), 10, 150); 
-    text("y joystick 2: " + str(joy2Vec[1]), 10, 200);
-=======
-    text("x joystick 1: " + str(joy1x), 10, 150);
-    text("y joystick 1: " + str(joy1y), 10, 200);
-    text("x joystick 2: " + str(joy2x), 10, 250); 
-    text("y joystick 2: " + str(joy2y), 10, 300);
->>>>>>> origin/master
+    text("x joystick 1: " + str(joy1Vec[0]), 10, 150);
+    text("y joystick 1: " + str(joy1Vec[1]), 10, 200);
+    text("x joystick 2: " + str(joy2Vec[0]), 10, 250); 
+    text("y joystick 2: " + str(joy2Vec[0]), 10, 300);
+
   
     // Filter out joystick float/noise by not sending values below JOYSTICK_NOISE
-    for (int i = 0; i < joy1Vec; i++) {
+    for (int i = 0; i < joy1Vec.length; i++) {
         if (abs(joy1Vec[i]) < JOYSTICK_NOISE) { joy1Vec[i] = 0; }
     }
-    for (int i = 0; i < joy2Vec; i++) {
+    for (int i = 0; i < joy2Vec.length; i++) {
         if (abs(joy2Vec[i]) < JOYSTICK_NOISE) { joy2Vec[i] = 0; }
     }
   
@@ -134,11 +124,17 @@ void draw() {
         xboxButtonValue = !xboxButtonValue;
         delay(DEBOUNCE_TIME);
     }
-  
+
+    fill(0,255,0); //got bored lol
     text("a Button: " + str(buttons[0].pressed()), 10, 350);
+    fill(255,0,0);
     text("b Button: " + str(buttons[1].pressed()), 10, 400);
+    fill(0,0,255);
     text("x Button: " + str(buttons[2].pressed()), 10, 450);
+    fill(255,255,0);
     text("y Button: " + str(buttons[3].pressed()), 10, 500);
+    fill(255);
+    noFill();
     text("Dpad Up: " + str(buttons[4].pressed()), 10, 550);
     text("Dpad Down: " + str(buttons[5].pressed()), 10, 600);
     text("PID (XBox): " + str(xboxButtonValue), 10, 650);
@@ -181,7 +177,7 @@ void draw() {
   
     //Calculate thrust vectors
     if (joy1Vec[0] != 0 || joy1Vec[1] != 0) {
-        thrustValues = getTranslation(joy1Vec[1], -joy1Vec[0]);
+        thrustValues = getTranslationCircle(joy1Vec[1], -joy1Vec[0]);
         // Map thrust vectors to between -256 and +256
         for (int i = 0; i < 4; i++) {
             if (thrustValues[i] > 512 || thrustValues[i] < -512) {
@@ -189,14 +185,9 @@ void draw() {
             }
             thrustValues[i] = (int) map(thrustValues[i], -512, 512, -256, 256);
         }
-<<<<<<< HEAD
-    } else {
-        thrustValues = getRotation(-joy2Vec[0]);
-=======
     }
     else {
-        thrustValues = getRotation(-joy2x);
->>>>>>> origin/master
+        thrustValues = getRotation(-joy2Vec[0]);
     }
   
   
@@ -205,7 +196,8 @@ void draw() {
   
     // Reference
     text("^", 614, 300); // Front
-    rect(500,300,250,250); //Body
+    rectMode(CORNERS);
+    rect(500,300,750,550); //Body
   
     //  Draw Motor A
     line (500, 300, 500+thrustValues[0]*cos(radians(45)), 300-thrustValues[0]*sin(radians(45)));
@@ -221,11 +213,8 @@ void draw() {
     line(625, 425, 625+thrustValues[5], 425-thrustValues[4]);
 
     stroke(0, 255, 0); //green line
-<<<<<<< HEAD
-    line(625, 325, 625-joy1Vec[0], 325-joy1Vec[1]);
-=======
-    line(625, 425, 625-joy1x, 425-joy1y);
->>>>>>> origin/master
+    line(625, 425, 625-joy1Vec[0], 425-joy1Vec[1]);
+
 
     stroke(255);
   
@@ -242,15 +231,8 @@ void draw() {
     // makes all thrust value strings going out 3 characters long + the "/"
     for (int counter = 0; counter < 4; counter++) {
         thrustValues[counter] += 256;
-        if (thrustValues[counter] >= 100) {
-            toSend += str(thrustValues[counter]) + "/";
-        }
-        else if (thrustValues[counter] >= 10) {
-            toSend += "0" + str(thrustValues[counter]) + "/"; 
-        }
-        else {
-            toSend += "00" + str(thrustValues[counter]) + "/";
-        }
+        
+        toSend += formatInt(thrustValues[counter]) + "/";
     }
     
     //makes the diff value 3 characters long + "/"
@@ -260,18 +242,9 @@ void draw() {
     } else if (diff == 0) {
         diff += 1;
     }
-    if (diff >= 100) {
-        toSend += str(diff) + "/";
-        toSend += str(diff) + "/";
-    } 
-    else if (diff >= 10) {
-        toSend += "0" + str(diff) + "/";
-        toSend += "0" + str(diff) + "/"; 
-    }
-    else {
-        toSend+= "00" + str(diff)  + "/";
-        toSend+= "00" + str(diff)  + "/";
-    }
+    
+    toSend += formatInt(diff) + "/";
+    toSend += formatInt(diff) + "/";
 
     for (int i=0; i < NUM_SERVOS; i++){
         if (i == NUM_SERVOS - 1){
@@ -284,10 +257,9 @@ void draw() {
   
     text(toSend, 300, 850);
   
-    if(SERIAL){
-        port.write(toSend);
-    }
-        
+  
+//    port.write(toSend);
+  
     delay(30);
 }
 
@@ -331,26 +303,24 @@ int[] getTranslation(int x, int y){
     return vals;
 }
 
-int[] getTranslationCircle(int x, int y){
+
+//this version of get translation uses the first (circle) method from this page on the wiki
+//https://github.com/MaretEngineering/MROV/wiki/Joystick-Problem
+int[] getTranslationCircle(int x, int y){ 
     //1. cut off values outside radius of 255
     //2. math
     
     float sInputMag = sqrt(x*x + y*y);
-    float sOutputMag = 1.41421 * 255.0; // sqrt(2) * 255
-    float dimensionScalingFactor;
-    if (abs(y) > abs(x)) {
-        // y-constrained regime
-        dimensionScalingFactor = float(y) / 255.0;
-    } else if (abs(y) < abs(x)) {
-        // x-constrained regime
-        dimensionScalingFactor = float(x) / 255.0;
-    } else {
-        // Diagonal regime
-        dimensionScalingFactor = 1;
+    if(sInputMag > 255){ //
+        x *= (255 / sInputMag);
+        y *= (255 / sInputMag);
     }
-    double scalingFactor = (sOutputMag / sInputMag) * abs(dimensionScalingFactor);
-    x *= scalingFactor;
-    y *= scalingFactor;
+
+    float sOutputMag = 1.41421 * 255.0; //sqrt(2)*255
+
+    //scale joystick vector to thrust vector
+    x *= 1.41421;
+    y *= 1.41421;    
   
     // The code below takes a single vector of arbitrary direction and magnitude
     // . and finds the magnitudes of four vectors of fixed direction
@@ -369,6 +339,7 @@ int[] getTranslationCircle(int x, int y){
     vals[5] = y;
     return vals;
 }
+
 
 int[] getRotation(int x) {
     int[] vals = new int[6]; // vals[0:3] contain motor values, vals[4:5] contain x and y of the rescaled control vector
@@ -398,4 +369,15 @@ String constantLength(int val) {
         toRet += "00" + str(val);
     }
     return toRet;
+}
+
+String formatInt(int x){
+    String str = "";
+    String num = str(x);
+    
+    if(x < 10){str += "00" + num;}
+    else if(x < 100){str += "0" + num;}
+    else{str += num;}
+    
+    return str;
 }
