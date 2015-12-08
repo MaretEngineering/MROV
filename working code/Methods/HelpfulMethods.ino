@@ -1,9 +1,13 @@
-#define MESSAGE_SIZE 40
 #define FORWARD LOW
 #define BACKWARD HIGH
 #define STALL_THRESHOLD 80
 #define START_DELIM '!'
 #define END_DELIM '$'
+//Message = 1 start delim, 1 end delim, 3 digits + 1 motor delim (4)
+//* the number of motors, * the number of servos - 1 motor delim
+//= 2 + (4*NUM_MOTORS) + (4*NUM_SERVOS) - 1
+//If we're adding the pid button/other buttons, needs modifications
+#define MESSAGE_SIZE 1 + (4*NUM_MOTORS) + (4*NUM_SERVOS)
 char rawInput[MESSAGE_SIZE]; //The raw message from serial
 //Will this 
 
