@@ -64,9 +64,8 @@ class Console{
             text(getOutput(), x, y);
     }
     
-    public void println(String str){
+    public void println(String str){ //another way to call it
         addLine(str);
-        printOutput();
     }
     
 }
