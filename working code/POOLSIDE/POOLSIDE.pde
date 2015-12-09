@@ -31,7 +31,8 @@ boolean xboxButtonValue = false;
 boolean xboxButtonPressed = false;
 
 final int JOYSTICK_NOISE = 50; //wiggle room on joysticks. min ~= 40 with current controller
-final int NUM_SERVOS = 6; //Number of servo motors
+
+final int NUM_SERVOS = 3; //Number of servo motors
 
 int[] servoValues = new int[NUM_SERVOS];
 
