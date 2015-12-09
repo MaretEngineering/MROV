@@ -7,6 +7,7 @@ import processing.serial.*;
 //   - The "x" axis is the y-axis irl, but the controller's wierd like that
 
 Serial port;
+Console scr;
 
 ControllIO controllIO;
 ControllDevice joypad;
@@ -71,26 +72,41 @@ void setup() {
         joypad.getButton(10) // xbox button           8
     };
 
-    //Set up serial
-    println(Serial.list());
+    scr = new Console(10, 1100, 300);
+    scr.addLine("Console output");
     
+    //Set up serial
+    String[] serialList = Serial.list();
+    println(serialList);
+    for(int i = 0; i < serialList.length; i++){
+        scr.addLine(serialList[i]);
+    }
+        
     if(serialOn){
       port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
     }
+
+
     
     delay(1000);
 }
 
 void draw() {
-    background(0.5);
+    background(0);
+
+    textSize(24);
+    scr.printOutput();
+    //scr.addLine(str(millis())); //uncomment this to test console
+
+
+    // Debugging stuff
+    noFill();
+    textAlign(LEFT,BOTTOM);
     
     //header (for space filler -- it looked empty)
     textSize(48);
     text("Placeholder Text", 50, 75);
     textSize(32);
-    
-    // Debugging stuff
-    noFill();
 
     stroke(255, 0, 0); //red circle for thrust bound
     ellipse(625, 425, 2*sqrt(2)*255, 2*sqrt(2)*255);
@@ -102,9 +118,13 @@ void draw() {
     rect(625, 425, 2*255, 2*255);
 
     stroke(255); //other lines are white
+
+    //box around console output
+    rectMode(CORNERS);
+    rect(1100, 300, 1440, 900);
         
     // Joysticks!
-    joy1Vec[1] = (int) joy1.getX(); //Why are these inverted x and y??? -Ethan
+    joy1Vec[1] = (int) joy1.getX(); 
     joy1Vec[0] = (int) joy1.getY();
     joy2Vec[1] = (int) joy2.getX();
     joy2Vec[0] = (int) joy2.getY();
