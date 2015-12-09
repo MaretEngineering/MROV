@@ -96,7 +96,7 @@ void draw() {
 
     textSize(24);
     scr.printOutput();
-    //scr.addLine(str(millis())); //uncomment this to test console
+    scr.println(str(millis())); //uncomment this to test console
 
 
     // Debugging stuff
@@ -205,7 +205,7 @@ void draw() {
         // Map thrust vectors to between -256 and +256
         for (int i = 0; i < 4; i++) {
             if (thrustValues[i] > 512 || thrustValues[i] < -512) {
-                println("WHAT THE FRACK ARE YOU DOING? Motor #" + str(i) + " is " + str(thrustValues[i]));
+                scr.println("WHAT THE FRACK ARE YOU DOING? Motor #" + str(i) + " is " + str(thrustValues[i]));
             }
             thrustValues[i] = (int) map(thrustValues[i], -512, 512, -256, 256);
         }
@@ -268,9 +268,13 @@ void draw() {
     }
     
     toSend += formatInt(diff) + "/";
-    toSend += formatInt(diff) + "/";
+    toSend += formatInt(diff) + "/"; //remove this line to send one vert. motor
 
-    for (int i=0; i < NUM_SERVOS; i++){
+    //send pid
+    //toSend += ((xboxButtonValue) ? "1" : "0") + "/";
+    
+    
+    for (int i = 0; i < NUM_SERVOS; i++){
         if (i == NUM_SERVOS - 1){
             toSend += constantLength(servoValues[i]);
         }else {
