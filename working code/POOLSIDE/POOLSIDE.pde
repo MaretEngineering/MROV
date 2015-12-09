@@ -36,7 +36,7 @@ final int NUM_SERVOS = 3; //Number of servo motors
 
 int[] servoValues = new int[NUM_SERVOS];
 
-
+final boolean serialOn = false;
 
 void setup() {
     size(1440, 900);
@@ -73,8 +73,11 @@ void setup() {
 
     //Set up serial
     println(Serial.list());
-//    port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
-  
+    
+    if(serialOn){
+      port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
+    }
+    
     delay(1000);
 }
 
@@ -258,9 +261,10 @@ void draw() {
   
     text(toSend, 300, 850);
   
-  
-//    port.write(toSend);
-  
+    if(serialOn){
+      port.write(toSend);
+    }
+      
     delay(30);
 }
 
