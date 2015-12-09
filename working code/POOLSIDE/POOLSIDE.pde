@@ -26,12 +26,16 @@ int lTrig = 0;
 //Thrust Values
 int[] thrustValues;
 
+//values for xbox toggle
 boolean xboxButtonValue = false;
-final int DEBOUNCE_TIME = 175; //for xbox button toggle
-final int JOYSTICK_NOISE = 50; //wiggle room on joysticks. min = 40 with current controller
+boolean xboxButtonPressed = false;
+
+final int JOYSTICK_NOISE = 50; //wiggle room on joysticks. min ~= 40 with current controller
 final int NUM_SERVOS = 6; //Number of servo motors
 
 int[] servoValues = new int[NUM_SERVOS];
+
+
 
 void setup() {
     size(1440, 900);
@@ -119,11 +123,7 @@ void draw() {
     rTrig = (int) trigs.getX() + 128;
     lTrig = (int) trigs.getY() + 128;
   
-    // Toggle PID
-    if (buttons[8].pressed()) {
-        xboxButtonValue = !xboxButtonValue;
-        delay(DEBOUNCE_TIME);
-    }
+    debounce();
 
     fill(0,255,0); //got bored lol
     text("a Button: " + str(buttons[0].pressed()), 10, 350);
@@ -380,8 +380,18 @@ String formatInt(int x){
     else{str += num;}
     
     return str;
-<<<<<<< HEAD
 }
-=======
+
+void debounce() {
+    if (!buttons[8].pressed()) {
+        xboxButtonPressed = false;
+    }
+    else if ((buttons[8].pressed())&&(!xboxButtonPressed)) {
+        xboxButtonValue = !xboxButtonValue;
+        xboxButtonPressed = true;
+//      delay(5); //seems to work fine without a delay
+    }
+    else {
+        xboxButtonPressed = true;
+    }
 }
->>>>>>> origin/master
