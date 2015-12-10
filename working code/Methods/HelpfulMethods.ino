@@ -3,13 +3,19 @@
 #define STALL_THRESHOLD 80
 #define START_DELIM '!'
 #define END_DELIM '$'
+
+#define PID_START (4*NUM_MOTORS)
+#define SERVO_START (4*NUM_MOTORS) + 2
+
 //Message = 1 start delim, 1 end delim, 3 digits + 1 motor delim (4)
 //* the number of motors, * the number of servos - 1 motor delim
-//= 2 + (4*NUM_MOTORS) + (4*NUM_SERVOS) - 1
+//= 2 + (4*NUM_MOTORS) + (4*NUM_SERVOS) - 1 + 2 for PID state and delim
 //If we're adding the pid button/other buttons, needs modifications
-#define MESSAGE_SIZE 1 + (4*NUM_MOTORS) + (4*NUM_SERVOS)
+#define MESSAGE_SIZE 3 + (4*NUM_MOTORS) + (4*NUM_SERVOS)
 char rawInput[MESSAGE_SIZE]; //The raw message from serial
 //Will this 
+
+boolean pidState = false; //Whether the PID should be on or off
 
 void loop() {
 	parseSerial();
@@ -74,6 +80,14 @@ void parseThrustMotorVals() { //Needs work for 5th and 6th motors, which have th
 }
 
 /**
+ * Parses the PID state
+ */
+void parsePID() {
+	char state = rawInput[PID_START];
+	pidState = (state == '0')? false : true; //If state == '0', pidState == false, otherwise true
+}
+
+/**
  * Parses the servo values from the rawInput[] char
  * array and assigns them to int values in servoValues[]
  */
@@ -81,8 +95,8 @@ void parseServoVals() {
 	char servoVal[4]; //4 because null terminator? Testing needed
 	for (int i = 0; i < NUM_SERVOS; i++) {
 		for (int j = 0; j < 3; j++) {
-			//24 is the start of the servo values (with 6 motors)
-			servoVal[j] = rawInput[(NUM_MOTORS*4) + (i*4) + j];
+			//Starts after 6 motors and the pid state
+			servoVal[j] = rawInput[SERVO_START + (i*4) + j];
 		}
 		servoVal[3] = '\0';
 		servoValues[i] = atoi(servoVal);
@@ -124,6 +138,7 @@ void controlThrustMotor(int motorNum, int motorSpeed) {
 	Serial.println(motorThrustPins[motorNum]);
 #endif
 }
+
 
 /**
  * Writes the servo value to the specified servo motor
