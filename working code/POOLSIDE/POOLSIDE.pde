@@ -96,7 +96,7 @@ void draw() {
 
     textSize(24);
     scr.printOutput();
-    scr.println(str(millis())); //uncomment this to test console
+//    scr.println(str(millis())); //uncomment this to test console
 
 
     // Debugging stuff
