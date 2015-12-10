@@ -63,7 +63,7 @@ void parseSerial() {
 void parseThrustMotorVals() { //Needs work for 5th and 6th motors, which have the same val
 	char motorVal[4]; //4 because null terminator? Testing needed
 	for (int i = 0; i < NUM_MOTORS; i++) {
-		for (int j = 0; j < 3; j++) {
+		for (int j = 0; j < 3; j++) { //j is the digit. Every number is a 3 digit number.
 			motorVal[j] = rawInput[4*i + j];
 		}
 		motorVal[3] = '\0';
@@ -94,7 +94,7 @@ void parsePID() {
 void parseServoVals() {
 	char servoVal[4]; //4 because null terminator? Testing needed
 	for (int i = 0; i < NUM_SERVOS; i++) {
-		for (int j = 0; j < 3; j++) {
+		for (int j = 0; j < 3; j++) { //j is the digit. Every number is a 3 digit number.
 			//Starts after 6 motors and the pid state
 			servoVal[j] = rawInput[SERVO_START + (i*4) + j];
 		}
