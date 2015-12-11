@@ -11,6 +11,10 @@
 #define PID_START (4*NUM_MOTORS)
 #define SERVO_START (4*NUM_MOTORS) + 2
 
+//Constraints
+#define MOTOR_MAX 255
+#define PAN_MIN 
+
 //Message = 1 start delim, 1 end delim, 3 digits + 1 motor delim (4)
 //* the number of motors, * the number of servos - 1 motor delim
 //= 2 + (4*NUM_MOTORS) + (4*NUM_SERVOS) - 1 + 2 for PID state and delim
