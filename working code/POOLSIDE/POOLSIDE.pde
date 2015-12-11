@@ -175,29 +175,29 @@ void draw() {
                 servoValues[0] += 1;
                 servoValues[0] = constrain(servoValues[0], 65, 115);
                 break;
-            case 2: // X
-                servoValues[1] -= 1;
-                servoValues[1] = constrain(servoValues[1], 70, 120);
-                break;
-            case 3: // Y
-                servoValues[1] += 1;
-                servoValues[1] = constrain(servoValues[1], 70, 120);
-                break;
             case 4: // Dpad Up
-                servoValues[2] += 1;
-                servoValues[2] = constrain(servoValues[2], 90, 145);
+                servoValues[1] += 1;
+                servoValues[1] = constrain(servoValues[1], 90, 145);
                 break;
             case 5: // Dpad down
+                servoValues[1] -= 1;
+                servoValues[1] = constrain(servoValues[1], 90, 145);
+                break;
+            case 2: // X
                 servoValues[2] -= 1;
-                servoValues[2] = constrain(servoValues[2], 90, 145);
+                servoValues[2] = constrain(servoValues[2], 70, 120);
+                break;
+            case 3: // Y
+                servoValues[2] += 1;
+                servoValues[2] = constrain(servoValues[2], 70, 120);
                 break;
             }
         }
     }
   
-    text("Camera Pan: " + str(servoValues[0]), 10, 700); //CAREFUL
-    text("Camera Tilt: " + str(servoValues[2]), 10, 750); //displayed in a different order than array 
-    text("Claw Open (X/Y): " + str(servoValues[1]), 10, 800); 
+    text("Camera Pan: " + str(servoValues[0]), 10, 700);
+    text("Camera Tilt: " + str(servoValues[1]), 10, 750);
+    text("Claw Open (X/Y): " + str(servoValues[2]), 10, 800);
   
     //Calculate thrust vectors
     if (joy1Vec[0] != 0 || joy1Vec[1] != 0) {

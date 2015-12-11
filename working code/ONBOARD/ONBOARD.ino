@@ -66,10 +66,10 @@ bool suckBlowTable[] = {true, false, false, false, false, false};
 
 // Pan
 #define SERVO_1_PIN 3
-// Claw
-#define SERVO_2_PIN 5
 // Tilt
-#define SERVO_3_PIN 2
+#define SERVO_2_PIN 2
+// Claw
+#define SERVO_3_PIN 5
 
 #define SERVO_4_PIN 0
 #define SERVO_5_PIN 0
