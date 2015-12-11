@@ -167,11 +167,11 @@ void draw() {
     for(int i=0; i<(buttons.length-1); i++){
         if (buttons[i].pressed()){
             switch(i){
-            case 6: // Dpad Down
+            case 6: // Dpad Left
                 servoValues[0] -= 1;
                 servoValues[0] = constrain(servoValues[0], 65, 115);
                 break;
-            case 7: // Dpad Up
+            case 7: // Dpad Right
                 servoValues[0] += 1;
                 servoValues[0] = constrain(servoValues[0], 65, 115);
                 break;
