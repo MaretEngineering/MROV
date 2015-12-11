@@ -286,7 +286,7 @@ void draw() {
     text(toSend, 300, 850);
   
     if(serialOn){
-      port.write(toSend);
+        port.write(toSend);
     }
       
     delay(30);
