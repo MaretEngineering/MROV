@@ -193,28 +193,28 @@ void draw() {
 
             case 6: // Dpad Left
                 servoValues[PAN] -= 1;
-                servoValues[PAN] = constrain(servoValues[0], 65, 115);
+                servoValues[PAN] = constrain(servoValues[PAN], 65, 115);
                 break;
             case 7: // Dpad Right
                 servoValues[PAN] += 1;
-                servoValues[PAN] = constrain(servoValues[0], 65, 115);
+                servoValues[PAN] = constrain(servoValues[PAN], 65, 115);
 
                 break;
             case 4: // Dpad Up
                 servoValues[TILT] += 1;
-                servoValues[TILT] = constrain(servoValues[1], TILT_MIN, TILT_ED);
+                servoValues[TILT] = constrain(servoValues[TILT], TILT_MIN, TILT_ED);
                 break;
             case 5: // Dpad down
                 servoValues[TILT] -= 1;
-                servoValues[TILT] = constrain(servoValues[1], TILT_MIN, TILT_ED);
+                servoValues[TILT] = constrain(servoValues[TILT], TILT_MIN, TILT_ED);
                 break;
             case 2: // X
                 servoValues[CLAW] -= 1;
-                servoValues[CLAW] = constrain(servoValues[2], CLAW_CLOSED, CLAW_OPEN);
+                servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_CLOSED, CLAW_OPEN);
                 break;
             case 3: // Y
                 servoValues[CLAW] += 1;
-                servoValues[CLAW] = constrain(servoValues[2], CLAW_CLOSED, CLAW_OPEN);
+                servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_CLOSED, CLAW_OPEN);
                 break;
             }
         }
