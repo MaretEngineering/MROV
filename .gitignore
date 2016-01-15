@@ -8,4 +8,4 @@
 /*/*/output
 
 #ignore vim files
-*.swp
+*.*.swp
