@@ -48,8 +48,6 @@ final int TILT_MIN = 90;
 final int TILT_CENTER = 118;
 final int TILT_ED = 145;
 
-final int ZANE = TILT_ED; //LOL
-
 //Constraints for claw
 final int CLAW_CLOSED = 70;
 final int CLAW_OPEN = 120;
