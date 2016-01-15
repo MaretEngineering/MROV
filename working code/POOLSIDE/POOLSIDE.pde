@@ -37,7 +37,7 @@ final int NUM_SERVOS = 3; //Number of servo motors
 
 int[] servoValues = new int[NUM_SERVOS];
 
-final boolean serialOn = false;
+final boolean serialOn = true;
 
 void setup() {
     size(1440, 900);
@@ -83,7 +83,7 @@ void setup() {
     }
         
     if(serialOn){
-      port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
+        port = new Serial(this, Serial.list()[Serial.list().length - 1], 38400);
     }
 
 
@@ -94,7 +94,7 @@ void setup() {
 void draw() {
     background(0);
 
-    textSize(24);
+    textSize(12);
     scr.printOutput();
 //    scr.println(str(millis())); //uncomment this to test console
 
@@ -288,7 +288,13 @@ void draw() {
     if(serialOn){
         port.write(toSend);
     }
-      
+
+    //read serial
+    String read = port.readStringUntil('\n');
+    if(read != null && read != "\n"){
+        scr.println(read);
+    }
+
     delay(30);
 }
 
@@ -335,92 +341,92 @@ int[] getTranslation(int x, int y){
 
 //this version of get translation uses the first (circle) method from this page on the wiki
 //https://github.com/MaretEngineering/MROV/wiki/Joystick-Problem
-int[] getTranslationCircle(int x, int y){ 
-    //1. cut off values outside radius of 255
-    //2. math
+    int[] getTranslationCircle(int x, int y){ 
+        //1. cut off values outside radius of 255
+        //2. math
     
-    float sInputMag = sqrt(x*x + y*y);
-    if(sInputMag > 255){ //
-        x *= (255 / sInputMag);
-        y *= (255 / sInputMag);
+        float sInputMag = sqrt(x*x + y*y);
+        if(sInputMag > 255){ //
+            x *= (255 / sInputMag);
+            y *= (255 / sInputMag);
+        }
+
+        float sOutputMag = 1.41421 * 255.0; //sqrt(2)*255
+
+        //scale joystick vector to thrust vector
+        x *= 1.41421;
+        y *= 1.41421;    
+  
+        // The code below takes a single vector of arbitrary direction and magnitude
+        // . and finds the magnitudes of four vectors of fixed direction
+        // . (basically translating the joystick vector to the four motor vectors)
+        int[] vals = new int[6]; // vals[0:3] contain motor values, vals[4:5] contain x and y of the rescaled control vector
+        int a = (int)(x + y);
+        int b = -(int)(y - x);
+        int c = -a;
+        int d = -b;
+        vals[0] = -a;
+        vals[1] = -b;
+        vals[2] = -c;
+        vals[3] = -d;
+  
+        vals[4] = x;
+        vals[5] = y;
+        return vals;
     }
 
-    float sOutputMag = 1.41421 * 255.0; //sqrt(2)*255
 
-    //scale joystick vector to thrust vector
-    x *= 1.41421;
-    y *= 1.41421;    
+    int[] getRotation(int x) {
+        int[] vals = new int[6]; // vals[0:3] contain motor values, vals[4:5] contain x and y of the rescaled control vector
+        int a = (int)(x);
+        int b = -(int)(x);
+        int c = a;
+        int d = b;
+        vals[0] = a;
+        vals[1] = b;
+        vals[2] = c;
+        vals[3] = d;
   
-    // The code below takes a single vector of arbitrary direction and magnitude
-    // . and finds the magnitudes of four vectors of fixed direction
-    // . (basically translating the joystick vector to the four motor vectors)
-    int[] vals = new int[6]; // vals[0:3] contain motor values, vals[4:5] contain x and y of the rescaled control vector
-    int a = (int)(x + y);
-    int b = -(int)(y - x);
-    int c = -a;
-    int d = -b;
-    vals[0] = -a;
-    vals[1] = -b;
-    vals[2] = -c;
-    vals[3] = -d;
-  
-    vals[4] = x;
-    vals[5] = y;
-    return vals;
-}
-
-
-int[] getRotation(int x) {
-    int[] vals = new int[6]; // vals[0:3] contain motor values, vals[4:5] contain x and y of the rescaled control vector
-    int a = (int)(x);
-    int b = -(int)(x);
-    int c = a;
-    int d = b;
-    vals[0] = a;
-    vals[1] = b;
-    vals[2] = c;
-    vals[3] = d;
-  
-    vals[4] = 0;
-    vals[5] = x;
-    return vals;
-}
-
-String constantLength(int val) {
-    String toRet = "";
-    if (val >= 100) {
-        toRet += str(val);
+        vals[4] = 0;
+        vals[5] = x;
+        return vals;
     }
-    else if (val >= 10) {
-        toRet += "0" + str(val); 
-    } 
-    else {
-        toRet += "00" + str(val);
-    }
-    return toRet;
-}
 
-String formatInt(int x){
-    String str = "";
-    String num = str(x);
+    String constantLength(int val) {
+        String toRet = "";
+        if (val >= 100) {
+            toRet += str(val);
+        }
+        else if (val >= 10) {
+            toRet += "0" + str(val); 
+        } 
+        else {
+            toRet += "00" + str(val);
+        }
+        return toRet;
+    }
+
+    String formatInt(int x){
+        String str = "";
+        String num = str(x);
     
-    if(x < 10){str += "00" + num;}
-    else if(x < 100){str += "0" + num;}
-    else{str += num;}
+        if(x < 10){str += "00" + num;}
+        else if(x < 100){str += "0" + num;}
+        else{str += num;}
     
-    return str;
-}
-
-void debounce() {
-    if (!buttons[8].pressed()) {
-        xboxButtonPressed = false;
+        return str;
     }
-    else if ((buttons[8].pressed())&&(!xboxButtonPressed)) {
-        xboxButtonValue = !xboxButtonValue;
-        xboxButtonPressed = true;
+
+    void debounce() {
+        if (!buttons[8].pressed()) {
+            xboxButtonPressed = false;
+        }
+        else if ((buttons[8].pressed())&&(!xboxButtonPressed)) {
+            xboxButtonValue = !xboxButtonValue;
+            xboxButtonPressed = true;
 //      delay(5); //seems to work fine without a delay
+        }
+        else {
+            xboxButtonPressed = true;
+        }
     }
-    else {
-        xboxButtonPressed = true;
-    }
-}
