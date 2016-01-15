@@ -34,8 +34,31 @@ boolean xboxButtonPressed = false;
 final int JOYSTICK_NOISE = 50; //wiggle room on joysticks. min ~= 40 with current controller
 
 final int NUM_SERVOS = 3; //Number of servo motors
+final int PAN = 0; //Servo index for camera pan
+final int TILT = 1; //Servo index for camera tilt
+final int CLAW = 2; //Servo index for claw
+
+//Constraints and center for pan
+final int PAN_MIN = 65;
+final int PAN_CENTER = 90;
+final int PAN_MAX = 115;
+
+//Constraints and center for tilt
+final int TILT_MIN = 90;
+final int TILT_CENTER = 118;
+final int TILT_ED = 145;
+
+final int ZANE = TILT_ED; //LOL
+
+//Constraints for claw
+final int CLAW_CLOSED = 70;
+final int CLAW_OPEN = 120;
 
 int[] servoValues = new int[NUM_SERVOS];
+servoValues[PAN] = PAN_CENTER; //Pan starts center
+servoValues[TILT] = TILT_CENTER; //Tilt starts center
+servoValues[CLAW] = CLAW_OPEN; //Claw starts open
+
 
 final boolean serialOn = true;
 
@@ -167,37 +190,39 @@ void draw() {
     for(int i=0; i<(buttons.length-1); i++){
         if (buttons[i].pressed()){
             switch(i){
+
             case 6: // Dpad Left
-                servoValues[0] -= 1;
-                servoValues[0] = constrain(servoValues[0], 65, 115);
+                servoValues[PAN] -= 1;
+                servoValues[PAN] = constrain(servoValues[PAN], 65, 115);
                 break;
             case 7: // Dpad Right
-                servoValues[0] += 1;
-                servoValues[0] = constrain(servoValues[0], 65, 115);
+                servoValues[PAN] += 1;
+                servoValues[PAN] = constrain(servoValues[PAN], 65, 115);
+
                 break;
             case 4: // Dpad Up
-                servoValues[1] += 1;
-                servoValues[1] = constrain(servoValues[1], 90, 145);
+                servoValues[TILT] += 1;
+                servoValues[TILT] = constrain(servoValues[TILT], TILT_MIN, TILT_ED);
                 break;
             case 5: // Dpad down
-                servoValues[1] -= 1;
-                servoValues[1] = constrain(servoValues[1], 90, 145);
+                servoValues[TILT] -= 1;
+                servoValues[TILT] = constrain(servoValues[TILT], TILT_MIN, TILT_ED);
                 break;
             case 2: // X
-                servoValues[2] -= 1;
-                servoValues[2] = constrain(servoValues[2], 70, 120);
+                servoValues[CLAW] -= 1;
+                servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_CLOSED, CLAW_OPEN);
                 break;
             case 3: // Y
-                servoValues[2] += 1;
-                servoValues[2] = constrain(servoValues[2], 70, 120);
+                servoValues[CLAW] += 1;
+                servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_CLOSED, CLAW_OPEN);
                 break;
             }
         }
     }
   
-    text("Camera Pan: " + str(servoValues[0]), 10, 700);
-    text("Camera Tilt: " + str(servoValues[1]), 10, 750);
-    text("Claw Open (X/Y): " + str(servoValues[2]), 10, 800);
+    text("Camera Pan: " + str(servoValues[PAN]), 10, 700);
+    text("Camera Tilt: " + str(servoValues[TILT]), 10, 750);
+    text("Claw Open (X/Y): " + str(servoValues[CLAW]), 10, 800);
   
     //Calculate thrust vectors
     if (joy1Vec[0] != 0 || joy1Vec[1] != 0) {
@@ -430,3 +455,7 @@ int[] getTranslation(int x, int y){
             xboxButtonPressed = true;
         }
     }
+    else {
+        xboxButtonPressed = true;
+    }
+}
