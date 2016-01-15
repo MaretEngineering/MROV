@@ -53,9 +53,7 @@ final int CLAW_CLOSED = 70;
 final int CLAW_OPEN = 120;
 
 int[] servoValues = new int[NUM_SERVOS];
-servoValues[PAN] = PAN_CENTER; //Pan starts center
-servoValues[TILT] = TILT_CENTER; //Tilt starts center
-servoValues[CLAW] = CLAW_OPEN; //Claw starts open
+
 
 
 final boolean serialOn = true;
@@ -107,6 +105,10 @@ void setup() {
         port = new Serial(this, Serial.list()[Serial.list().length - 1], 38400);
     }
 
+    //servo start values
+    servoValues[PAN] = PAN_CENTER; //Pan starts center
+    servoValues[TILT] = TILT_CENTER; //Tilt starts center
+    servoValues[CLAW] = CLAW_OPEN; //Claw starts open
 
     
     delay(1000);
@@ -318,7 +320,7 @@ void draw() {
         scr.println(read);
     }
 
-    delay(30);
+    delay(100);
 }
 
 int[] getTranslation(int x, int y){
@@ -453,7 +455,3 @@ int[] getTranslation(int x, int y){
             xboxButtonPressed = true;
         }
     }
-    else {
-        xboxButtonPressed = true;
-    }
-}

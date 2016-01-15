@@ -135,22 +135,16 @@ void setup() {
     Serial.println(i);
     for (int j = 0; j < 256; j++) {
       analogWrite(motorThrustPins[i], j);
-      delay(10);
+      delay(3);
     }
     
     delay(200);
     
     for (int j = 255; j >= 0; j--) {
       analogWrite(motorThrustPins[i], j);
-      delay(10);
+      delay(3);
     }
-
-    for(int i = 0; i < 256; i++){
-        for(int j = 0; j < 6; j++){
-            analogWrite(motorThrustPins[j], i);
-            delay(10);
-        }
-    }
+  }
   
 
   Serial.println("Testing servos...");
@@ -170,7 +164,15 @@ void setup() {
     Serial.print((char)Serial.read());
   }
   Serial.println("Done clearing buffer");
-  }
+
+    
+    Serial.println("END SETUP");
+    Serial.println("END SETUP");
+    Serial.println("END SETUP");
+    Serial.println("END SETUP");
+    Serial.println("END SETUP");
+    Serial.println("END SETUP");
+  
 } // End setup
 
 void loop() {
@@ -179,7 +181,14 @@ void loop() {
   // Receive serial input
   //*********************************
 #ifdef DEBUG
-  Serial.println("Waiting for values...");
+    Serial.println("Waiting for values...");
+    Serial.println("Waiting for values...");
+    Serial.println("Waiting for values...");
+    Serial.println("Waiting for values...");
+    Serial.println("Waiting for values...");
+    Serial.println("Waiting for values...");
+    Serial.println("Waiting for values...");
+    Serial.println("Waiting for values...");
 #endif
 
   while (Serial.available() <= 0 || (char)Serial.read() != '!') {
