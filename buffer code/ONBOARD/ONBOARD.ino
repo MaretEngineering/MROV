@@ -18,13 +18,20 @@
 #define BACKWARD LOW
 #define STALL_THRESHOLD 80
 
+#define START_DELIM 1
+#define END_DELIM 255
+
 //************************************
 // Motor pins
 //************************************
 
-#define NUM_MOTORS 6
-#define NUM_SERVOS 0
-#define MESSAGE_SIZE 40
+#define NUM_HORIZ_MOTORS 4
+#define NUM_VERT_MOTORS 2
+#define NUM_MOTORS NUM_VERT_MOTORS + NUM_VERT_MOTORS
+#define NUM_SERVOS 3
+
+//Note: MESSAGE_SIZE doesn't include the PID toggle
+#define MESSAGE_SIZE 2 + NUM_HORIZ_MOTORS + NUM_VERT_MOTORS + NUM_SERVOS
 
 //Motor thruster pins
 // finalized:
@@ -180,166 +187,149 @@ void loop() {
   //*********************************
   // Receive serial input
   //*********************************
-#ifdef DEBUG
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-#endif
-
-  while (Serial.available() <= 0 || (char)Serial.read() != '!') {
-    // Wait for start signal...
-  }
-
-  delay(10); // To give the next byte a chance to come in
-  // By this point we know that either there is nothing in the RX buffer
-  //   or the first byte in the buffer is the second byte of the message
-  //   (as we already read the first byte to see if it was a '!')
-  char inputString[40];
-  int i = 0;
-  while (Serial.available() > 0) {
-    char inChar = (char)Serial.read();
-
-    if (inChar == '$') {
-      break; // Stop byte recieved, breaking out
-    }
-
-    inputString[i] = inChar;
-    i++;
-    delay(1);
-  }
-
-  delay(1);
-
-#ifdef DEBUG
-  Serial.println("Values received: ");
-  Serial.println(inputString);
-#endif
-
+    parseSerial();
   //************************************
   // Parse the received values
   //
   //  Reference Message:
-  //    !123/123/123/123/123/123/000/000$
-  //  note: ! is received, but is not stored
+  //     [1]dddddZZZ[255] corresponds to:
+  //     [1][100][100][100][100][100][90][90][90][255] 
   //************************************
-
-  for (int i = 0; i < NUM_MOTORS; i++) {
-    char inputBuffer[4];
-    for (int j = 0; j < 3; j++) {
-      inputBuffer[j] = inputString[i * 4 + j];
-    }
-    inputBuffer[3] = '\0';
-    int mVal = atoi(inputBuffer);
-#ifdef DEBUG
-    Serial.print("Parsing value: ");
-    Serial.println(mVal);
-#endif
-    motorValues[i] = mVal - 256;
-  }
-
-  // For debugging, print out the motor values
-#ifdef DEBUG
-  Serial.print("Parsed motor values: {");
-  for (int i = 0; i < NUM_MOTORS; i++) {
-    Serial.print(motorValues[i]);
-    Serial.print(", ");
-  }
-  Serial.println("}");
-#endif
-
-  // Parse servo values
-  for (int i = 0; i < NUM_SERVOS; i++) {
-    char inputBuffer[4];
-    for (int j = 0; j < 3; j++) {
-      //24 is the start of the servo values (with 6 motors)
-      //i*4 is servo number * characters per servo (###/ = 4)
-      //j is the digit of the servo value
-      inputBuffer[j] = inputString[24 + i * 4 + j];
-    }
-    inputBuffer[3] = '\0';
-    int sVal = atoi(inputBuffer);
-#ifdef DEBUG
-    Serial.print("Parsing servo value: ");
-    Serial.println(sVal);
-#endif
-    servoValues[i] = sVal;
-  }
-
+    parseThrustMotorVals();
+    parseServoVals();
   //*********************************
   // Write out motor values
   //*********************************
-
-  for (int i = 0; i < NUM_MOTORS; i++) {
-    int motorSpeed = motorValues[i];
-
-    if (!suckBlowTable[i]) {
-      motorSpeed = -motorSpeed;
+    for (int i = 0; i < NUM_MOTORS; i++) {
+        controlThrustMotor(i, motorValues[i]);
     }
-
-    controlMotor(i, motorSpeed);
-
-    delay(1);
-  }
-
-  // Write out servo values
-  for (int i = 0; i < NUM_SERVOS; i++) {
-#ifdef DEBUG
-    Serial.print("Writing ");
-    Serial.print(servoValues[i]);
-    Serial.print(" to servo ");
-    Serial.println(i + 1);
-#endif
-    Servo servo = servos[i];
-    servo.write(servoValues[i]);
-    delay(1);
-  }
-
+    for (int i = 0; i < NUM_SERVOS; i++) {
+        controlServoMotor(i, servoValues[i]);
+    }
 }
 
-//motorNum is one of the motor IDs defined in motor_thrust_pins & motor_dir_pins (0 through NUM_MOTORS - 1)
-//motorSpeed is number between -255 and 255 (it is constrained below to be so).
-boolean controlMotor(int motorNum, int motorSpeed) {
-  int forward = LOW;
-  int reverse = HIGH;
 
-  int stallThreshold = 80;
+//###################################
+//###################################
+//NEW METHODS FOR PARSING NEW FORMAT OF MESSAGE
+//Updated: 1/17/16
+//###################################
+//###################################
 
-  if (motorSpeed < -stallThreshold) {
-    motorSpeed = -motorSpeed;
-    analogWrite(motorThrustPins[motorNum], motorSpeed);
-    digitalWrite(motorDirPins[motorNum], reverse);
+/**
+ * Receives the message from serial and places it in
+ * char rawInput[]
+ */
+void parseSerial() {
 #ifdef DEBUG
-    Serial.print("Writing ");
-    Serial.print(motorSpeed);
-    Serial.print(" to motor on pin " );
-    Serial.print(motorThrustPins[motorNum]);
-    Serial.print(" reversing on pin ");
-    Serial.println(motorDirPins[motorNum]);
+    Serial.println("Waiting for values...");
 #endif
-  }
-  else if (motorSpeed > stallThreshold) {
-    analogWrite(motorThrustPins[motorNum], motorSpeed);
-    digitalWrite(motorDirPins[motorNum], forward);
+
+    while (Serial.available() <= 0 || (int)Serial.read() != 1) {
+        //Wait for start
+    }
+    delay(10); //Give the next byte a chance
+    int i = 0;
+    while (Serial.available() > 0) {
+        char input  = Serial.read();
+        if (input == 255) {
+            break;
+        }
+        rawInput[i] = input;
+        i++;
+        delay(1);
+    }
 #ifdef DEBUG
-    Serial.print("Writing ");
+    Serial.println("Values received: ");
+    Serial.println(rawInput);
+#endif
+}
+
+/**
+ * Parses the thrust-motor values from char rawInput[]
+ * and assigns them to int values in motorValues[]
+ */
+void parseThrustMotorVals() {
+    int motorVal;
+    for (int i=0; i < NUM_MOTORS; i++) {
+        //This if statement ensures that the 1 vert motor val maps to all the vert motors
+        if (i <= NUM_HORIZ_MOTORS) { 
+            motorVal = (int) rawInput[i + 1]; //+1 for start delim
+        }
+        //Map raw values in range [2,254] to [-255,255]
+        motorVal = (motorVal - 128)*2; //Range: [-252,252]
+        if (motorVal < 0) motorVal -= 3;
+        else if (motorVal > 0) motorVal += 3; //Range[-255,255]
+    }
+#ifdef DEBUG
+    Serial.print("DEBUG: Parsing motor values: {");
+    for (int i = 0; i < NUM_MOTORS; i++) {
+        Serial.print(motorValues[i]);
+        Serial.print(", ");
+    }
+    Serial.println("}");
+#endif
+}
+
+/**
+ * Parses the servo values from char rawInput[]
+ * and assigns them to int values in servoValues[]
+ */
+void parseServoVals() {
+    for (int i = 0; i < NUM_SERVOS; i++) {
+        servoValues[i] = (int)rawInput[1 + NUM_MOTORS + i] - 1; //-1 to make the range [0,179]. Should it be - 2?
+    }
+#ifdef DEBUG
+    Serial.print("DEBUG: Parsing servo values: {");
+    for (int i = 0; i < NUM_SERVOS; i++) {
+        Serial.print(servoValues[i]);
+        Serial.print(", ");
+    }
+    Serial.println("}");
+#endif
+}
+
+/**
+ * Write the motor speed to the specified motor and changes
+ *its direction depending on the sign (+/-) of the speed
+ * @param   int motorNum        The ID of the motor
+ * @param   int motorSpeed      A value in range [-255,255]
+ */
+void controlThrustMotor(int motorNum, int motorSpeed) {
+    motorSpeed = constrain(motorSpeed, -255,255); //Keeps in range
+    if (motorSpeed > STALL_THRESHOLD) {
+        digitalWrite(motorDirPins[motorNum], FORWARD); //Set forward
+    }
+    else if (motorSpeed < (0 - STALL_THRESHOLD)) { //Subtraction is more efficient than multiplication
+            motorSpeed = 0 - motorSpeed; //Can only write positive values, but change direction
+            digitalWrite(motorDirPins[motorNum], BACKWARD);
+    }
+    else {
+        motorSpeed = 0;
+        digitalWrite(motorDirPins[motorNum], FORWARD);
+    }
+    analogWrite(motorThrustPins[motorNum], motorSpeed); //Write the actual value
+#ifdef DEBUG
+Serial.print("DEBUG: Writing");
     Serial.print(motorSpeed);
     Serial.print(" to motor on pin ");
     Serial.println(motorThrustPins[motorNum]);
 #endif
-  }
-  else {
-    analogWrite(motorThrustPins[motorNum], 0);
-    digitalWrite(motorDirPins[motorNum], LOW);
+}
+
+/**
+ * Write the servo value to the specified servo motor
+ * @param   int servoNum      The ID of the servo
+ * @param   int servoVal      The degree turn of the servo
+ */
+void controlServoMotor(int servoNum, int servoVal) {
+    servoVal = constrain(servoVal, 0, 179); //Keeps in range
+    Servo servo = servos[servoNum];
+    servo.write(servoVal);
 #ifdef DEBUG
-    Serial.print("Writing ");
-    Serial.print(0);
-    Serial.print(" to motor on pin ");
-    Serial.println(motorThrustPins[motorNum]);
+    Serial.print("DEBUG: Writing ");
+    Serial.print(servoValues[servoNum]);
+    Serial.print(" to servo ");
+    Serial.println(servoNum);
 #endif
-  }
 }
