@@ -28,7 +28,7 @@
 #define NUM_HORIZ_MOTORS 4
 #define NUM_VERT_MOTORS 2
 #define NUM_MOTORS NUM_VERT_MOTORS + NUM_VERT_MOTORS
-#define NUM_SERVOS 3
+#define NUM_SERVOS 0
 
 //Note: MESSAGE_SIZE doesn't include the PID toggle
 #define MESSAGE_SIZE 2 + NUM_HORIZ_MOTORS + NUM_VERT_MOTORS + NUM_SERVOS
@@ -187,7 +187,9 @@ void loop() {
   //*********************************
   // Receive serial input
   //*********************************
+  
     parseSerial();
+    
   //************************************
   // Parse the received values
   //

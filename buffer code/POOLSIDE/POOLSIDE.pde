@@ -297,14 +297,17 @@ void draw() {
     toSend += (char)255;
   
     text(toSend, 300, 850);
+
+    //write to console as well
+    scr.println("toSend = " + toSend);
   
     if(serialOn){
         port.write(toSend);
     }
 
     //read serial
-    String read = port.readStringUntil('\n');
-    if(read != null && read != "\n"){
+    String read = port.readString();
+    if(read != null){
         scr.println(read);
     }
 
