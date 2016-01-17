@@ -27,11 +27,13 @@
 
 #define NUM_HORIZ_MOTORS 4
 #define NUM_VERT_MOTORS 2
-#define NUM_MOTORS NUM_VERT_MOTORS + NUM_VERT_MOTORS
+//use below for serial size calulations
+#define NUM_VERT_MOTORS_SERIAL 1
+#define NUM_MOTORS NUM_VERT_MOTORS + NUM_HORIZ_MOTORS
 #define NUM_SERVOS 0
 
 //Note: MESSAGE_SIZE doesn't include the PID toggle
-#define MESSAGE_SIZE 2 + NUM_HORIZ_MOTORS + NUM_VERT_MOTORS + NUM_SERVOS
+#define MESSAGE_SIZE 2 + NUM_HORIZ_MOTORS + NUM_VERT_MOTORS_SERIAL + NUM_SERVOS
 
 //Motor thruster pins
 // finalized:
@@ -142,14 +144,14 @@ void setup() {
     Serial.println(i);
     for (int j = 0; j < 256; j++) {
       analogWrite(motorThrustPins[i], j);
-      delay(3);
+      delay(1);
     }
     
-    delay(200);
+    delay(10);
     
     for (int j = 255; j >= 0; j--) {
       analogWrite(motorThrustPins[i], j);
-      delay(3);
+      delay(1);
     }
   }
   
@@ -230,11 +232,13 @@ void parseSerial() {
     while (Serial.available() <= 0 || (int)Serial.read() != 1) {
         //Wait for start
     }
+    rawInput[0] = (char)1; //for the missing one taken by the while loop
+    
     delay(10); //Give the next byte a chance
-    int i = 0;
-    while (Serial.available() > 0) {
+    int i = 1;
+    while (1==1) {
         char input  = Serial.read();
-        if (input == 255) {
+        if (input == (char)255) {
             break;
         }
         rawInput[i] = input;
@@ -243,7 +247,12 @@ void parseSerial() {
     }
 #ifdef DEBUG
     Serial.println("Values received: ");
-    Serial.println(rawInput);
+    Serial.write(rawInput);
+//    Serial.println();
+//    for(int i = 0; i < 7; i++){
+//        Serial.write((int)rawInput[i] + ",");
+//    }
+    Serial.println();
 #endif
 }
 
@@ -257,11 +266,12 @@ void parseThrustMotorVals() {
         //This if statement ensures that the 1 vert motor val maps to all the vert motors
         if (i <= NUM_HORIZ_MOTORS) { 
             motorVal = (int) rawInput[i + 1]; //+1 for start delim
+            //Map raw values in range [2,254] to [-255,255]
+            motorVal = (motorVal - 128)*2; //Range: [-252,252]
+            if (motorVal < 0) motorVal -= 3;
+            else if (motorVal > 0) motorVal += 3; //Range[-255,255]
         }
-        //Map raw values in range [2,254] to [-255,255]
-        motorVal = (motorVal - 128)*2; //Range: [-252,252]
-        if (motorVal < 0) motorVal -= 3;
-        else if (motorVal > 0) motorVal += 3; //Range[-255,255]
+        motorValues[i] = motorVal;
     }
 #ifdef DEBUG
     Serial.print("DEBUG: Parsing motor values: {");

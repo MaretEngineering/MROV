@@ -242,6 +242,7 @@ void draw() {
   
     text("Right Trigger: " + str(rTrig), 900, 100);
     text("Left Trigger:  " + str(lTrig), 900, 150);
+
   
     // Reference
     text("^", 614, 300); // Front
@@ -269,6 +270,7 @@ void draw() {
   
     // Draw Depth control lines
     int diff = lTrig - rTrig;
+    text("Diff: " + str(diff), 950, 200); //write diff
     //line (1050, 425, 1050, 425 - (diff));
     rectMode(CORNERS);
     fill(255);
@@ -277,7 +279,7 @@ void draw() {
     
     String toSend = str((char)1); //1=start value
 
-    // makes all thrust value strings going out 3 characters long + the "/"
+    // send the values
     for (int counter = 0; counter < 4; counter++) {
         int sendVal = thrustValues[counter]/2+128;
         
@@ -286,13 +288,14 @@ void draw() {
         
         toSend += (char)sendVal;
     }
+    
     if(diff == 255) diff = 254;
     else if(diff == 1) diff = 2;
     toSend += (char)diff;
 
     
     for (int i = 0; i < NUM_SERVOS; i++){
-        toSend += (char)(servoValues[i] + 1);
+        //toSend += (char)(servoValues[i] + 1);
     }
     toSend += (char)255;
   
