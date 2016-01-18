@@ -21,11 +21,9 @@ void loop() {
   sensorVal = analogRead(sensorPort);
   kPa = (sensorVal*(0.00488)/(0.022) + 20);
   height = 1000*((kPa-101.85)/(9800));
-  Serial.print("Raw/kPa \t");
-  Serial.print(sensorVal);
-  Serial.print("\t");
-  Serial.print(kPa);
-  Serial.print("\t");
-  Serial.println(height);
+  //Serial.print("Raw/kPa/height \t");
+  //Serial.println(sensorVal);
+  //Serial.println(kPa);
+  Serial.println((int)(height*100));
   delay(300);
 }

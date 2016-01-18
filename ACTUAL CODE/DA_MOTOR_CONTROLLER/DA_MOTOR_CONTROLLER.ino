@@ -34,10 +34,10 @@ SEE THE MAP FOR CONVERSIONS BETWEEN DWORKEN AND DAVID SYSTEMS
  5        4
 
 */
-#define MT1t_PIN 12
+#define MT1t_PIN 3
 #define MT2t_PIN 9
-#define MT3t_PIN 8
-#define MT4t_PIN 13
+#define MT3t_PIN 5
+#define MT4t_PIN 6
 #define MT5t_PIN 11
 #define MT6t_PIN 10
 int motor_thrust_pins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};

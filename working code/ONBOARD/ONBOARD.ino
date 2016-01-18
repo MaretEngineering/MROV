@@ -181,14 +181,14 @@ void loop() {
   // Receive serial input
   //*********************************
 #ifdef DEBUG
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
-    Serial.println("Waiting for values...");
+//    Serial.println("Waiting for values...");
+//    Serial.println("Waiting for values...");
+//    Serial.println("Waiting for values...");
+//    Serial.println("Waiting for values...");
+//    Serial.println("Waiting for values...");
+//    Serial.println("Waiting for values...");
+//    Serial.println("Waiting for values...");
+//    Serial.println("Waiting for values...");
 #endif
 
   while (Serial.available() <= 0 || (char)Serial.read() != '!') {

@@ -277,7 +277,8 @@ void draw() {
     rect(1050, 425, 1060, 425 - (diff));
     noFill();
     
-    String toSend = str((char)1); //1=start value
+    //String toSend = str((char)1); //1=start value
+    port.write(1);
 
     // send the values
     for (int counter = 0; counter < 4; counter++) {
@@ -286,36 +287,39 @@ void draw() {
         if(sendVal >= 255) sendVal = 254; //1 and 255 are reserved
         else if(sendVal <= 1) sendVal = 2;
         
-        toSend += (char)sendVal;
+        //toSend += (char)sendVal;
+        port.write(sendVal);
 
         scr.println(counter + " " + sendVal);
     }
     diff = diff/2 + 128;
     if(diff >= 255) diff = 254;
     else if(diff <= 1) diff = 2;
-    toSend += (char)diff;
+    //toSend += (char)diff;
+    port.write(diff);
 
     
     for (int i = 0; i < NUM_SERVOS; i++){
         //toSend += (char)(servoValues[i] + 1);
     }
-    toSend += (char)255;
+    //toSend += (char)255;
+    port.write(255);
 
     
     
-    text(toSend, 300, 850);
+    //text(toSend, 300, 850);
     
     //write to console as well
-    scr.println("toSend = " + toSend);
+    //scr.println("toSend = " + toSend);
   
     if(serialOn){
-        port.write(toSend);
+        //        port.write(toSend);
     }
 
     //read serial
     String read = port.readString();
     if(read != null){
-        println(read);
+        scr.println(read);
     }
     
     delay(100);

@@ -320,7 +320,7 @@ void draw() {
         scr.println(read);
     }
 
-    delay(100);
+    delay(30);
 }
 
 int[] getTranslation(int x, int y){
