@@ -283,14 +283,16 @@ void draw() {
     for (int counter = 0; counter < 4; counter++) {
         int sendVal = thrustValues[counter]/2+128;
         
-        if(sendVal == 255) sendVal = 254; //1 and 255 are reserved
-        else if(sendVal == 1) sendVal = 2;
+        if(sendVal >= 255) sendVal = 254; //1 and 255 are reserved
+        else if(sendVal <= 1) sendVal = 2;
         
         toSend += (char)sendVal;
+
+        scr.println(counter + " " + sendVal);
     }
-    
-    if(diff == 255) diff = 254;
-    else if(diff == 1) diff = 2;
+    diff = diff/2 + 128;
+    if(diff >= 255) diff = 254;
+    else if(diff <= 1) diff = 2;
     toSend += (char)diff;
 
     
@@ -298,9 +300,11 @@ void draw() {
         //toSend += (char)(servoValues[i] + 1);
     }
     toSend += (char)255;
-  
-    text(toSend, 300, 850);
 
+    
+    
+    text(toSend, 300, 850);
+    
     //write to console as well
     scr.println("toSend = " + toSend);
   
@@ -311,9 +315,9 @@ void draw() {
     //read serial
     String read = port.readString();
     if(read != null){
-        scr.println(read);
+        println(read);
     }
-
+    
     delay(100);
 }
 

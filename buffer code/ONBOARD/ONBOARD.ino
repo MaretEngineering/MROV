@@ -48,22 +48,40 @@
   5        4
 
 */
+//light board pins
 #define MT1t_PIN 11
 #define MT2t_PIN 10
 #define MT3t_PIN 9
 #define MT4t_PIN 6
 #define MT5t_PIN 5
 #define MT6t_PIN 3
+
+//real pins
+//define MT1t_PIN 12
+//define MT2t_PIN 9
+//define MT3t_PIN 8
+//define MT4t_PIN 13
+//define MT5t_PIN 11
+//define MT6t_PIN 10
 int motorThrustPins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
 
 //Motor direction pins
 // ADJUST THESE WHEN PINS ARE FINALIZED
+//light board
 #define MT1d_PIN 39
 #define MT2d_PIN 33
 #define MT3d_PIN 41
 #define MT4d_PIN 31
 #define MT5d_PIN 37
 #define MT6d_PIN 35
+
+//real pins
+//define MT1d_PIN 39
+//define MT2d_PIN 33
+//define MT3d_PIN 41
+//define MT4d_PIN 31
+//define MT5d_PIN 37
+//define MT6d_PIN 35
 int motorDirPins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_PIN};
 
 bool suckBlowTable[] = {true, false, false, false, false, false};
@@ -102,7 +120,7 @@ Servo servos[NUM_SERVOS];
 int motorValues[] = {0, 0, 0, 0, 0};
 //5 because the vertical motors have the same
 int servoValues[] = {0, 0, 0, 0, 0, 0};
-char rawInput[MESSAGE_SIZE];
+int rawInput[MESSAGE_SIZE];
 //The raw message from serial
 
 //###################################
@@ -142,16 +160,16 @@ void setup() {
   for (int i = 0; i < NUM_MOTORS; i++) {  
     Serial.print("Testing motor ");
     Serial.println(i);
-    for (int j = 0; j < 256; j++) {
+    for (int j = STALL_THRESHOLD; j < 256; j++) {
       analogWrite(motorThrustPins[i], j);
-      delay(1);
+      delay(3);
     }
     
     delay(10);
     
     for (int j = 255; j >= 0; j--) {
       analogWrite(motorThrustPins[i], j);
-      delay(1);
+      delay(3);
     }
   }
   
@@ -232,26 +250,31 @@ void parseSerial() {
     while (Serial.available() <= 0 || (int)Serial.read() != 1) {
         //Wait for start
     }
-    rawInput[0] = (char)1; //for the missing one taken by the while loop
+    rawInput[0] = 36; //for the missing one taken by the while loop
     
     delay(10); //Give the next byte a chance
     int i = 1;
-    while (1==1) {
-        char input  = Serial.read();
-        if (input == (char)255) {
+    while (0==0) {
+        int input  = Serial.read();
+//        Serial.println(input);
+//        if(input <= 0){
+//            continue;
+//            Serial.print("cont." + input);
+//        }
+        rawInput[i] = input;
+        if (input == 255) {
             break;
         }
-        rawInput[i] = input;
         i++;
         delay(1);
     }
 #ifdef DEBUG
     Serial.println("Values received: ");
-    Serial.write(rawInput);
+//    Serial.write(rawInput);
 //    Serial.println();
-//    for(int i = 0; i < 7; i++){
-//        Serial.write((int)rawInput[i] + ",");
-//    }
+    for(int i = 0; i < 7; i++){
+        Serial.println(rawInput[i] + ",");
+    }
     Serial.println();
 #endif
 }
@@ -265,7 +288,7 @@ void parseThrustMotorVals() {
     for (int i=0; i < NUM_MOTORS; i++) {
         //This if statement ensures that the 1 vert motor val maps to all the vert motors
         if (i <= NUM_HORIZ_MOTORS) { 
-            motorVal = (int) rawInput[i + 1]; //+1 for start delim
+            motorVal = rawInput[i + 1]; //+1 for start delim
             //Map raw values in range [2,254] to [-255,255]
             motorVal = (motorVal - 128)*2; //Range: [-252,252]
             if (motorVal < 0) motorVal -= 3;
