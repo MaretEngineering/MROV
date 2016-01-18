@@ -53,43 +53,43 @@ int[] servoValues = {
 };
 
 void setup(){
-  size(1500, 900);
-  stroke(150);
-  textSize(32);
+    size(1500, 900);
+    stroke(150);
+    textSize(32);
   
-  //Set up controller
-  controllIO = ControllIO.getInstance(this);
-  joypad = controllIO.getDevice("Wireless 360 Controller");
+    //Set up controller
+    controllIO = ControllIO.getInstance(this);
+    joypad = controllIO.getDevice("Wireless 360 Controller");
  
-  //Set up joystick w/ proper multiplier for x and y values (negative because otehrwise it's inverted)
-  joy1 = joypad.getStick(0);
-  joy1.setMultiplier(-255);
-  //Set Up 2nd joystick w/ proper multiplier for x and y values (see above for why)
-  joy2 = joypad.getStick(1); 
-  joy2.setMultiplier(255); 
+    //Set up joystick w/ proper multiplier for x and y values (negative because otehrwise it's inverted)
+    joy1 = joypad.getStick(0);
+    joy1.setMultiplier(-255);
+    //Set Up 2nd joystick w/ proper multiplier for x and y values (see above for why)
+    joy2 = joypad.getStick(1); 
+    joy2.setMultiplier(255); 
   
-  // Set up triggers
-  trigs = joypad.getStick(2);
-  trigs.setMultiplier(-128);
+    // Set up triggers
+    trigs = joypad.getStick(2);
+    trigs.setMultiplier(-128);
   
-  //Setup buttons
-  buttons = new ControllButton[] {
-    joypad.getButton(11), // a                    0
-    joypad.getButton(12), // b                    1
-    joypad.getButton(13), // x                    2
-    joypad.getButton(14), // y                    3
-    joypad.getButton(0), // dpad up               4
-    joypad.getButton(1), // dpad down             5
-    joypad.getButton(2), // dpad left             6
-    joypad.getButton(3), // dpad right            7
-    joypad.getButton(10) // xbox button           8
-  };
+    //Setup buttons
+    buttons = new ControllButton[] {
+        joypad.getButton(11), // a                    0
+        joypad.getButton(12), // b                    1
+        joypad.getButton(13), // x                    2
+        joypad.getButton(14), // y                    3
+        joypad.getButton(0), // dpad up               4
+        joypad.getButton(1), // dpad down             5
+        joypad.getButton(2), // dpad left             6
+        joypad.getButton(3), // dpad right            7
+        joypad.getButton(10) // xbox button           8
+    };
 
-  //Set up serial
-  println(Serial.list());
-  port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
+    //Set up serial
+    println(Serial.list());
+    port = new Serial(this, Serial.list()[Serial.list().length - 1], 9600);
   
-  delay(1000);
+    delay(1000);
 }
 
 void draw() {
