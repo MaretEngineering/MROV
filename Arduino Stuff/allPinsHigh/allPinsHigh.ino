@@ -22,7 +22,7 @@ int motorThrustPins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_
 //real pins
 #define MT1d_PIN 39
 #define MT2d_PIN 33
-#define MT3d_PIN 41s
+#define MT3d_PIN 41
 #define MT4d_PIN 31
 #define MT5d_PIN 37
 #define MT6d_PIN 35
