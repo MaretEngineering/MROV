@@ -2,6 +2,7 @@ import procontroll.*;
 import net.java.games.input.*;
 import processing.serial.*;
 
+// BUFFER CODE!!!!
 // Notes on the controller:
 //   - Axis are inverted, so we used negative multipliers
 //   - The "x" axis is the y-axis irl, but the controller's wierd like that
@@ -37,6 +38,7 @@ final int NUM_SERVOS = 3; //Number of servo motors
 final int PAN = 0; //Servo index for camera pan
 final int TILT = 1; //Servo index for camera tilt
 final int CLAW = 2; //Servo index for claw
+final int WRIST = 3; //Servo index for wrist
 
 //Constraints and center for pan
 final int PAN_MIN = 65;
@@ -51,6 +53,11 @@ final int TILT_ED = 145;
 //Constraints for claw
 final int CLAW_CLOSED = 70;
 final int CLAW_OPEN = 120;
+
+//Constraints for wrist
+final int WRIST_CENTER = 90;
+final int WRIST_LEFT = 0;
+final int WRIST_RIGHT = 180;
 
 int[] servoValues = new int[NUM_SERVOS];
 
@@ -109,6 +116,7 @@ void setup() {
     servoValues[PAN] = PAN_CENTER; //Pan starts center
     servoValues[TILT] = TILT_CENTER; //Tilt starts center
     servoValues[CLAW] = CLAW_OPEN; //Claw starts open
+    servoValues[WRIST] = WRIST_CENTER; //Wrist starts center
 
     
     delay(1000);
@@ -208,13 +216,22 @@ void draw() {
                 servoValues[TILT] -= 1;
                 servoValues[TILT] = constrain(servoValues[TILT], TILT_MIN, TILT_ED);
                 break;
+                
             case 2: // X
-                servoValues[CLAW] -= 1;
-                servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_CLOSED, CLAW_OPEN);
-                break;
+                servoValues[WRIST] -= 1;
+                servoValues[WRIST] = constrain(servoValues[WRIST], WRIST_LEFT, WRIST_RIGHT);
+                break; 
             case 3: // Y
                 servoValues[CLAW] += 1;
                 servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_CLOSED, CLAW_OPEN);
+                break;
+            case 0: // A
+                servoValues[CLAW] -= 1;
+                servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_CLOSED, CLAW_OPEN);
+                break;
+            case 1: // B
+                servoValues[WRIST] += 1;
+                servoValues[WRIST] = constrain(servoValues[WRIST], WRIST_LEFT, WRIST_RIGHT);
                 break;
             }
         }

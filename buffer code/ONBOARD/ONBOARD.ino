@@ -1,6 +1,7 @@
 #include <Servo.h>
 
 
+//BUFFER CODE
 //###################################
 //###################################
 // Constants
@@ -12,11 +13,10 @@
 //************************************
 
 // True if you want debug information
-#define DEBUG
 
 #define FORWARD HIGH
 #define BACKWARD LOW
-#define STALL_THRESHOLD 80
+#define STALL_THRESHOLD 80 
 
 #define START_DELIM 1
 #define END_DELIM 255
@@ -99,8 +99,9 @@ bool suckBlowTable[] = {true, false, false, false, false, false};
 #define SERVO_2_PIN 0
 // Claw
 #define SERVO_3_PIN 0
+// Claw Wrist
+#define SERVO_4_PIN 3
 
-#define SERVO_4_PIN 0
 #define SERVO_5_PIN 0
 #define SERVO_6_PIN 0
 int servoPins[] = {SERVO_1_PIN, SERVO_2_PIN, SERVO_3_PIN, SERVO_4_PIN, SERVO_5_PIN, SERVO_6_PIN};
@@ -199,6 +200,8 @@ void setup() {
     Serial.println("END SETUP");
     Serial.println("END SETUP");
     Serial.println("END SETUP");
+    Serial.println("End SETUP");
+    Serial.println("Ending Setup");
   
 } // End setup
 

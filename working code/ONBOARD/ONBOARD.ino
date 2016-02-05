@@ -1,6 +1,6 @@
 #include <Servo.h>
 
-
+//WORKING CODE
 //###################################
 //###################################
 // Constants
@@ -12,7 +12,7 @@
 //************************************
 
 // True if you want debug information
-#define DEBUG
+#define nodebug
 
 #define FORWARD HIGH
 #define BACKWARD LOW
@@ -23,7 +23,7 @@
 //************************************
 
 #define NUM_MOTORS 6
-#define NUM_SERVOS 0
+#define NUM_SERVOS 1
 #define MESSAGE_SIZE 40
 
 //Motor thruster pins
@@ -39,12 +39,18 @@
   5        4
 
 */
-#define MT1t_PIN 11
-#define MT2t_PIN 10
-#define MT3t_PIN 9
-#define MT4t_PIN 6
-#define MT5t_PIN 5
-#define MT6t_PIN 3
+//#define MT1t_PIN 11
+//#define MT2t_PIN 10
+//#define MT3t_PIN 9
+//#define MT4t_PIN 6
+//#define MT5t_PIN 5
+//#define MT6t_PIN 3
+#define MT1t_PIN 12
+#define MT2t_PIN 9
+#define MT3t_PIN 8
+#define MT4t_PIN 13
+#define MT5t_PIN 11
+#define MT6t_PIN 10
 int motorThrustPins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
 
 //Motor direction pins
@@ -67,7 +73,7 @@ bool suckBlowTable[] = {true, false, false, false, false, false};
 // Change to match setup
 
 // Pan
-#define SERVO_1_PIN 0
+#define SERVO_1_PIN 2
 // Tilt
 #define SERVO_2_PIN 0
 // Claw
