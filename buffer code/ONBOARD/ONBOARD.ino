@@ -30,7 +30,7 @@
 //use below for serial size calulations
 #define NUM_VERT_MOTORS_SERIAL 1
 #define NUM_MOTORS NUM_VERT_MOTORS + NUM_HORIZ_MOTORS
-#define NUM_SERVOS 0
+#define NUM_SERVOS 1
 
 //Note: MESSAGE_SIZE doesn't include the PID toggle
 #define MESSAGE_SIZE 2 + NUM_HORIZ_MOTORS + NUM_VERT_MOTORS_SERIAL + NUM_SERVOS
@@ -51,10 +51,10 @@
 //light board pins
 #define MT1t_PIN 11
 #define MT2t_PIN 10
-#define MT3t_PIN 9
-#define MT4t_PIN 6
-#define MT5t_PIN 5
-#define MT6t_PIN 3
+#define MT3t_PIN 5
+#define MT4t_PIN 1
+#define MT5t_PIN 9
+#define MT6t_PIN 6
 
 //real pins
 //define MT1t_PIN 12
@@ -68,12 +68,12 @@ int motorThrustPins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_
 //Motor direction pins
 // ADJUST THESE WHEN PINS ARE FINALIZED
 //light board
-#define MT1d_PIN 39
-#define MT2d_PIN 33
-#define MT3d_PIN 41
-#define MT4d_PIN 31
-#define MT5d_PIN 37
-#define MT6d_PIN 35
+#define MT1d_PIN 2
+#define MT2d_PIN 4
+#define MT3d_PIN 7
+#define MT4d_PIN 8
+#define MT5d_PIN 12
+#define MT6d_PIN 13
 
 //real pins
 //define MT1d_PIN 39
@@ -94,13 +94,13 @@ bool suckBlowTable[] = {true, false, false, false, false, false};
 // Change to match setup
 
 // Pan
-#define SERVO_1_PIN 0
+#define SERVO_1_PIN 3
 // Tilt
-#define SERVO_2_PIN 0
+#define SERVO_2_PIN 2
 // Claw
-#define SERVO_3_PIN 0
+#define SERVO_3_PIN 7
 // Claw Wrist
-#define SERVO_4_PIN 3
+#define SERVO_4_PIN 8
 
 #define SERVO_5_PIN 0
 #define SERVO_6_PIN 0

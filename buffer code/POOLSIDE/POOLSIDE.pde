@@ -34,7 +34,7 @@ boolean xboxButtonPressed = false;
 
 final int JOYSTICK_NOISE = 50; //wiggle room on joysticks. min ~= 40 with current controller
 
-final int NUM_SERVOS = 3; //Number of servo motors
+final int NUM_SERVOS = 1; //Number of servo motors
 final int PAN = 0; //Servo index for camera pan
 final int TILT = 1; //Servo index for camera tilt
 final int CLAW = 2; //Servo index for claw
@@ -109,7 +109,7 @@ void setup() {
     }
         
     if(serialOn){
-        port = new Serial(this, Serial.list()[Serial.list().length - 1], 38400);
+        port = new Serial(this, Serial.list()[Serial.list().length - 2], 38400); //this might be a different serial
     }
 
     //servo start values
