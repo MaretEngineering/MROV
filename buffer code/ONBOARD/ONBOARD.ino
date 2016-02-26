@@ -30,7 +30,7 @@
 //use below for serial size calulations
 #define NUM_VERT_MOTORS_SERIAL 1
 #define NUM_MOTORS NUM_VERT_MOTORS + NUM_HORIZ_MOTORS
-#define NUM_SERVOS 1
+#define NUM_SERVOS 4
 
 //Note: MESSAGE_SIZE doesn't include the PID toggle
 #define MESSAGE_SIZE 2 + NUM_HORIZ_MOTORS + NUM_VERT_MOTORS_SERIAL + NUM_SERVOS
@@ -48,40 +48,40 @@
   5        4
 
 */
-//light board pins
-#define MT1t_PIN 11
-#define MT2t_PIN 10
-#define MT3t_PIN 5
-#define MT4t_PIN 1
-#define MT5t_PIN 9
-#define MT6t_PIN 6
+////light board pins
+//#define MT1t_PIN 11
+//#define MT2t_PIN 10
+//#define MT3t_PIN 5
+//#define MT4t_PIN 1
+//#define MT5t_PIN 9
+//#define MT6t_PIN 6
 
 //real pins
-//define MT1t_PIN 12
-//define MT2t_PIN 9
-//define MT3t_PIN 8
-//define MT4t_PIN 13
-//define MT5t_PIN 11
-//define MT6t_PIN 10
+#define MT1t_PIN 12
+#define MT2t_PIN 9
+#define MT3t_PIN 8
+#define MT4t_PIN 13
+#define MT5t_PIN 11
+#define MT6t_PIN 10
 int motorThrustPins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
 
 //Motor direction pins
 // ADJUST THESE WHEN PINS ARE FINALIZED
 //light board
-#define MT1d_PIN 2
-#define MT2d_PIN 4
-#define MT3d_PIN 7
-#define MT4d_PIN 8
-#define MT5d_PIN 12
-#define MT6d_PIN 13
+//#define MT1d_PIN 2
+//#define MT2d_PIN 4
+//#define MT3d_PIN 7
+//#define MT4d_PIN 8
+//#define MT5d_PIN 12
+//#define MT6d_PIN 13
 
 //real pins
-//define MT1d_PIN 39
-//define MT2d_PIN 33
-//define MT3d_PIN 41
-//define MT4d_PIN 31
-//define MT5d_PIN 37
-//define MT6d_PIN 35
+#define MT1d_PIN 39
+#define MT2d_PIN 33
+#define MT3d_PIN 41
+#define MT4d_PIN 31
+#define MT5d_PIN 37
+#define MT6d_PIN 35
 int motorDirPins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_PIN};
 
 bool suckBlowTable[] = {true, false, false, false, false, false};
@@ -94,13 +94,13 @@ bool suckBlowTable[] = {true, false, false, false, false, false};
 // Change to match setup
 
 // Pan
-#define SERVO_1_PIN 3
+#define SERVO_1_PIN 6
 // Tilt
-#define SERVO_2_PIN 2
+#define SERVO_2_PIN 7
 // Claw
-#define SERVO_3_PIN 7
+#define SERVO_3_PIN 3
 // Claw Wrist
-#define SERVO_4_PIN 8
+#define SERVO_4_PIN 2
 
 #define SERVO_5_PIN 0
 #define SERVO_6_PIN 0
@@ -166,7 +166,7 @@ void setup() {
       delay(3);
     }
     
-    delay(10);
+    delay(3);
     
     for (int j = 255; j >= 0; j--) {
       analogWrite(motorThrustPins[i], j);
@@ -335,6 +335,7 @@ void parseServoVals() {
  */
 void controlThrustMotor(int motorNum, int motorSpeed) {
     motorSpeed = constrain(motorSpeed, -255,255); //Keeps in range
+    if (suckBlowTable[motorNum]) motorSpeed = 0 - motorSpeed; //dammit ethan
     if (motorSpeed > STALL_THRESHOLD) {
         digitalWrite(motorDirPins[motorNum], FORWARD); //Set forward
     }

@@ -34,7 +34,7 @@ boolean xboxButtonPressed = false;
 
 final int JOYSTICK_NOISE = 50; //wiggle room on joysticks. min ~= 40 with current controller
 
-final int NUM_SERVOS = 1; //Number of servo motors
+final int NUM_SERVOS = 4; //Number of servo motors
 final int PAN = 0; //Servo index for camera pan
 final int TILT = 1; //Servo index for camera tilt
 final int CLAW = 2; //Servo index for claw
@@ -51,8 +51,8 @@ final int TILT_CENTER = 118;
 final int TILT_ED = 145;
 
 //Constraints for claw
-final int CLAW_CLOSED = 70;
-final int CLAW_OPEN = 120;
+final int CLAW_CLOSED = 0;
+final int CLAW_OPEN = 180;
 
 //Constraints for wrist
 final int WRIST_CENTER = 90;
@@ -317,6 +317,7 @@ void draw() {
 
     
     for (int i = 0; i < NUM_SERVOS; i++){
+        //port.write(servoValues[i] + 1);
         //toSend += (char)(servoValues[i] + 1);
     }
     //toSend += (char)255;

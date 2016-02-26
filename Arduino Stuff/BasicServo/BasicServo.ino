@@ -13,6 +13,7 @@ void setup() {
 
 void loop() {
   if(Serial.available() > 0) {
+    delay(5);
     int a = Serial.parseInt();
     servo1.write(a);
     Serial.println(a);
