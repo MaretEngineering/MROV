@@ -1,5 +1,7 @@
 #include <Servo.h>
 
+#include <Wire.h>
+#include <SparkFun_MS5803_I2C.h>
 
 //BUFFER CODE
 //###################################
@@ -94,17 +96,17 @@ bool suckBlowTable[] = {true, false, false, false, false, false};
 // Change to match setup
 
 // Pan
-#define SERVO_1_PIN 6
+#define SERVO_PAN 3
 // Tilt
-#define SERVO_2_PIN 7
+#define SERVO_TILT 7
 // Claw
-#define SERVO_3_PIN 3
+#define SERVO_CLAW 5
 // Claw Wrist
-#define SERVO_4_PIN 2
+#define SERVO_WRIST 6
 
 #define SERVO_5_PIN 0
 #define SERVO_6_PIN 0
-int servoPins[] = {SERVO_1_PIN, SERVO_2_PIN, SERVO_3_PIN, SERVO_4_PIN, SERVO_5_PIN, SERVO_6_PIN};
+int servoPins[] = {SERVO_PAN, SERVO_TILT, SERVO_CLAW, SERVO_WRIST, SERVO_5_PIN, SERVO_6_PIN};
 
 Servo servos[NUM_SERVOS];
 
@@ -123,6 +125,14 @@ int motorValues[] = {0, 0, 0, 0, 0};
 int servoValues[] = {0, 0, 0, 0, 0, 0};
 int rawInput[MESSAGE_SIZE];
 //The raw message from serial
+
+//pressure sensor
+MS5803 sensor(ADDRESS_HIGH);
+
+float temp;
+double pressure;
+double height;
+double setpoint;
 
 //###################################
 //###################################
@@ -152,6 +162,9 @@ void setup() {
     Servo servo = servos[i];
     servo.attach(servoPins[i]);
   }
+
+  sensor.reset();
+  sensor.begin();
 
   //*********************************
   // Test Systems
@@ -193,14 +206,11 @@ void setup() {
   }
   Serial.println("Done clearing buffer");
 
+
+    Serial.println("Testing setpoint");
+    setpoint = sensor.getPressure(ADC_4096);
+    Serial.print("Setpoint = "); Serial.println(setpoint);
     
-    Serial.println("END SETUP");
-    Serial.println("END SETUP");
-    Serial.println("END SETUP");
-    Serial.println("END SETUP");
-    Serial.println("END SETUP");
-    Serial.println("END SETUP");
-    Serial.println("End SETUP");
     Serial.println("Ending Setup");
   
 } // End setup
@@ -220,8 +230,12 @@ void loop() {
   //     [1]dddddZZZ[255] corresponds to:
   //     [1][100][100][100][100][100][90][90][90][255] 
   //************************************
+
+  
     parseThrustMotorVals();
     parseServoVals();
+
+    
   //*********************************
   // Write out motor values
   //*********************************
@@ -231,6 +245,18 @@ void loop() {
     for (int i = 0; i < NUM_SERVOS; i++) {
         controlServoMotor(i, servoValues[i]);
     }
+
+    //*****************************
+    // Generating Sensor Values
+    //*****************************
+
+    temp = random(0,100);
+    height = random(0, 1000);
+
+    Serial.print("t$"); Serial.println(temp);
+    Serial.print("h$"); Serial.println(height);
+    
+    
 }
 
 
@@ -259,11 +285,6 @@ void parseSerial() {
     int i = 1;
     while (0==0) {
         int input  = Serial.read();
-//        Serial.println(input);
-//        if(input <= 0){
-//            continue;
-//            Serial.print("cont." + input);
-//        }
         rawInput[i] = input;
         if (input == 255) {
             break;
@@ -273,8 +294,6 @@ void parseSerial() {
     }
 #ifdef DEBUG
     Serial.println("Values received: ");
-//    Serial.write(rawInput);
-//    Serial.println();
     for(int i = 0; i < 7; i++){
         Serial.println(rawInput[i] + ",");
     }
@@ -315,7 +334,7 @@ void parseThrustMotorVals() {
  */
 void parseServoVals() {
     for (int i = 0; i < NUM_SERVOS; i++) {
-        servoValues[i] = (int)rawInput[1 + NUM_MOTORS + i] - 1; //-1 to make the range [0,179]. Should it be - 2?
+        servoValues[i] = (int)rawInput[NUM_MOTORS + i] - 1; //-1 to make the range [0,179]. Should it be - 2?
     }
 #ifdef DEBUG
     Serial.print("DEBUG: Parsing servo values: {");

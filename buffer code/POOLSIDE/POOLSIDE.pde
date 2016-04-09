@@ -51,8 +51,8 @@ final int TILT_CENTER = 118;
 final int TILT_ED = 145;
 
 //Constraints for claw
-final int CLAW_CLOSED = 0;
-final int CLAW_OPEN = 180;
+final int CLAW_CLOSED = 125;
+final int CLAW_OPEN = 23;
 
 //Constraints for wrist
 final int WRIST_CENTER = 90;
@@ -61,7 +61,8 @@ final int WRIST_RIGHT = 180;
 
 int[] servoValues = new int[NUM_SERVOS];
 
-
+double depth;
+float temp;
 
 final boolean serialOn = true;
 
@@ -221,17 +222,18 @@ void draw() {
                 servoValues[WRIST] -= 1;
                 servoValues[WRIST] = constrain(servoValues[WRIST], WRIST_LEFT, WRIST_RIGHT);
                 break; 
-            case 3: // Y
-                servoValues[CLAW] += 1;
-                servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_CLOSED, CLAW_OPEN);
-                break;
-            case 0: // A
-                servoValues[CLAW] -= 1;
-                servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_CLOSED, CLAW_OPEN);
-                break;
             case 1: // B
                 servoValues[WRIST] += 1;
                 servoValues[WRIST] = constrain(servoValues[WRIST], WRIST_LEFT, WRIST_RIGHT);
+                break;
+                
+            case 3: // Y
+                servoValues[CLAW] += 1;
+                servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_OPEN, CLAW_CLOSED);
+                break;
+            case 0: // A
+                servoValues[CLAW] -= 1;
+                servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_OPEN, CLAW_CLOSED);
                 break;
             }
         }
@@ -239,7 +241,8 @@ void draw() {
   
     text("Camera Pan: " + str(servoValues[PAN]), 10, 700);
     text("Camera Tilt: " + str(servoValues[TILT]), 10, 750);
-    text("Claw Open (X/Y): " + str(servoValues[CLAW]), 10, 800);
+    text("Claw Open (Y/A): " + str(servoValues[CLAW]), 10, 800);
+    text("Claw Wrist (X/B): " + str(servoValues[WRIST]), 10, 850);
   
     //Calculate thrust vectors
     if (joy1Vec[0] != 0 || joy1Vec[1] != 0) {
@@ -257,8 +260,8 @@ void draw() {
     }
   
   
-    text("Right Trigger: " + str(rTrig), 900, 100);
-    text("Left Trigger:  " + str(lTrig), 900, 150);
+//    text("Right Trigger: " + str(rTrig), 900, 100);
+//    text("Left Trigger:  " + str(lTrig), 900, 150);
 
   
     // Reference
@@ -287,12 +290,16 @@ void draw() {
   
     // Draw Depth control lines
     int diff = lTrig - rTrig;
-    text("Diff: " + str(diff), 950, 200); //write diff
+    text("Vertical Thrust: " + str(diff), 950, 200); //write diff
     //line (1050, 425, 1050, 425 - (diff));
     rectMode(CORNERS);
     fill(255);
     rect(1050, 425, 1060, 425 - (diff));
     noFill();
+    
+    //sensor data
+    text("Temp: " + str(temp) + "°C", 1100, 100);
+    text("Depth: " + Double.toString(depth) + " cm", 1100, 150);    
     
     //String toSend = str((char)1); //1=start value
     port.write(1);
@@ -307,7 +314,8 @@ void draw() {
         //toSend += (char)sendVal;
         port.write(sendVal);
 
-        scr.println(counter + " " + sendVal);
+//        scr.println(counter + " " + sendVal);
+        text(counter + ":" + sendVal, 450 + counter * 100, 850);
     }
     diff = diff/2 + 128;
     if(diff >= 255) diff = 254;
@@ -317,7 +325,8 @@ void draw() {
 
     
     for (int i = 0; i < NUM_SERVOS; i++){
-        //port.write(servoValues[i] + 1);
+        port.write(servoValues[i] + 1);
+//        scr.println(servoValues[i] + 1 + "");
         //toSend += (char)(servoValues[i] + 1);
     }
     //toSend += (char)255;
@@ -338,6 +347,12 @@ void draw() {
     String read = port.readString();
     if(read != null){
         scr.println(read);
+        //read sensor data
+        if(read.substring(0,2) == "t$"){
+            temp = Float.parseFloat(read.substring(1, read.indexOf("\n")));
+            depth = Double.parseDouble(read.substring(read.indexOf("h$") + 2, read.lastIndexOf("\n")));
+            scr.println("t: " + temp + " d: " + depth);
+        }
     }
     
     delay(100);
