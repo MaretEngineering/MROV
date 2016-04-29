@@ -86,7 +86,7 @@ int motorThrustPins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_
 #define MT6d_PIN 35
 int motorDirPins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_PIN};
 
-bool suckBlowTable[] = {true, false, false, false, false, false};
+bool suckBlowTable[] = {true, false, true, false, false, false};
 // bool suck_blow_table[] = {true, false, false, false, false, false};
 
 //************************************
@@ -96,9 +96,9 @@ bool suckBlowTable[] = {true, false, false, false, false, false};
 // Change to match setup
 
 // Pan
-#define SERVO_PAN 3
+#define SERVO_PAN 2
 // Tilt
-#define SERVO_TILT 7
+#define SERVO_TILT 3
 // Claw
 #define SERVO_CLAW 5
 // Claw Wrist
@@ -250,8 +250,9 @@ void loop() {
     // Generating Sensor Values
     //*****************************
 
-    temp = random(0,100);
-    height = random(0, 1000);
+    temp = sensor.getTemperature(CELSIUS, ADC_512);
+    pressure = sensor.getPressure(ADC_4096);
+    height = 100*(pressure - setpoint)/98;
 
     Serial.print("t$"); Serial.println(temp);
     Serial.print("h$"); Serial.println(height);

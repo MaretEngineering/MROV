@@ -41,14 +41,14 @@ final int CLAW = 2; //Servo index for claw
 final int WRIST = 3; //Servo index for wrist
 
 //Constraints and center for pan
-final int PAN_MIN = 65;
+final int PAN_MIN = 51;
 final int PAN_CENTER = 90;
-final int PAN_MAX = 115;
+final int PAN_MAX = 137;
 
 //Constraints and center for tilt
-final int TILT_MIN = 90;
-final int TILT_CENTER = 118;
-final int TILT_ED = 145;
+final int TILT_MIN = 0;
+final int TILT_CENTER = 94;
+final int TILT_ED = 180;
 
 //Constraints for claw
 final int CLAW_CLOSED = 125;
@@ -202,11 +202,11 @@ void draw() {
 
             case 6: // Dpad Left
                 servoValues[PAN] -= 1;
-                servoValues[PAN] = constrain(servoValues[PAN], 65, 115);
+                servoValues[PAN] = constrain(servoValues[PAN], PAN_MIN, PAN_MAX);
                 break;
             case 7: // Dpad Right
                 servoValues[PAN] += 1;
-                servoValues[PAN] = constrain(servoValues[PAN], 65, 115);
+                servoValues[PAN] = constrain(servoValues[PAN], PAN_MIN, PAN_MAX);
 
                 break;
             case 4: // Dpad Up
@@ -219,20 +219,20 @@ void draw() {
                 break;
                 
             case 2: // X
-                servoValues[WRIST] -= 1;
+                servoValues[WRIST] -= 2;
                 servoValues[WRIST] = constrain(servoValues[WRIST], WRIST_LEFT, WRIST_RIGHT);
                 break; 
             case 1: // B
-                servoValues[WRIST] += 1;
+                servoValues[WRIST] += 2;
                 servoValues[WRIST] = constrain(servoValues[WRIST], WRIST_LEFT, WRIST_RIGHT);
                 break;
                 
             case 3: // Y
-                servoValues[CLAW] += 1;
+                servoValues[CLAW] += 2;
                 servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_OPEN, CLAW_CLOSED);
                 break;
             case 0: // A
-                servoValues[CLAW] -= 1;
+                servoValues[CLAW] -= 2;
                 servoValues[CLAW] = constrain(servoValues[CLAW], CLAW_OPEN, CLAW_CLOSED);
                 break;
             }
