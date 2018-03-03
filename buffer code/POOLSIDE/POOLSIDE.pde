@@ -51,8 +51,8 @@ final int TILT_CENTER = 94;
 final int TILT_ED = 180;
 
 //Constraints for claw
-final int CLAW_CLOSED = 125;
-final int CLAW_OPEN = 23;
+final int CLAW_CLOSED = 140;
+final int CLAW_OPEN = 70;
 
 //Constraints for wrist
 final int WRIST_CENTER = 90;
@@ -96,7 +96,8 @@ void setup() {
         joypad.getButton(1), // dpad down             5
         joypad.getButton(2), // dpad left             6
         joypad.getButton(3), // dpad right            7
-        joypad.getButton(10) // xbox button           8
+        joypad.getButton(10), // xbox button           8
+        joypad.getButton(9) //start                    9
     };
 
     scr = new Console(10, 1100, 300);
@@ -110,13 +111,13 @@ void setup() {
     }
         
     if(serialOn){
-        port = new Serial(this, Serial.list()[Serial.list().length - 2], 38400); //this might be a different serial
+     //   port = new Serial(this, Serial.list()[Serial.list().length - 2], 38400); //this might be a different serial
     }
 
     //servo start values
     servoValues[PAN] = PAN_CENTER; //Pan starts center
     servoValues[TILT] = TILT_CENTER; //Tilt starts center
-    servoValues[CLAW] = CLAW_OPEN; //Claw starts open
+    servoValues[CLAW] = CLAW_CLOSED; //Claw starts open
     servoValues[WRIST] = WRIST_CENTER; //Wrist starts center
 
     
@@ -128,7 +129,7 @@ void draw() {
 
     textSize(12);
     scr.printOutput();
-//    scr.println(str(millis())); //uncomment this to test console
+    println(str(millis())); //uncomment this to test console
 
 
     // Debugging stuff
@@ -137,7 +138,7 @@ void draw() {
     
     //header (for space filler -- it looked empty)
     textSize(48);
-    text("Placeholder Text", 50, 75);
+    text("Siphonophore", 50, 85);
     textSize(32);
 
     stroke(255, 0, 0); //red circle for thrust bound
@@ -201,20 +202,20 @@ void draw() {
             switch(i){
 
             case 6: // Dpad Left
-                servoValues[PAN] -= 1;
+                servoValues[PAN] += 1;
                 servoValues[PAN] = constrain(servoValues[PAN], PAN_MIN, PAN_MAX);
                 break;
             case 7: // Dpad Right
-                servoValues[PAN] += 1;
+                servoValues[PAN] -= 1;
                 servoValues[PAN] = constrain(servoValues[PAN], PAN_MIN, PAN_MAX);
 
                 break;
             case 4: // Dpad Up
-                servoValues[TILT] += 1;
+                servoValues[TILT] -= 1;
                 servoValues[TILT] = constrain(servoValues[TILT], TILT_MIN, TILT_ED);
                 break;
             case 5: // Dpad down
-                servoValues[TILT] -= 1;
+                servoValues[TILT] += 1;
                 servoValues[TILT] = constrain(servoValues[TILT], TILT_MIN, TILT_ED);
                 break;
                 
@@ -302,7 +303,7 @@ void draw() {
     text("Depth: " + Double.toString(depth) + " cm", 1100, 150);    
     
     //String toSend = str((char)1); //1=start value
-    port.write(1);
+    //port.write(1);
 
     // send the values
     for (int counter = 0; counter < 4; counter++) {
@@ -312,7 +313,7 @@ void draw() {
         else if(sendVal <= 1) sendVal = 2;
         
         //toSend += (char)sendVal;
-        port.write(sendVal);
+        //port.write(sendVal);
 
 //        scr.println(counter + " " + sendVal);
         text(counter + ":" + sendVal, 450 + counter * 100, 850);
@@ -321,16 +322,16 @@ void draw() {
     if(diff >= 255) diff = 254;
     else if(diff <= 1) diff = 2;
     //toSend += (char)diff;
-    port.write(diff);
+    //port.write(diff);
 
     
     for (int i = 0; i < NUM_SERVOS; i++){
-        port.write(servoValues[i] + 1);
+        //port.write(servoValues[i] + 1);
 //        scr.println(servoValues[i] + 1 + "");
         //toSend += (char)(servoValues[i] + 1);
     }
     //toSend += (char)255;
-    port.write(255);
+    //port.write(255);
 
     
     
@@ -344,16 +345,16 @@ void draw() {
     }
 
     //read serial
-    String read = port.readString();
-    if(read != null){
-        scr.println(read);
-        //read sensor data
-        if(read.substring(0,2) == "t$"){
-            temp = Float.parseFloat(read.substring(1, read.indexOf("\n")));
-            depth = Double.parseDouble(read.substring(read.indexOf("h$") + 2, read.lastIndexOf("\n")));
-            scr.println("t: " + temp + " d: " + depth);
-        }
-    }
+//    String read = port.readString();
+//    if(read != null){
+//        println(read);
+//        //read sensor data
+//        if(read.substring(0,2) == "t$"){
+//            temp = Float.parseFloat(read.substring(1, read.indexOf("\n")));
+//            depth = Double.parseDouble(read.substring(read.indexOf("h$") + 2, read.lastIndexOf("\n")));
+//            println("t: " + temp + " d: " + depth);
+//        }
+//    }
     
     delay(100);
 }

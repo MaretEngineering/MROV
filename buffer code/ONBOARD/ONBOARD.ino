@@ -86,7 +86,7 @@ int motorThrustPins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_
 #define MT6d_PIN 35
 int motorDirPins[] = {MT1d_PIN, MT2d_PIN, MT3d_PIN, MT4d_PIN, MT5d_PIN, MT6d_PIN};
 
-bool suckBlowTable[] = {true, false, true, false, false, false};
+bool suckBlowTable[] = {false, false, true, false, false, false};
 // bool suck_blow_table[] = {true, false, false, false, false, false};
 
 //************************************
@@ -96,13 +96,13 @@ bool suckBlowTable[] = {true, false, true, false, false, false};
 // Change to match setup
 
 // Pan
-#define SERVO_PAN 2
+#define SERVO_PAN 5
 // Tilt
-#define SERVO_TILT 3
+#define SERVO_TILT 2
 // Claw
-#define SERVO_CLAW 5
+#define SERVO_CLAW 3 //5
 // Claw Wrist
-#define SERVO_WRIST 6
+#define SERVO_WRIST 0
 
 #define SERVO_5_PIN 0
 #define SERVO_6_PIN 0
@@ -170,35 +170,35 @@ void setup() {
   // Test Systems
   //*********************************
 
-  //Test motors
-  for (int i = 0; i < NUM_MOTORS; i++) {  
-    Serial.print("Testing motor ");
-    Serial.println(i);
-    for (int j = STALL_THRESHOLD; j < 256; j++) {
-      analogWrite(motorThrustPins[i], j);
-      delay(3);
-    }
-    
-    delay(3);
-    
-    for (int j = 255; j >= 0; j--) {
-      analogWrite(motorThrustPins[i], j);
-      delay(3);
-    }
-  }
-  
-
-  Serial.println("Testing servos...");
-  for (int i = 0; i < NUM_SERVOS; i++) {
-    Serial.print("Testing servo ");
-    Serial.println(i + 1);
-    Servo servo = servos[i];
-    servo.write(80);
-    delay(500);
-    servo.write(100);
-    delay(500);
-  }
-  Serial.println("Servos tested");
+//  //Test motors
+//  for (int i = 0; i < NUM_MOTORS; i++) {  
+//    Serial.print("Testing motor ");
+//    Serial.println(i);
+//    for (int j = STALL_THRESHOLD; j < 256; j++) {
+//      analogWrite(motorThrustPins[i], j);
+//      delay(3);
+//    }
+//    
+//    delay(3);
+//    
+//    for (int j = 255; j >= 0; j--) {
+//      analogWrite(motorThrustPins[i], j);
+//      delay(3);
+//    }
+//  }
+//  
+//
+//  Serial.println("Testing servos...");
+//  for (int i = 0; i < NUM_SERVOS; i++) {
+//    Serial.print("Testing servo ");
+//    Serial.println(i + 1);
+//    Servo servo = servos[i];
+//    servo.write(80);
+//    delay(500);
+//    servo.write(100);
+//    delay(500);
+//  }
+//  Serial.println("Servos tested");
 
   Serial.println("Clearing serial buffer");
   while (Serial.available() > 0) {
@@ -206,6 +206,7 @@ void setup() {
   }
   Serial.println("Done clearing buffer");
 
+    delay(500);
 
     Serial.println("Testing setpoint");
     setpoint = sensor.getPressure(ADC_4096);
@@ -216,12 +217,14 @@ void setup() {
 } // End setup
 
 void loop() {
+    Serial.println("loop");
 
   //*********************************
   // Receive serial input
   //*********************************
   
     parseSerial();
+    
     
   //************************************
   // Parse the received values
@@ -233,6 +236,7 @@ void loop() {
 
   
     parseThrustMotorVals();
+    
     parseServoVals();
 
     

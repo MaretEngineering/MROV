@@ -34,10 +34,10 @@ SEE THE MAP FOR CONVERSIONS BETWEEN DWORKEN AND DAVID SYSTEMS
  5        4
 
 */
-#define MT1t_PIN 3
+#define MT1t_PIN 12
 #define MT2t_PIN 9
-#define MT3t_PIN 5
-#define MT4t_PIN 6
+#define MT3t_PIN 8
+#define MT4t_PIN 13
 #define MT5t_PIN 11
 #define MT6t_PIN 10
 int motor_thrust_pins[] = {MT1t_PIN, MT2t_PIN, MT3t_PIN, MT4t_PIN, MT5t_PIN, MT6t_PIN};
@@ -65,11 +65,11 @@ bool suck_blow_table[] = {true, false, false, false, false, false};
 // Change to match setup
 
 // Pan
-#define SERVO_1_PIN 3
+#define SERVO_1_PIN 0
 // Claw
-#define SERVO_2_PIN 5
+#define SERVO_2_PIN 0
 // Tilt
-#define SERVO_3_PIN 2
+#define SERVO_3_PIN 0
 #define SERVO_4_PIN 0
 #define SERVO_5_PIN 0
 #define SERVO_6_PIN 0
